@@ -82,35 +82,42 @@ function applyRolePermissions() {
     });
 }
 
-// --- MODULE 01: QR REGISTRATION (HIGH VISIBILITY GENERATOR) ---
+// --- MODULE 01: UNIFORM PERFECT QR CODE GENERATOR ---
 function generateQRCodes(text) {
     const container = document.getElementById("qrcode");
     if (!container) return;
     container.innerHTML = "";
 
-    // 1. Try QRCode JS library
     if (typeof QRCode !== 'undefined') {
         try {
             new QRCode(container, {
                 text: text,
-                width: 195,
-                height: 195,
+                width: 190,
+                height: 190,
                 colorDark: "#050c1a",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
+            setTimeout(() => {
+                const canvas = container.querySelector("canvas");
+                const img = container.querySelector("img");
+                if (canvas && img) {
+                    canvas.remove(); // Remove duplicate canvas element to prevent vertical stretch!
+                }
+            }, 30);
             return;
         } catch(e) {
             console.log("QRCode library fallback:", e);
         }
     }
 
-    // 2. Guaranteed fallback QR code generator API
+    // Guaranteed inline image generator fallback
     const qrImg = document.createElement("img");
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(text)}&color=050c1a&bgcolor=ffffff`;
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=190x190&data=${encodeURIComponent(text)}&color=050c1a&bgcolor=ffffff`;
     qrImg.alt = "Código QR de Asistencia";
-    qrImg.style.width = "100%";
-    qrImg.style.height = "100%";
+    qrImg.style.width = "190px";
+    qrImg.style.height = "190px";
+    qrImg.style.objectFit = "contain";
     qrImg.style.borderRadius = "6px";
     container.appendChild(qrImg);
 }
