@@ -150,23 +150,6 @@ body.dark-theme {
     box-shadow: 0 0 45px rgba(223, 172, 66, 0.8);
 }
 
-.welcome-coach-badge {
-    background: linear-gradient(90deg, rgba(223, 172, 66, 0.25) 0%, rgba(0, 102, 255, 0.25) 100%);
-    border: 1px solid var(--border-gold);
-    color: var(--accent-gold);
-    font-family: var(--font-heading);
-    font-size: 1.25rem;
-    letter-spacing: 2px;
-    font-weight: 700;
-    padding: 0.4rem 1rem;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.6rem;
-    box-shadow: 0 0 15px rgba(223, 172, 66, 0.3);
-}
-
 .hero-tagline {
     color: var(--accent-gold);
     font-family: var(--font-heading);
@@ -452,44 +435,38 @@ body.dark-theme {
     font-size: 1rem;
 }
 
-/* QR CONTAINER - PERFECT UNIFORM SQUARE DESIGN */
+/* PERFECT UNIFORM QR CONTAINER */
 .qr-container-simple {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 16px;
-    width: 220px;
-    height: 220px;
-    margin: 1.4rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 25px rgba(0, 210, 255, 0.5);
-    border: 3px solid var(--accent-cyan);
-    overflow: hidden;
-    box-sizing: border-box;
+    background: #ffffff !important;
+    padding: 15px !important;
+    border-radius: 16px !important;
+    width: 220px !important;
+    height: 220px !important;
+    min-width: 220px !important;
+    min-height: 220px !important;
+    max-width: 220px !important;
+    max-height: 220px !important;
+    margin: 1.4rem auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.5) !important;
+    border: 3px solid var(--accent-cyan) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    aspect-ratio: 1 / 1 !important;
 }
 
-#qrcode {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#qrcode canvas {
-    display: none !important;
-}
-
-#qrcode img {
+.qr-square-img {
     width: 190px !important;
     height: 190px !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
+    max-width: 190px !important;
+    max-height: 190px !important;
     object-fit: contain !important;
     display: block !important;
-    border-radius: 6px;
-    margin: 0 auto;
+    border-radius: 6px !important;
+    margin: 0 auto !important;
+    aspect-ratio: 1 / 1 !important;
 }
 
 .qr-code-text {

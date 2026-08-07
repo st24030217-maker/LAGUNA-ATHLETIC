@@ -14,11 +14,11 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Chart.js & QR Code Libraries -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
-    <link rel="stylesheet" href="styles.css">
+    <!-- Cache buster query string -->
+    <link rel="stylesheet" href="styles.css?v=3.0">
 </head>
 <body class="dark-theme">
 
@@ -115,11 +115,11 @@
                         <p class="subtitle-text">Escaneo rápido a la llegada a la cancha. Sin planillas de papel.</p>
 
                         <div class="grid-2-cols margin-top">
-                            <!-- QR de Sesión -->
+                            <!-- QR de Sesión (UNIFORM PERFECT SQUARE) -->
                             <div class="subcard text-center">
                                 <h4>Código QR de Hoy</h4>
                                 <div class="qr-container-simple">
-                                    <div id="qrcode"></div>
+                                    <img id="qrDisplayImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SESION-LAGUNA-2026-08-06&color=050c1a&bgcolor=ffffff" alt="Código QR Asistencia" class="qr-square-img">
                                 </div>
                                 <p class="qr-code-text">SESIÓN-LAGUNA-2026</p>
                             </div>
@@ -372,6 +372,6 @@
         </div>
     </main>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=3.0"></script>
 </body>
 </html>
