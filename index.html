@@ -17,8 +17,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Cache buster query string -->
-    <link rel="stylesheet" href="styles.css?v=3.0">
+    <link rel="stylesheet" href="styles.css?v=4.0">
 </head>
 <body class="dark-theme">
 
@@ -105,7 +104,7 @@
             <!-- CONTENIDO DE LOS MÓDULOS -->
             <div class="dashboard-content-simple">
 
-                <!-- 01. REGISTRO POR QR -->
+                <!-- 01. REGISTRO POR QR (SIMULACIÓN ULTRA LIMPIA) -->
                 <div id="mod-qr" class="module-panel active">
                     <div class="simple-card">
                         <div class="card-header-flex">
@@ -115,11 +114,55 @@
                         <p class="subtitle-text">Escaneo rápido a la llegada a la cancha. Sin planillas de papel.</p>
 
                         <div class="grid-2-cols margin-top">
-                            <!-- QR de Sesión (UNIFORM PERFECT SQUARE) -->
+                            <!-- QR Simulador Vectorial Cuadrado Perfecto -->
                             <div class="subcard text-center">
                                 <h4>Código QR de Hoy</h4>
-                                <div class="qr-container-simple">
-                                    <img id="qrDisplayImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SESION-LAGUNA-2026-08-06&color=050c1a&bgcolor=ffffff" alt="Código QR Asistencia" class="qr-square-img">
+                                <div class="qr-container-sim-box">
+                                    <svg viewBox="0 0 100 100" class="qr-svg-matrix">
+                                        <rect width="100" height="100" rx="10" fill="#ffffff" />
+                                        
+                                        <!-- Top Left Pattern -->
+                                        <rect x="10" y="10" width="24" height="24" fill="#040914" rx="4" />
+                                        <rect x="14" y="14" width="16" height="16" fill="#ffffff" rx="2" />
+                                        <rect x="18" y="18" width="8" height="8" fill="#040914" rx="1" />
+
+                                        <!-- Top Right Pattern -->
+                                        <rect x="66" y="10" width="24" height="24" fill="#040914" rx="4" />
+                                        <rect x="70" y="14" width="16" height="16" fill="#ffffff" rx="2" />
+                                        <rect x="74" y="18" width="8" height="8" fill="#040914" rx="1" />
+
+                                        <!-- Bottom Left Pattern -->
+                                        <rect x="10" y="66" width="24" height="24" fill="#040914" rx="4" />
+                                        <rect x="14" y="70" width="16" height="16" fill="#ffffff" rx="2" />
+                                        <rect x="18" y="74" width="8" height="8" fill="#040914" rx="1" />
+
+                                        <!-- QR Matrix Dots -->
+                                        <rect x="40" y="12" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="52" y="12" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="44" y="22" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="56" y="22" width="6" height="6" fill="#040914" rx="1"/>
+                                        
+                                        <rect x="12" y="42" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="24" y="42" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="36" y="42" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="48" y="42" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="60" y="42" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="72" y="42" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="82" y="42" width="6" height="6" fill="#040914" rx="1"/>
+
+                                        <rect x="12" y="52" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="28" y="52" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="44" y="52" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="60" y="52" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="76" y="52" width="6" height="6" fill="#040914" rx="1"/>
+
+                                        <rect x="40" y="64" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="52" y="64" width="6" height="6" fill="#040914" rx="1"/>
+                                        <rect x="66" y="66" width="10" height="10" fill="#040914" rx="2"/>
+                                        <rect x="80" y="66" width="10" height="10" fill="#040914" rx="2"/>
+                                        <rect x="66" y="80" width="10" height="10" fill="#040914" rx="2"/>
+                                        <rect x="80" y="80" width="10" height="10" fill="#040914" rx="2"/>
+                                    </svg>
                                 </div>
                                 <p class="qr-code-text">SESIÓN-LAGUNA-2026</p>
                             </div>
@@ -372,6 +415,6 @@
         </div>
     </main>
 
-    <script src="app.js?v=3.0"></script>
+    <script src="app.js?v=4.0"></script>
 </body>
 </html>
