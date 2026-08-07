@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laguna Athletic · Control de Asistencia 2026</title>
+    <meta name="description" content="Sistema fácil e intuitivo para control de asistencia y convocatorias de Laguna Athletic. Unidos por la misma pasión.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js & QR Code Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+
+    <!-- HEADER / BARRA SUPERIOR CON LOGO OFICIAL LAGUNA.JPG -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand" onclick="showModuleTab('mod-qr')" style="cursor:pointer;">
+                <img src="LAGUNA.jpg" alt="Laguna Athletic Escudo Oficial" class="nav-logo-img">
+                <div>
+                    <span class="brand-sub">— LAGUNA ATHLETIC</span>
+                    <span class="brand-title">CONTROL DE ASISTENCIA</span>
+                </div>
+            </div>
+
+            <div class="role-selector-container">
+                <label for="userRoleSelect"><i class="fa-solid fa-user-gear"></i> Modo / Rol:</label>
+                <select id="userRoleSelect" onchange="changeUserRole(this.value)">
+                    <option value="dt">Coach. Zúñiga (DT)</option>
+                    <option value="jugador">Jugador (Mateo Silva)</option>
+                    <option value="directiva">Directiva</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main id="main-content">
+
+        <!-- RESUMEN RÁPIDO Y MÉTRICAS CLAVE -->
+        <section class="quick-hero">
+            <div class="hero-flex-container">
+                <img src="LAGUNA.jpg" alt="Laguna Athletic Escudo Oficial" class="hero-crest-img">
+                <div class="hero-simple-header" style="flex:1; min-width:280px;">
+                    <div class="hero-tagline"><i class="fa-solid fa-shield-halved"></i> UNIDOS POR LA MISMA PASIÓN</div>
+                    <h1>TEMPORADA 2026 <span class="text-accent">· SIN BALONES FUERA</span></h1>
+                </div>
+            </div>
+
+            <!-- TRES MÉTRICAS CLAVE -->
+            <div class="metrics-grid-simple">
+                <div class="metric-card-simple" onclick="showModuleTab('mod-qr')">
+                    <div class="metric-number">01</div>
+                    <div class="metric-label">TOQUE PARA REGISTRAR</div>
+                </div>
+                <div class="metric-card-simple" onclick="showModuleTab('mod-calendario')">
+                    <div class="metric-number">24/7</div>
+                    <div class="metric-label">ACCESO MÓVIL</div>
+                </div>
+                <div class="metric-card-simple" onclick="showModuleTab('mod-estadisticas')">
+                    <div class="metric-number">100%</div>
+                    <div class="metric-label">ASISTENCIA DEL PLANTEL</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD SIMPLIFICADO -->
+        <div class="dashboard-layout-simple">
+            
+            <!-- MENÚ PRINCIPAL (BOTONES RÁPIDOS Y CLAROS) -->
+            <nav class="main-tabs-nav">
+                <button class="tab-btn active" data-tab="mod-qr" onclick="showModuleTab('mod-qr')">
+                    <i class="fa-solid fa-qrcode"></i> 1. Registro QR
+                </button>
+                <button class="tab-btn" data-tab="mod-alineacion" onclick="showModuleTab('mod-alineacion')">
+                    <i class="fa-solid fa-futbol"></i> 2. Once Inicial (XI)
+                </button>
+                <button class="tab-btn" data-tab="mod-avisos" onclick="showModuleTab('mod-avisos')">
+                    <i class="fa-brands fa-whatsapp"></i> 3. Avisos WhatsApp
+                </button>
+                <button class="tab-btn" data-tab="mod-calendario" onclick="showModuleTab('mod-calendario')">
+                    <i class="fa-solid fa-calendar-days"></i> 4. Calendario
+                </button>
+                <button class="tab-btn" data-tab="mod-justificaciones" onclick="showModuleTab('mod-justificaciones')">
+                    <i class="fa-solid fa-clipboard-check"></i> 5. Justificaciones
+                </button>
+                <button class="tab-btn" data-tab="mod-estadisticas" onclick="showModuleTab('mod-estadisticas')">
+                    <i class="fa-solid fa-chart-pie"></i> 6. Estadísticas
+                </button>
+                <button class="tab-btn" data-tab="mod-roles" onclick="showModuleTab('mod-roles')">
+                    <i class="fa-solid fa-user-lock"></i> 7. Permisos
+                </button>
+            </nav>
+
+            <!-- CONTENIDO DE LOS MÓDULOS -->
+            <div class="dashboard-content-simple">
+
+                <!-- 01. REGISTRO POR QR -->
+                <div id="mod-qr" class="module-panel active">
+                    <div class="simple-card">
+                        <div class="card-header-flex">
+                            <h3><i class="fa-solid fa-qrcode color-accent"></i> Registro de Asistencia por Código QR</h3>
+                            <span class="badge badge-accent" id="attendanceCount">0/18 Presentes</span>
+                        </div>
+                        <p class="subtitle-text">Escaneo rápido a la llegada a la cancha. Sin planillas de papel.</p>
+
+                        <div class="grid-2-cols margin-top">
+                            <!-- QR de Sesión -->
+                            <div class="subcard text-center">
+                                <h4>Código QR de Hoy</h4>
+                                <div class="qr-container-simple">
+                                    <div id="qrcode"></div>
+                                </div>
+                                <p class="qr-code-text">SESIÓN-LAGUNA-2026</p>
+                            </div>
+
+                            <!-- Botón Marcar Rápido -->
+                            <div class="subcard">
+                                <h4>Marcar Asistencia Rápida</h4>
+                                <p class="subtitle-text">Selecciona al jugador para simular su llegada:</p>
+
+                                <div class="form-group margin-top">
+                                    <select id="quickPlayerSelect" class="form-control-lg">
+                                        <!-- Jugadores dinámicos -->
+                                    </select>
+                                </div>
+
+                                <button class="btn btn-primary btn-block btn-lg" onclick="simulateQRCheckIn()">
+                                    <i class="fa-solid fa-bolt"></i> MARCAR ASISTENCIA AHORA
+                                </button>
+
+                                <div id="lastCheckinAlert" class="alert alert-success margin-top hidden">
+                                    <i class="fa-solid fa-circle-check"></i> <span id="lastCheckinText">¡Asistencia registrada!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Asistencia -->
+                        <div class="margin-top">
+                            <table class="table-simple">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Jugador</th>
+                                        <th>Posición</th>
+                                        <th>Estado</th>
+                                        <th>Hora Entrada</th>
+                                        <th class="role-dt-only">Acciones DT</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody">
+                                    <!-- JS Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 02. ONCE INICIAL (TITULARES Y CONVOCATORIA) -->
+                <div id="mod-alineacion" class="module-panel">
+                    <div class="simple-card">
+                        <h3><i class="fa-solid fa-futbol color-accent"></i> Convocatoria y 11 Titular</h3>
+                        <p class="subtitle-text">Haz clic en cualquier posición de la cancha para cambiar al titular.</p>
+
+                        <div class="grid-2-cols margin-top">
+                            <!-- Cancha -->
+                            <div class="pitch-container" id="tacticalPitch">
+                                <div class="pitch-line center-circle"></div>
+                                <div class="pitch-line center-line"></div>
+
+                                <!-- 11 Posiciones -->
+                                <div class="pitch-player pos-gk" onclick="changePitchSlot('GK')"><div class="player-shirt">1</div><span class="player-name" id="slot-GK">POR (Mateo)</span></div>
+                                <div class="pitch-player pos-lb" onclick="changePitchSlot('LB')"><div class="player-shirt">3</div><span class="player-name" id="slot-LB">LTI (Gómez)</span></div>
+                                <div class="pitch-player pos-cb1" onclick="changePitchSlot('CB1')"><div class="player-shirt">4</div><span class="player-name" id="slot-CB1">DFC (Ramos)</span></div>
+                                <div class="pitch-player pos-cb2" onclick="changePitchSlot('CB2')"><div class="player-shirt">5</div><span class="player-name" id="slot-CB2">DFC (Pérez)</span></div>
+                                <div class="pitch-player pos-rb" onclick="changePitchSlot('RB')"><div class="player-shirt">2</div><span class="player-name" id="slot-RB">LTD (Sánchez)</span></div>
+                                <div class="pitch-player pos-mcd" onclick="changePitchSlot('MCD')"><div class="player-shirt">6</div><span class="player-name" id="slot-MCD">MCD (Alcaraz)</span></div>
+                                <div class="pitch-player pos-mc1" onclick="changePitchSlot('MC1')"><div class="player-shirt">8</div><span class="player-name" id="slot-MC1">MC (Valdés)</span></div>
+                                <div class="pitch-player pos-mc2" onclick="changePitchSlot('MC2')"><div class="player-shirt">10</div><span class="player-name" id="slot-MC2">MCO (Suárez)</span></div>
+                                <div class="pitch-player pos-ei" onclick="changePitchSlot('EI')"><div class="player-shirt">11</div><span class="player-name" id="slot-EI">EI (López)</span></div>
+                                <div class="pitch-player pos-dc" onclick="changePitchSlot('DC')"><div class="player-shirt">9</div><span class="player-name" id="slot-DC">DC (Martínez)</span></div>
+                                <div class="pitch-player pos-ed" onclick="changePitchSlot('ED')"><div class="player-shirt">7</div><span class="player-name" id="slot-ED">ED (Torres)</span></div>
+                            </div>
+
+                            <!-- Lista Plantel -->
+                            <div class="subcard">
+                                <h4>Lista del Plantel</h4>
+                                <div class="squad-list-container" id="squadCallupList">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                                <button class="btn btn-success btn-block margin-top role-dt-only" onclick="saveLineup()">
+                                    <i class="fa-solid fa-floppy-disk"></i> Guardar Convocatoria
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 03. AVISOS AUTOMÁTICOS WHATSAPP -->
+                <div id="mod-avisos" class="module-panel">
+                    <div class="simple-card">
+                        <h3><i class="fa-brands fa-whatsapp color-whatsapp"></i> Avisos por WhatsApp</h3>
+                        <p class="subtitle-text">Envía avisos directos a jugadores y padres sin escribir mensajes manuales.</p>
+
+                        <div class="form-container-simple margin-top">
+                            <div class="form-group">
+                                <label>Tipo de Mensaje:</label>
+                                <select id="noticeTypeSelect" class="form-control form-control-lg" onchange="updateNoticeTemplate()">
+                                    <option value="entrenamiento">Recordatorio de Entrenamiento</option>
+                                    <option value="partido">Convocatoria a Partido</option>
+                                    <option value="falta">Aviso de Falta sin Justificar</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Mensaje a Enviar:</label>
+                                <textarea id="noticeMessageText" rows="6" class="form-control"></textarea>
+                            </div>
+
+                            <button class="btn btn-whatsapp btn-block btn-lg role-dt-only" onclick="simulateSendNotices()">
+                                <i class="fa-brands fa-whatsapp"></i> ENVIAR AVISO AHORA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 04. CALENDARIO -->
+                <div id="mod-calendario" class="module-panel">
+                    <div class="simple-card">
+                        <div class="card-header-flex">
+                            <h3><i class="fa-solid fa-calendar-days color-accent"></i> Calendario del Club</h3>
+                            <button class="btn btn-accent btn-sm role-dt-only" onclick="openAddEventModal()"><i class="fa-solid fa-plus"></i> Nuevo Evento</button>
+                        </div>
+
+                        <div class="calendar-events-grid margin-top" id="calendarEventsGrid">
+                            <!-- JS Dynamic -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 05. JUSTIFICACIONES -->
+                <div id="mod-justificaciones" class="module-panel">
+                    <div class="simple-card">
+                        <h3><i class="fa-solid fa-clipboard-check color-accent"></i> Justificaciones de Faltas</h3>
+                        <p class="subtitle-text">Sube tu justificación o revisa las faltas pendientes.</p>
+
+                        <div class="grid-2-cols margin-top">
+                            <!-- Formulario Jugador -->
+                            <div class="subcard">
+                                <h4>Enviar Justificación</h4>
+                                <form id="justificationForm" onsubmit="submitJustification(event)">
+                                    <div class="form-group">
+                                        <label>Fecha de Ausencia:</label>
+                                        <input type="date" id="justDate" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Motivo:</label>
+                                        <select id="justReason" class="form-control">
+                                            <option value="Médico / Lesión">Médico / Lesión</option>
+                                            <option value="Examen Académico">Examen Académico</option>
+                                            <option value="Asunto Familiar">Asunto Familiar</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Explicación:</label>
+                                        <textarea id="justDetail" rows="3" class="form-control" placeholder="Escribe aquí el motivo..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
+                                </form>
+                            </div>
+
+                            <!-- Lista Solicitudes -->
+                            <div class="subcard">
+                                <h4>Solicitudes Recibidas</h4>
+                                <div class="justifications-list" id="justificationsList">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 06. ESTADÍSTICAS -->
+                <div id="mod-estadisticas" class="module-panel">
+                    <div class="simple-card">
+                        <h3><i class="fa-solid fa-chart-pie color-accent"></i> Estadísticas del Plantel</h3>
+
+                        <div class="grid-2-cols margin-top">
+                            <div>
+                                <h4>% Asistencia Global</h4>
+                                <div class="chart-container">
+                                    <canvas id="attendanceChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4>Ranking de Cumplimiento</h4>
+                                <table class="table-simple">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Jugador</th>
+                                            <th>% Asistencia</th>
+                                            <th>Racha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rankingTableBody">
+                                        <!-- Dynamic -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 07. PERMISOS POR ROL -->
+                <div id="mod-roles" class="module-panel">
+                    <div class="simple-card">
+                        <h3><i class="fa-solid fa-user-lock color-accent"></i> Permisos por Rol</h3>
+                        <p class="subtitle-text">Permisos diferenciados para entrenadores, jugadores y directiva.</p>
+
+                        <table class="table-simple margin-top">
+                            <thead>
+                                <tr>
+                                    <th>Función</th>
+                                    <th>Entrenador (DT)</th>
+                                    <th>Jugador</th>
+                                    <th>Directiva</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Escanear QR</strong></td>
+                                    <td><span class="perm-yes">✔ Completo</span></td>
+                                    <td><span class="perm-yes">✔ Su QR</span></td>
+                                    <td><span class="perm-read">👁 Solo Ver</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Once Inicial (Titulares)</strong></td>
+                                    <td><span class="perm-yes">✔ Control Total</span></td>
+                                    <td><span class="perm-read">👁 Ver Convocatoria</span></td>
+                                    <td><span class="perm-read">👁 Solo Ver</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Avisos WhatsApp</strong></td>
+                                    <td><span class="perm-yes">✔ Enviar</span></td>
+                                    <td><span class="perm-no">✖ Sin Acceso</span></td>
+                                    <td><span class="perm-yes">✔ Enviar</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Aprobar Justificaciones</strong></td>
+                                    <td><span class="perm-yes">✔ Aprobar / Rechazar</span></td>
+                                    <td><span class="perm-yes">✔ Subir Motivo</span></td>
+                                    <td><span class="perm-read">👁 Ver</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
