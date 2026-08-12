@@ -60,14 +60,42 @@ body {
 .login-overlay {
   position: fixed;
   inset: 0;
-  background: var(--bg-app);
-  background-image: 
-    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  overflow: hidden;
 }
+
+/* Video de fondo del login */
+.login-bg-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Capa oscura semitransparente para legibilidad */
+.login-overlay-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1;
+}
+
+/* Elevar la tarjeta de login por encima del video */
+.login-overlay .login-box {
+  position: relative;
+  z-index: 2;
+}
+
 .login-box {
   width: 90%;
   max-width: 420px;
