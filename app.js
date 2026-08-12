@@ -140,9 +140,11 @@ function postLoginInit() {
   renderJustifications();
   renderRankingTable();
   renderInjuredTable();
+  renderRegTable();
   initChart();
   updateNoticeTemplate();
   initDragAndDrop();
+
 
   // Determine display name and greet
   let displayName = '';
@@ -801,3 +803,220 @@ function onDragEnd() {
   draggedMarker = null;
   isDragging    = false;
 }
+
+// ==========================================================================
+// MODULE: REGISTRO DE JUGADORES
+// ==========================================================================
+
+let regFilter = 'todos';    // filtro activo de estatus
+let regEditingId = null;    // id del jugador en edición (null = nuevo)
+
+/**
+ * Inicializa los datos extra de registro en cada jugador si no existen.
+ * Garantiza compatibilidad con el array defaultSquadData ya existente.
+ */
+function ensureRegFields(player) {
+  if (!player.regStatus)    player.regStatus    = 'Activo';
+  if (!player.birthdate)    player.birthdate    = '';
+  if (!player.phone)        player.phone        = '';
+  if (!player.email)        player.email        = '';
+  if (!player.regNotes)     player.regNotes     = '';
+  return player;
+}
+
+/** Renders the registration table with current filter + search */
+function renderRegTable() {
+  const tbody       = document.getElementById('regTableBody');
+  const countEl     = document.getElementById('regSquadCount');
+  const searchVal   = (document.getElementById('regSearchInput')?.value || '').toLowerCase();
+  if (!tbody) return;
+  tbody.innerHTML   = '';
+
+  // Ensure fields exist on all players
+  squadData.forEach(ensureRegFields);
+
+  const filtered = squadData.filter(p => {
+    const matchFilter = regFilter === 'todos' || p.regStatus === regFilter;
+    const matchSearch = !searchVal ||
+      p.name.toLowerCase().includes(searchVal) ||
+      String(p.number).includes(searchVal) ||
+      p.position.toLowerCase().includes(searchVal);
+    return matchFilter && matchSearch;
+  });
+
+  if (countEl) countEl.textContent = `${squadData.length} Jugador${squadData.length !== 1 ? 'es' : ''}`;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:2rem;">Sin jugadores con ese criterio.</td></tr>`;
+    return;
+  }
+
+  const isDT = currentRole === 'dt';
+
+  filtered.sort((a, b) => a.number - b.number).forEach(p => {
+    const statusKey = (p.regStatus || 'Activo').toLowerCase().replace(/ /g, '');
+    const badgeClass = `badge badge-status-${statusKey}`;
+    const starterLabel = p.starter ? 'Titular' : 'Suplente';
+
+    const actionsCells = isDT ? `
+      <td>
+        <button class="reg-action-btn edit" title="Editar" onclick="openEditPlayer(${p.id})">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button class="reg-action-btn delete" title="Eliminar" onclick="confirmDeletePlayer(${p.id})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </td>` : '<td></td>';
+
+    tbody.innerHTML += `
+      <tr>
+        <td class="mono-text text-primary" style="font-weight:700;">${p.number}</td>
+        <td>
+          <strong>${p.name}</strong>
+          <br><small class="text-muted">${starterLabel}${p.phone ? ' · ' + p.phone : ''}</small>
+        </td>
+        <td class="text-muted" style="font-size:0.85rem;">${p.position}</td>
+        <td><span class="${badgeClass}">${p.regStatus}</span></td>
+        ${actionsCells}
+      </tr>`;
+  });
+
+  applyRolePermissions();
+}
+
+/** Sets active filter and re-renders */
+function setRegFilter(filter, btn) {
+  regFilter = filter;
+  document.querySelectorAll('.reg-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderRegTable();
+}
+
+/** Live search handler */
+function filterRegTable() {
+  renderRegTable();
+}
+
+/** Handles form submit for both new player and edit */
+function handlePlayerRegSubmit(e) {
+  e.preventDefault();
+
+  const name      = document.getElementById('regName').value.trim();
+  const number    = parseInt(document.getElementById('regNumber').value);
+  const position  = document.getElementById('regPosition').value;
+  const birthdate = document.getElementById('regBirthdate').value;
+  const phone     = document.getElementById('regPhone').value.trim();
+  const email     = document.getElementById('regEmail').value.trim();
+  const regStatus = document.getElementById('regStatus').value;
+  const starter   = document.getElementById('regStarter').value === 'true';
+  const regNotes  = document.getElementById('regNotes').value.trim();
+
+  // Validate dorsal uniqueness
+  const dorsalTaken = squadData.find(p => p.number === number && p.id !== regEditingId);
+  if (dorsalTaken) {
+    showToast(`El dorsal #${number} ya pertenece a ${dorsalTaken.name}.`, 'error');
+    return;
+  }
+
+  if (regEditingId !== null) {
+    // --- EDIT MODE ---
+    const p = squadData.find(x => x.id === regEditingId);
+    if (p) {
+      p.name      = name;
+      p.number    = number;
+      p.position  = position;
+      p.birthdate = birthdate;
+      p.phone     = phone;
+      p.email     = email;
+      p.regStatus = regStatus;
+      p.starter   = starter;
+      p.regNotes  = regNotes;
+      saveData();
+      showToast(`Jugador ${name} actualizado.`, 'success');
+    }
+  } else {
+    // --- NEW PLAYER ---
+    const newId = Date.now();
+    squadData.push({
+      id: newId, number, name, position,
+      attendancePct: 0, streak: '0 A',
+      status: 'Ausente', checkinTime: '-',
+      starter, injured: false,
+      goals: 0, assists: 0, mins: 0, cards: 0,
+      // Extended fields
+      birthdate, phone, email, regStatus, regNotes
+    });
+    saveData();
+    showToast(`${name} registrado en la plantilla.`, 'success');
+  }
+
+  resetRegForm();
+  renderRegTable();
+  renderSquadCallupList();
+  populateQuickPlayerSelect();
+}
+
+/** Populates the form for editing an existing player */
+function openEditPlayer(id) {
+  const p = squadData.find(x => x.id === id);
+  if (!p) return;
+  ensureRegFields(p);
+
+  regEditingId = id;
+
+  document.getElementById('regEditId').value      = id;
+  document.getElementById('regName').value        = p.name;
+  document.getElementById('regNumber').value      = p.number;
+  document.getElementById('regPosition').value    = p.position;
+  document.getElementById('regBirthdate').value   = p.birthdate || '';
+  document.getElementById('regPhone').value       = p.phone || '';
+  document.getElementById('regEmail').value       = p.email || '';
+  document.getElementById('regStatus').value      = p.regStatus || 'Activo';
+  document.getElementById('regStarter').value     = p.starter ? 'true' : 'false';
+  document.getElementById('regNotes').value       = p.regNotes || '';
+
+  // Update form title & buttons
+  document.getElementById('regFormTitle').innerHTML =
+    `<i class="fa-solid fa-pen text-primary"></i> Editando: ${p.name}`;
+  document.getElementById('regSubmitBtn').innerHTML =
+    `<i class="fa-solid fa-cloud-arrow-up"></i> GUARDAR CAMBIOS`;
+  document.getElementById('regCancelBtn').style.display = '';
+
+  // Scroll form into view
+  document.getElementById('playerRegForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/** Cancels edit mode and resets the form */
+function cancelPlayerEdit() {
+  regEditingId = null;
+  resetRegForm();
+}
+
+function resetRegForm() {
+  regEditingId = null;
+  document.getElementById('playerRegForm').reset();
+  document.getElementById('regEditId').value = '';
+  document.getElementById('regFormTitle').innerHTML =
+    `<i class="fa-solid fa-user-plus text-primary"></i> Nuevo Jugador`;
+  document.getElementById('regSubmitBtn').innerHTML =
+    `<i class="fa-solid fa-user-plus"></i> REGISTRAR JUGADOR`;
+  document.getElementById('regCancelBtn').style.display = 'none';
+}
+
+/** Asks for confirmation before permanently deleting a player */
+function confirmDeletePlayer(id) {
+  const p = squadData.find(x => x.id === id);
+  if (!p) return;
+
+  // Use a simple confirm; in a real app you'd use a modal
+  if (!confirm(`¿Eliminar permanentemente a ${p.name} (#${p.number}) del equipo?`)) return;
+
+  squadData = squadData.filter(x => x.id !== id);
+  injuredData = injuredData.filter(x => x.playerId !== id);
+  saveData();
+  showToast(`${p.name} eliminado de la plantilla.`, 'warning');
+  renderRegTable();
+  renderSquadCallupList();
+  populateQuickPlayerSelect();
+}
+

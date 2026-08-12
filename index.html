@@ -83,6 +83,9 @@
           </button>
 
           <p class="nav-section-title">DEPORTIVO</p>
+          <button class="tab-btn" data-tab="mod-registro" onclick="showModuleTab('mod-registro')">
+            <i class="fa-solid fa-user-plus"></i> <span>Registro Jugadores</span>
+          </button>
           <button class="tab-btn" data-tab="mod-alineacion" onclick="showModuleTab('mod-alineacion')">
             <i class="fa-solid fa-futbol"></i> <span>Pizarra Táctica</span>
           </button>
@@ -463,6 +466,164 @@
               </div>
             </div>
           </div>
+
+          <!-- 07. REGISTRO DE JUGADORES -->
+          <div id="mod-registro" class="module-panel">
+
+            <!-- Banner Hero -->
+            <div class="hero-event-card glass-panel margin-bottom fade-in-up" style="background: linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(16,185,129,0.06) 100%);">
+              <div class="hero-event-info">
+                <span class="badge badge-neon">GESTIÓN DE PLANTILLA</span>
+                <h2>Registro de Jugadores</h2>
+                <p>Alta, edición y baja de jugadores del equipo Laguna Athletic 2026.</p>
+              </div>
+              <div class="hero-stats">
+                <div class="stat-box">
+                  <i class="fa-solid fa-users"></i>
+                  <span id="regSquadCount">0 Jugadores</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2-cols">
+
+              <!-- Formulario de Registro -->
+              <div class="glass-card fade-in-up" style="animation-delay:0.1s;">
+                <h3 class="card-title" id="regFormTitle">
+                  <i class="fa-solid fa-user-plus text-primary"></i> Nuevo Jugador
+                </h3>
+                <form id="playerRegForm" class="modern-form" onsubmit="handlePlayerRegSubmit(event)">
+                  <input type="hidden" id="regEditId" value="" />
+
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Nombre Completo *</label>
+                      <input type="text" id="regName" class="form-control" placeholder="Ej. Juan Martínez" required />
+                    </div>
+                    <div class="form-group">
+                      <label>Número de Dorsal *</label>
+                      <input type="number" id="regNumber" class="form-control" placeholder="Ej. 10" min="1" max="99" required />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Posición *</label>
+                    <select id="regPosition" class="form-control" required>
+                      <option value="" disabled selected>Selecciona una posición...</option>
+                      <optgroup label="Portería">
+                        <option value="Portero">Portero</option>
+                      </optgroup>
+                      <optgroup label="Defensa">
+                        <option value="Lateral Derecho">Lateral Derecho</option>
+                        <option value="Lateral Izquierdo">Lateral Izquierdo</option>
+                        <option value="Defensa Central">Defensa Central</option>
+                      </optgroup>
+                      <optgroup label="Mediocampo">
+                        <option value="Medio Defensivo">Medio Defensivo</option>
+                        <option value="Mediocampista">Mediocampista</option>
+                        <option value="Medio Ofensivo">Medio Ofensivo</option>
+                      </optgroup>
+                      <optgroup label="Delantera">
+                        <option value="Extremo Derecho">Extremo Derecho</option>
+                        <option value="Extremo Izquierdo">Extremo Izquierdo</option>
+                        <option value="Delantero Centro">Delantero Centro</option>
+                      </optgroup>
+                    </select>
+                  </div>
+
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Fecha de Nacimiento</label>
+                      <input type="date" id="regBirthdate" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <label>Teléfono / WhatsApp</label>
+                      <input type="tel" id="regPhone" class="form-control" placeholder="+52 844 000 0000" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="jugador@correo.com" />
+                  </div>
+
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Estatus en el Equipo</label>
+                      <select id="regStatus" class="form-control">
+                        <option value="Activo">Activo</option>
+                        <option value="Suspendido">Suspendido</option>
+                        <option value="Prueba">En Prueba</option>
+                        <option value="Baja">Baja</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Convocatoria</label>
+                      <select id="regStarter" class="form-control">
+                        <option value="true">Titular</option>
+                        <option value="false">Suplente</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Notas adicionales</label>
+                    <textarea id="regNotes" class="form-control" rows="2" placeholder="Observaciones del DT..."></textarea>
+                  </div>
+
+                  <div class="flex-end gap-2 mt-4">
+                    <button type="button" class="btn btn-ghost" id="regCancelBtn" onclick="cancelPlayerEdit()" style="display:none;">
+                      <i class="fa-solid fa-xmark"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-block" id="regSubmitBtn">
+                      <i class="fa-solid fa-user-plus"></i> REGISTRAR JUGADOR
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Tabla de jugadores registrados -->
+              <div class="glass-card fade-in-up" style="animation-delay:0.2s;">
+                <div class="flex-between margin-bottom">
+                  <h3 class="card-title" style="margin-bottom:0;">
+                    <i class="fa-solid fa-list-ul text-primary"></i> Plantilla Actual
+                  </h3>
+                  <div class="reg-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="regSearchInput" class="form-control" placeholder="Buscar jugador..." oninput="filterRegTable()" style="padding:0.5rem 0.8rem; font-size:0.85rem;" />
+                  </div>
+                </div>
+
+                <!-- Filtros rápidos -->
+                <div class="reg-filter-tabs margin-bottom">
+                  <button class="reg-filter-btn active" data-filter="todos" onclick="setRegFilter('todos', this)">Todos</button>
+                  <button class="reg-filter-btn" data-filter="Activo" onclick="setRegFilter('Activo', this)">Activos</button>
+                  <button class="reg-filter-btn" data-filter="Prueba" onclick="setRegFilter('Prueba', this)">En Prueba</button>
+                  <button class="reg-filter-btn" data-filter="Suspendido" onclick="setRegFilter('Suspendido', this)">Suspendidos</button>
+                  <button class="reg-filter-btn" data-filter="Baja" onclick="setRegFilter('Baja', this)">Bajas</button>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="modern-table" id="regPlayersTable">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Jugador</th>
+                        <th>Posición</th>
+                        <th>Estatus</th>
+                        <th class="role-dt-only">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="regTableBody">
+                      <!-- Dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <!-- /REGISTRO DE JUGADORES -->
 
         </div>
       </main>

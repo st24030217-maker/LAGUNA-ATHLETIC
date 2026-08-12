@@ -731,7 +731,127 @@ body {
   max-width: 450px;
 }
 
-/* RESPONSIVE DESIGN */
+/* ==========================================================================
+   PLAYER REGISTRATION MODULE
+   ========================================================================== */
+
+/* Form 2-col grid */
+.reg-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.2rem;
+}
+
+/* Search box inside table header */
+.reg-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  padding: 0 0.8rem;
+  max-width: 220px;
+}
+.reg-search-box i {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.reg-search-box .form-control {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 0;
+  box-shadow: none;
+}
+.reg-search-box .form-control:focus {
+  border: none;
+  box-shadow: none;
+}
+
+/* Filter tab pills */
+.reg-filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.reg-filter-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.reg-filter-btn:hover {
+  color: var(--text-main);
+  border-color: var(--border-strong);
+}
+.reg-filter-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--accent-primary);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Status badges for registration */
+.badge-status-activo   { background: rgba(16,185,129,0.15); color: var(--accent-neon); border: 1px solid rgba(16,185,129,0.3); }
+.badge-status-prueba   { background: rgba(59,130,246,0.15); color: var(--accent-primary); border: 1px solid rgba(59,130,246,0.3); }
+.badge-status-suspendido { background: rgba(245,158,11,0.15); color: var(--accent-warning); border: 1px solid rgba(245,158,11,0.3); }
+.badge-status-baja     { background: rgba(239,68,68,0.15); color: var(--accent-danger); border: 1px solid rgba(239,68,68,0.3); }
+
+/* Action buttons in registration table */
+.reg-action-btn {
+  background: transparent;
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 0.3rem;
+}
+.reg-action-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-main); }
+.reg-action-btn.edit:hover  { border-color: var(--accent-primary); color: var(--accent-primary); }
+.reg-action-btn.delete:hover { border-color: var(--accent-danger); color: var(--accent-danger); }
+
+/* Toasts (placed here to improve styling) */
+.toast-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 320px;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  background: rgba(25, 30, 45, 0.95);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(10px);
+  font-size: 0.9rem;
+  animation: slideInRight 0.3s cubic-bezier(0.16,1,0.3,1);
+  transition: opacity 0.3s ease;
+}
+.toast-icon { width: 20px; text-align: center; flex-shrink: 0; }
+.toast-success { border-left: 3px solid var(--accent-neon); }
+.toast-error   { border-left: 3px solid var(--accent-danger); }
+.toast-warning { border-left: 3px solid var(--accent-warning); }
+.toast-info    { border-left: 3px solid var(--accent-primary); }
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
 @media (max-width: 900px) {
   .app-layout {
     grid-template-columns: 1fr;
@@ -752,4 +872,7 @@ body {
   .content-wrapper { padding: 1.5rem; }
   
   .hero-event-card { flex-direction: column; text-align: center; gap: 1.5rem; }
+
+  .reg-form-grid { grid-template-columns: 1fr; }
+  .reg-search-box { max-width: 100%; }
 }
