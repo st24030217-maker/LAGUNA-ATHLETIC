@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laguna Athletic · Pro Dashboard</title>
+    <meta
+      name="description"
+      content="Sistema avanzado y moderno de gestión para Laguna Athletic."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="styles.css?v=6.0" />
+  </head>
+  <body class="dark-theme">
+    
+    <!-- PANTALLA DE LOGIN -->
+    <div id="loginScreen" class="login-overlay">
+      <div class="glass-card login-box fade-in-up">
+        <div class="text-center margin-bottom">
+          <img src="LAGUNA.jpg" alt="Laguna Athletic" class="sidebar-logo" style="width: 80px; height: 80px;" />
+          <h2 class="card-title mt-3" style="justify-content: center;">ACCESO AL SISTEMA</h2>
+          <p class="subtitle-text">Temporada 2026</p>
+        </div>
+        
+        <form id="loginForm" onsubmit="handleLogin(event)" class="modern-form">
+          <div class="form-group">
+            <label>Usuario / Rol</label>
+            <select id="loginRole" class="form-control" required>
+              <option value="" disabled selected>Selecciona tu perfil...</option>
+              <option value="dt">Director Técnico / Admin</option>
+              <option value="jugador">Jugador Plantel</option>
+              <option value="directiva">Directiva (Solo Lectura)</option>
+            </select>
+          </div>
+          <div class="form-group margin-bottom">
+            <label>PIN de Acceso (Simulado, cualquier número sirve)</label>
+            <input type="password" class="form-control" placeholder="****" required />
+          </div>
+          
+          <button type="submit" class="btn btn-primary btn-block btn-lg">INGRESAR</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MAIN APP LAYOUT (Oculto inicialmente por CSS/JS) -->
+    <div class="app-layout" id="appLayout" style="display: none;">
+      <!-- SIDEBAR -->
+      <aside class="sidebar glass-panel" id="mainSidebar">
+        <div class="sidebar-header">
+          <img src="LAGUNA.jpg" alt="Laguna Athletic" class="sidebar-logo" />
+          <div class="brand-text">
+            <span class="brand-title">LAGUNA</span>
+            <span class="brand-subtitle">ATHLETIC 2026</span>
+          </div>
+          <button class="mobile-menu-close" onclick="toggleSidebar()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <p class="nav-section-title">CONTROL DIARIO</p>
+          <button class="tab-btn active" data-tab="mod-qr" onclick="showModuleTab('mod-qr')">
+            <i class="fa-solid fa-qrcode"></i> <span>Registro QR</span>
+          </button>
+          <button class="tab-btn" data-tab="mod-justificaciones" onclick="showModuleTab('mod-justificaciones')">
+            <i class="fa-solid fa-clipboard-check"></i> <span>Justificaciones</span>
+          </button>
+          <button class="tab-btn" data-tab="mod-avisos" onclick="showModuleTab('mod-avisos')">
+            <i class="fa-brands fa-whatsapp"></i> <span>Avisos Bot</span>
+          </button>
+
+          <p class="nav-section-title">DEPORTIVO</p>
+          <button class="tab-btn" data-tab="mod-alineacion" onclick="showModuleTab('mod-alineacion')">
+            <i class="fa-solid fa-futbol"></i> <span>Pizarra Táctica</span>
+          </button>
+          <button class="tab-btn" data-tab="mod-calendario" onclick="showModuleTab('mod-calendario')">
+            <i class="fa-solid fa-calendar-days"></i> <span>Calendario</span>
+          </button>
+          <button class="tab-btn" data-tab="mod-medico" onclick="showModuleTab('mod-medico')">
+            <i class="fa-solid fa-staff-snake"></i> <span>Enfermería</span>
+          </button>
+          <button class="tab-btn" data-tab="mod-estadisticas" onclick="showModuleTab('mod-estadisticas')">
+            <i class="fa-solid fa-chart-line"></i> <span>Rendimiento</span>
+          </button>
+          
+          <div class="sidebar-bottom">
+            <div class="current-user-info margin-bottom">
+              <label><i class="fa-solid fa-user-shield"></i> Usuario Activo</label>
+              <div id="activeUserName" class="mono-text mt-2 text-primary" style="font-size: 0.85rem; color: var(--accent-primary);"></div>
+            </div>
+            <button class="btn btn-ghost btn-block" onclick="logout()" style="font-size: 0.8rem;">
+              <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </button>
+            <div id="roleContextNote" class="role-context-note hidden"></div>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- TOPBAR MOBILE / EXTRA INFO -->
+        <header class="topbar glass-panel">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="topbar-greeting">
+            <h1 class="greeting-text" id="greetingHeader">Bienvenido al sistema.</h1>
+            <p class="greeting-sub">Gestiona la temporada 2026 en tiempo real.</p>
+          </div>
+          <div id="toastContainer" class="toast-container"></div>
+        </header>
+
+        <div class="content-wrapper">
+          
+          <!-- 01. REGISTRO QR -->
+          <div id="mod-qr" class="module-panel active">
+            <div class="hero-event-card glass-panel margin-bottom fade-in-up" id="nextEventBanner">
+              <div class="hero-event-info">
+                <span class="badge badge-neon" id="bannerBadge">MODO ASISTENCIA</span>
+                <h2 id="bannerTitle">Captura de Asistencia en Progreso</h2>
+                <p id="bannerSubtitle">El código QR actual es válido para la sesión de hoy.</p>
+              </div>
+              <div class="hero-stats">
+                <div class="stat-box">
+                  <i class="fa-solid fa-users"></i>
+                  <span id="attendanceCount">0/14 Presentes</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2-cols">
+              <!-- Lado Izquierdo: QR -->
+              <div class="glass-card text-center fade-in-up" style="animation-delay: 0.1s;">
+                <h3 class="card-title">Escáner Oficial</h3>
+                <div class="qr-scanner-box">
+                  <div class="qr-scanner-laser"></div>
+                  <!-- Simulador QR SVG -->
+                  <svg viewBox="0 0 100 100" class="qr-svg-matrix">
+                    <rect width="100" height="100" rx="4" fill="#ffffff" />
+                    <!-- Marcas simplificadas -->
+                    <rect x="10" y="10" width="24" height="24" fill="#000" rx="2" />
+                    <rect x="14" y="14" width="16" height="16" fill="#fff" rx="1" />
+                    <rect x="18" y="18" width="8" height="8" fill="#000" rx="0.5" />
+                    
+                    <rect x="66" y="10" width="24" height="24" fill="#000" rx="2" />
+                    <rect x="70" y="14" width="16" height="16" fill="#fff" rx="1" />
+                    <rect x="74" y="18" width="8" height="8" fill="#000" rx="0.5" />
+                    
+                    <rect x="10" y="66" width="24" height="24" fill="#000" rx="2" />
+                    <rect x="14" y="70" width="16" height="16" fill="#fff" rx="1" />
+                    <rect x="18" y="74" width="8" height="8" fill="#000" rx="0.5" />
+
+                    <!-- Puntos aleatorios simulados -->
+                    <rect x="40" y="20" width="10" height="10" fill="#000" rx="1" />
+                    <rect x="55" y="15" width="5" height="15" fill="#000" rx="1" />
+                    <rect x="15" y="45" width="25" height="5" fill="#000" rx="1" />
+                    <rect x="50" y="50" width="15" height="15" fill="#000" rx="1" />
+                    <rect x="75" y="45" width="10" height="25" fill="#000" rx="1" />
+                    <rect x="45" y="75" width="45" height="15" fill="#000" rx="1" />
+                  </svg>
+                </div>
+                <p class="mono-text text-muted margin-top">ID: SESION-LAGUNA-2026</p>
+                
+                <div class="manual-checkin margin-top role-dt-only">
+                  <p class="subtitle-text text-left margin-bottom">Simular Escaneo (Modo Dev):</p>
+                  <select id="quickPlayerSelect" class="form-control mb-2"></select>
+                  <button class="btn btn-primary btn-block" onclick="simulateQRCheckIn()">
+                    <i class="fa-solid fa-bolt"></i> MARCAR AHORA
+                  </button>
+                  <div id="lastCheckinAlert" class="alert alert-success mt-2 hidden">
+                    <i class="fa-solid fa-check-circle"></i> <span id="lastCheckinText"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lado Derecho: Tabla -->
+              <div class="glass-card fade-in-up" style="animation-delay: 0.2s;">
+                <h3 class="card-title">Registro en Vivo</h3>
+                <div class="table-responsive">
+                  <table class="modern-table">
+                    <thead>
+                      <tr>
+                        <th>Jugador</th>
+                        <th>Estado</th>
+                        <th>Hora</th>
+                        <th class="role-dt-only">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                      <!-- Dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 02. PIZARRA TÁCTICA -->
+          <div id="mod-alineacion" class="module-panel">
+            <div class="grid-2-cols">
+              <div class="glass-card fade-in-up">
+                <h3 class="card-title">Pizarra Táctica (XI)</h3>
+                <p class="subtitle-text margin-bottom">Haz clic en un jugador para cambiar la convocatoria.</p>
+                
+                <div class="tactical-pitch" id="tacticalPitch">
+                  <div class="pitch-texture"></div>
+                  <div class="pitch-lines">
+                    <div class="center-line"></div>
+                    <div class="center-circle"></div>
+                    <div class="penalty-area left"></div>
+                    <div class="penalty-area right"></div>
+                  </div>
+
+                  <!-- 4-3-3 ORDENADO -->
+                  <!-- PORTERO -->
+                  <div class="player-marker role-editable" data-slot="GK" style="top: 50%; left: 8%;">
+                    <div class="marker-shirt gk-shirt">1</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-GK">POR</span>
+                  </div>
+                  <!-- DEFENSA (Línea de 4) -->
+                  <div class="player-marker role-editable" data-slot="LB" style="top: 15%; left: 25%;">
+                    <div class="marker-shirt">3</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-LB">LTI</span>
+                  </div>
+                  <div class="player-marker role-editable" data-slot="CB1" style="top: 35%; left: 22%;">
+                    <div class="marker-shirt">4</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-CB1">DFC</span>
+                  </div>
+                  <div class="player-marker role-editable" data-slot="CB2" style="top: 65%; left: 22%;">
+                    <div class="marker-shirt">5</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-CB2">DFC</span>
+                  </div>
+                  <div class="player-marker role-editable" data-slot="RB" style="top: 85%; left: 25%;">
+                    <div class="marker-shirt">2</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-RB">LTD</span>
+                  </div>
+                  <!-- MEDIOCAMPO (Línea de 3) -->
+                  <div class="player-marker role-editable" data-slot="MC1" style="top: 25%; left: 50%;">
+                    <div class="marker-shirt">8</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-MC1">MC</span>
+                  </div>
+                  <div class="player-marker role-editable" data-slot="MCD" style="top: 50%; left: 45%;">
+                    <div class="marker-shirt">6</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-MCD">MCD</span>
+                  </div>
+                  <div class="player-marker role-editable" data-slot="MC2" style="top: 75%; left: 50%;">
+                    <div class="marker-shirt">10</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-MC2">MCO</span>
+                  </div>
+                  <!-- DELANTERA (Línea de 3) -->
+                  <div class="player-marker role-editable" data-slot="EI" style="top: 20%; left: 75%;">
+                    <div class="marker-shirt">11</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-EI">EI</span>
+                  </div>
+                  <div class="player-marker role-editable" data-slot="DC" style="top: 50%; left: 82%;">
+                    <div class="marker-shirt">9</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-DC">DC</span>
+                  </div>
+                  <div class="player-marker role-editable" data-slot="ED" style="top: 80%; left: 75%;">
+                    <div class="marker-shirt">7</div>
+                    <div class="marker-shadow"></div>
+                    <span class="marker-name" id="slot-ED">ED</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass-card fade-in-up" style="animation-delay: 0.1s;">
+                <h3 class="card-title">Plantilla Oficial</h3>
+                <p class="subtitle-text text-muted mb-2" style="font-size: 0.8rem;">Haz clic en el nombre de un jugador para ver su perfil y estadísticas.</p>
+                <div class="roster-list" id="squadCallupList">
+                  <!-- Dinámico -->
+                </div>
+                <button class="btn btn-primary btn-block margin-top role-dt-only" onclick="saveLineup()">
+                  <i class="fa-solid fa-cloud-arrow-up"></i> PUBLICAR ALINEACIÓN
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 02B. ENFERMERIA / MEDICO (NUEVO) -->
+          <div id="mod-medico" class="module-panel">
+             <div class="hero-event-card glass-card fade-in-up margin-bottom" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);">
+              <div class="hero-event-info">
+                <span class="badge badge-neon" style="color:var(--accent-danger); border-color:var(--accent-danger); background:rgba(239, 68, 68, 0.1);">DEPARTAMENTO MÉDICO</span>
+                <h2>Reporte de Bajas y Lesiones</h2>
+                <p>Jugadores en la enfermería quedan automáticamente inhabilitados en la táctica.</p>
+              </div>
+            </div>
+
+            <div class="grid-2-cols">
+              <div class="glass-card fade-in-up" style="animation-delay: 0.1s;">
+                <h3 class="card-title"><i class="fa-solid fa-user-injured text-danger"></i> Reportar Nueva Lesión</h3>
+                <form id="injuryForm" class="modern-form margin-top" onsubmit="reportInjury(event)">
+                  <div class="form-group">
+                    <label>Jugador Afectado</label>
+                    <select id="injuryPlayerSelect" class="form-control" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label>Tipo de Lesión</label>
+                    <input type="text" id="injuryType" class="form-control" placeholder="Ej. Esguince de tobillo" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Tiempo Estimado de Recuperación</label>
+                    <select id="injuryTime" class="form-control" required>
+                      <option value="1 Semana">1 Semana</option>
+                      <option value="2-3 Semanas">2 - 3 Semanas</option>
+                      <option value="1 Mes">1 Mes</option>
+                      <option value="Indefinido">Indefinido</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block" style="background: var(--accent-danger);">
+                    <i class="fa-solid fa-briefcase-medical"></i> INGRESAR A ENFERMERÍA
+                  </button>
+                </form>
+              </div>
+
+              <div class="glass-card fade-in-up" style="animation-delay: 0.2s;">
+                <h3 class="card-title">En Recuperación</h3>
+                <div class="table-responsive">
+                  <table class="modern-table">
+                    <thead>
+                      <tr>
+                        <th>Jugador</th>
+                        <th>Lesión</th>
+                        <th>Tiempo</th>
+                        <th class="role-dt-only">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="injuredTableBody">
+                      <!-- Dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03. CALENDARIO -->
+          <div id="mod-calendario" class="module-panel">
+            <div class="glass-card fade-in-up">
+              <div class="flex-between margin-bottom">
+                <h3 class="card-title">Calendario de Eventos</h3>
+                <button class="btn btn-primary role-dt-only" onclick="openAddEventModal()">
+                  <i class="fa-solid fa-plus"></i> AGREGAR EVENTO
+                </button>
+              </div>
+              <div class="calendar-grid" id="calendarEventsGrid">
+                <!-- Dinámico -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 04. JUSTIFICACIONES -->
+          <div id="mod-justificaciones" class="module-panel">
+            <div class="grid-2-cols">
+              <div class="glass-card fade-in-up">
+                <h3 class="card-title">Buzón de Solicitudes</h3>
+                <p class="subtitle-text margin-bottom">Aprobación y rechazo de ausencias.</p>
+                <div class="justifications-feed" id="justificationsList">
+                  <!-- Dinámico -->
+                </div>
+              </div>
+              
+              <div class="glass-card fade-in-up" style="animation-delay: 0.1s;">
+                <h3 class="card-title">Enviar Nueva Justificación</h3>
+                <form id="justificationForm" onsubmit="submitJustification(event)" class="modern-form margin-top">
+                  <div class="form-group">
+                    <label>Fecha de Ausencia</label>
+                    <input type="date" id="justDate" class="form-control" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Motivo General</label>
+                    <select id="justReason" class="form-control" required>
+                      <option value="Enfermedad">Enfermedad / Lesión</option>
+                      <option value="Laboral/Académico">Laboral / Académico</option>
+                      <option value="Personal">Problema Personal</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Detalle Adicional</label>
+                    <textarea id="justDetail" class="form-control" rows="4" required placeholder="Explica brevemente..."></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-block">ENVIAR A REVISIÓN</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- 05. AVISOS WHATSAPP -->
+          <div id="mod-avisos" class="module-panel">
+            <div class="glass-card fade-in-up max-w-md">
+              <h3 class="card-title"><i class="fa-brands fa-whatsapp text-whatsapp"></i> Difusión Inteligente</h3>
+              <p class="subtitle-text margin-bottom">Generador automático de comunicados para el grupo.</p>
+              
+              <div class="modern-form">
+                <div class="form-group">
+                  <label>Plantilla de Aviso:</label>
+                  <select id="noticeTypeSelect" class="form-control" onchange="updateNoticeTemplate()">
+                    <option value="entrenamiento">Próximo Entrenamiento</option>
+                    <option value="partido">Próximo Partido Oficial</option>
+                    <option value="falta">Aviso de Falta Injustificada</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Vista Previa del Mensaje:</label>
+                  <textarea id="noticeMessageText" rows="7" class="form-control mono-text"></textarea>
+                </div>
+                <button class="btn btn-whatsapp btn-block role-dt-only" onclick="simulateSendNotices()">
+                  <i class="fa-regular fa-paper-plane"></i> ENVIAR AL GRUPO
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 06. ESTADÍSTICAS -->
+          <div id="mod-estadisticas" class="module-panel">
+            <div class="grid-2-cols">
+              <div class="glass-card fade-in-up">
+                <h3 class="card-title">Balance de Asistencia</h3>
+                <div class="chart-container">
+                  <canvas id="attendanceChart"></canvas>
+                </div>
+              </div>
+              <div class="glass-card fade-in-up" style="animation-delay: 0.1s;">
+                <h3 class="card-title">Top Compromiso</h3>
+                <table class="modern-table margin-top">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Jugador</th>
+                      <th>% Asistencia</th>
+                      <th>Racha</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rankingTableBody">
+                    <!-- Dinámico -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- MODALES -->
+    
+    <!-- Modal Alineación -->
+    <div id="playerSelectModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content">
+        <h3 class="card-title" id="modalPositionTitle">Seleccionar Jugador</h3>
+        <select id="modalPlayerSelect" class="form-control margin-bottom mt-3"></select>
+        <div class="flex-end gap-2 mt-4">
+          <button class="btn btn-ghost" onclick="closePlayerModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="confirmPlayerSelection()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Calendario -->
+    <div id="addEventModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content">
+        <h3 class="card-title">Nuevo Evento</h3>
+        <div class="modern-form mt-3">
+          <div class="form-group">
+            <label>Tipo</label>
+            <select id="newEvent-type" class="form-control">
+              <option value="entrenamiento">Entrenamiento</option>
+              <option value="partido">Partido</option>
+              <option value="evento">Otro Evento</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Título / Rival</label>
+            <input type="text" id="newEvent-title" class="form-control" />
+          </div>
+          <div class="grid-2-cols gap-2" style="grid-template-columns: 1fr 1fr;">
+            <div class="form-group">
+              <label>Fecha</label>
+              <input type="date" id="newEvent-date" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Hora</label>
+              <input type="time" id="newEvent-time" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ubicación</label>
+            <input type="text" id="newEvent-location" class="form-control" placeholder="Ej. Cancha 1" />
+          </div>
+        </div>
+        <div class="flex-end gap-2 mt-4">
+          <button class="btn btn-ghost" onclick="closeEventModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="saveNewEvent()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Perfil de Jugador -->
+    <div id="playerProfileModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content player-profile-card">
+        <div class="profile-header flex-between mb-2">
+          <h3 class="card-title" style="margin-bottom: 0;">Ficha del Jugador</h3>
+          <button class="btn btn-ghost" style="padding: 0.5rem;" onclick="closeProfileModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="profile-body mt-4">
+          <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1.5rem;">
+            <div class="marker-shirt" style="width: 60px; height: 60px; font-size: 1.5rem;" id="profileNumber">10</div>
+            <div>
+              <h2 style="font-family: var(--font-heading);" id="profileName">Emilio Suárez</h2>
+              <p class="text-muted" id="profilePosition">Medio Ofensivo</p>
+              <span id="profileStatusBadge" class="badge badge-success mt-2">Activo</span>
+            </div>
+          </div>
+          
+          <div class="grid-2-cols gap-2" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Goles</p>
+              <h3 style="font-family: var(--font-mono); font-size: 1.8rem;" class="text-primary" id="profileGoals">12</h3>
+            </div>
+            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Asistencias</p>
+              <h3 style="font-family: var(--font-mono); font-size: 1.8rem;" class="text-primary" id="profileAssists">8</h3>
+            </div>
+          </div>
+          <div class="grid-2-cols gap-2" style="grid-template-columns: 1fr 1fr;">
+            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Mins Jugados</p>
+              <h3 style="font-family: var(--font-mono); font-size: 1.4rem;" class="text-primary" id="profileMins">1240'</h3>
+            </div>
+            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Tarjetas</p>
+              <h3 style="font-family: var(--font-mono); font-size: 1.4rem;" class="text-warning" id="profileCards">🟨 2</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Reportar Resultado -->
+    <div id="matchResultModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content">
+        <h3 class="card-title">Registrar Resultado</h3>
+        <p class="subtitle-text margin-bottom" id="matchResultTitle">Partido vs Rival</p>
+        <div class="modern-form mt-3">
+          <div class="grid-2-cols gap-2 text-center" style="grid-template-columns: 1fr auto 1fr; align-items: center;">
+            <div class="form-group">
+              <label>Laguna Athletic</label>
+              <input type="number" id="scoreLaguna" class="form-control" style="font-size: 2rem; text-align: center;" min="0" value="0" />
+            </div>
+            <div style="font-weight: bold; font-size: 1.5rem; color: var(--text-muted);">-</div>
+            <div class="form-group">
+              <label>Rival</label>
+              <input type="number" id="scoreRival" class="form-control" style="font-size: 2rem; text-align: center;" min="0" value="0" />
+            </div>
+          </div>
+        </div>
+        <div class="flex-end gap-2 mt-4">
+          <button class="btn btn-ghost" onclick="closeMatchResultModal()">Cancelar</button>
+          <button class="btn btn-primary" onclick="saveMatchResult()">Guardar Resultado</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
