@@ -27,7 +27,25 @@
   </head>
   <body class="dark-theme">
     
-    <!-- PANTALLA DE LOGIN -->
+    <!-- PANTALLA DE CARGA (PRELOADER FUTURISTA) -->
+    <div id="appLoadingScreen" class="loading-overlay hidden">
+      <div class="loading-box text-center fade-in-up">
+        <div class="loading-logo-wrapper">
+          <img src="LAGUNA.jpg" alt="Laguna Athletic" class="loading-logo" />
+          <div class="loading-spinner-glow"></div>
+          <div class="loading-spinner-glow-inner"></div>
+        </div>
+        <h3 class="loading-title mt-3">LAGUNA ATHLETIC 2026</h3>
+        <p id="loadingStatusText" class="mono-text text-muted mt-1" style="font-size: 0.82rem; min-height: 24px;">[SYSTEM] Inicializando entorno seguro...</p>
+        
+        <div class="loading-bar-container mt-3">
+          <div id="loadingBarFill" class="loading-bar-fill"></div>
+        </div>
+        <span id="loadingPercent" class="mono-text text-neon mt-2 block" style="font-weight: 700; font-size: 1.1rem; text-shadow:0 0 10px rgba(16,185,129,0.5);">0%</span>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE LOGIN ULTRA PROFESIONAL -->
     <div id="loginScreen" class="login-overlay">
       <!-- Video de fondo -->
       <video class="login-bg-video" autoplay muted loop playsinline>
@@ -35,29 +53,63 @@
       </video>
       <div class="login-overlay-dim"></div>
       <div class="glass-card login-box fade-in-up">
-        <div class="text-center margin-bottom">
-          <img src="LAGUNA.jpg" alt="Laguna Athletic" class="sidebar-logo" style="width: 80px; height: 80px;" />
-          <h2 class="card-title mt-3" style="justify-content: center;">ACCESO AL SISTEMA</h2>
-          <p class="subtitle-text">Temporada 2026</p>
+        <div class="login-badge-header">
+          <span class="badge badge-neon" style="font-size:0.65rem; letter-spacing:1px;"><i class="fa-solid fa-shield-halved"></i> PORTAL OFICIAL DE GESTIÓN DEPORTIVA</span>
+        </div>
+        
+        <div class="text-center margin-bottom mt-2">
+          <div class="login-logo-wrapper">
+            <img src="LAGUNA.jpg" alt="Laguna Athletic" class="login-logo-img" />
+            <div class="login-orbit-ring"></div>
+          </div>
+          <h2 class="card-title mt-3" style="justify-content: center; font-family:var(--font-heading); font-size:1.6rem; letter-spacing:1px;">LAGUNA ATHLETIC</h2>
+          <p class="subtitle-text" style="color:var(--accent-warning); font-family:var(--font-mono); font-size:0.75rem; letter-spacing:1.5px;">UNIDOS POR LA MISMA PASIÓN</p>
         </div>
         
         <form id="loginForm" onsubmit="handleLogin(event)" class="modern-form">
           <div class="form-group">
-            <label>Usuario / Rol</label>
-            <select id="loginRole" class="form-control" required>
-              <option value="" disabled selected>Selecciona tu perfil...</option>
-              <option value="dt">Director Técnico / Admin</option>
-              <option value="jugador">Jugador Plantel</option>
-              <option value="directiva">Directiva (Solo Lectura)</option>
+            <label><i class="fa-solid fa-user-shield text-primary"></i> Perfil de Usuario / Rol *</label>
+            <select id="loginRole" class="form-control" onchange="onLoginRoleChange()" required>
+              <option value="" disabled selected>Selecciona tu perfil de acceso...</option>
+              <option value="dt">Director Técnico (DT) / Administrador</option>
+              <option value="auxiliar">Auxiliar Técnico / Cuerpo Médico</option>
+              <option value="preparador">Preparador Físico / Cancha</option>
+              <option value="jugador">Jugador / Padre de Familia</option>
             </select>
           </div>
-          <div class="form-group margin-bottom">
-            <label>PIN de Acceso (Simulado, cualquier número sirve)</label>
-            <input type="password" class="form-control" placeholder="****" required />
+          
+          <!-- Banner dinámico de permisos del rol seleccionado -->
+          <div id="rolePermissionBadge" class="login-perm-badge hidden">
+            <i class="fa-solid fa-circle-info"></i>
+            <span id="rolePermissionText">Acceso total al sistema y finanzas.</span>
           </div>
           
-          <button type="submit" class="btn btn-primary btn-block btn-lg">INGRESAR</button>
+          <div class="form-group relative-input-group mt-3">
+            <label><i class="fa-solid fa-key text-warning"></i> PIN de Acceso Institucional</label>
+            <div class="input-with-action">
+              <input type="password" id="loginPinInput" class="form-control mono-text" placeholder="••••" value="1234" required />
+              <button type="button" class="pin-toggle-btn" title="Mostrar/Ocultar PIN" onclick="togglePinVisibility()">
+                <i class="fa-solid fa-eye" id="togglePinIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex-between mt-3 mb-2" style="font-size:0.8rem; color:var(--text-muted);">
+            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+              <input type="checkbox" checked style="accent-color:var(--accent-primary);" /> Recordar sesión
+            </label>
+            <a href="#" style="color:var(--accent-primary); text-decoration:none; font-size:0.75rem;" onclick="showToast('Consulta a la directiva para restablecer tu PIN.', 'info'); return false;">¿Olvidaste tu PIN?</a>
+          </div>
+          
+          <button type="submit" id="btnLoginSubmit" class="btn btn-login-glow btn-block btn-lg mt-3">
+            <span>INGRESAR AL SISTEMA</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          </button>
         </form>
+
+        <div class="login-footer-security mt-4">
+          <small class="mono-text"><i class="fa-solid fa-lock text-neon"></i> Encriptación SSL 256-bit</small>
+          <small class="mono-text">v2.6 Enterprise</small>
+        </div>
       </div>
     </div>
 
@@ -77,33 +129,63 @@
         </div>
 
         <nav class="sidebar-nav">
-          <p class="nav-section-title">CONTROL DIARIO</p>
-          <button class="tab-btn active" data-tab="mod-qr" onclick="showModuleTab('mod-qr')">
-            <i class="fa-solid fa-qrcode"></i> <span>Registro QR</span>
-          </button>
-          <button class="tab-btn" data-tab="mod-justificaciones" onclick="showModuleTab('mod-justificaciones')">
-            <i class="fa-solid fa-clipboard-check"></i> <span>Justificaciones</span>
-          </button>
-          <button class="tab-btn" data-tab="mod-avisos" onclick="showModuleTab('mod-avisos')">
-            <i class="fa-brands fa-whatsapp"></i> <span>Avisos Bot</span>
-          </button>
+          
+          <!-- GRUPO 1: CONTROL DIARIO -->
+          <div class="nav-group open" id="navGroupDaily">
+            <button class="nav-group-header" onclick="toggleNavGroup('navGroupDaily')">
+              <span><i class="fa-solid fa-clock-rotate-left text-primary"></i> CONTROL DIARIO</span>
+              <i class="fa-solid fa-chevron-down chevron-icon"></i>
+            </button>
+            <div class="nav-group-body">
+              <button class="tab-btn active" data-tab="mod-qr" onclick="showModuleTab('mod-qr')">
+                <i class="fa-solid fa-qrcode"></i> <span>Registro QR</span>
+              </button>
+              <button class="tab-btn" data-tab="mod-justificaciones" onclick="showModuleTab('mod-justificaciones')">
+                <i class="fa-solid fa-clipboard-check"></i> <span>Justificaciones</span>
+              </button>
+              <button class="tab-btn" data-tab="mod-avisos" onclick="showModuleTab('mod-avisos')">
+                <i class="fa-brands fa-whatsapp"></i> <span>Avisos Bot</span>
+              </button>
+            </div>
+          </div>
 
-          <p class="nav-section-title">DEPORTIVO</p>
-          <button class="tab-btn" data-tab="mod-registro" onclick="showModuleTab('mod-registro')">
-            <i class="fa-solid fa-user-plus"></i> <span>Registro Jugadores</span>
-          </button>
-          <button class="tab-btn" data-tab="mod-alineacion" onclick="showModuleTab('mod-alineacion')">
-            <i class="fa-solid fa-futbol"></i> <span>Pizarra Táctica</span>
-          </button>
-          <button class="tab-btn" data-tab="mod-calendario" onclick="showModuleTab('mod-calendario')">
-            <i class="fa-solid fa-calendar-days"></i> <span>Calendario</span>
-          </button>
-          <button class="tab-btn" data-tab="mod-medico" onclick="showModuleTab('mod-medico')">
-            <i class="fa-solid fa-staff-snake"></i> <span>Enfermería</span>
-          </button>
-          <button class="tab-btn" data-tab="mod-estadisticas" onclick="showModuleTab('mod-estadisticas')">
-            <i class="fa-solid fa-chart-line"></i> <span>Rendimiento</span>
-          </button>
+          <!-- GRUPO 2: DEPORTIVO -->
+          <div class="nav-group open" id="navGroupSports">
+            <button class="nav-group-header" onclick="toggleNavGroup('navGroupSports')">
+              <span><i class="fa-solid fa-futbol text-primary"></i> DEPORTIVO</span>
+              <i class="fa-solid fa-chevron-down chevron-icon"></i>
+            </button>
+            <div class="nav-group-body">
+              <button class="tab-btn" data-tab="mod-registro" onclick="showModuleTab('mod-registro')">
+                <i class="fa-solid fa-user-plus"></i> <span>Registro Jugadores</span>
+              </button>
+              <button class="tab-btn" data-tab="mod-alineacion" onclick="showModuleTab('mod-alineacion')">
+                <i class="fa-solid fa-shirt"></i> <span>Pizarra Táctica</span>
+              </button>
+              <button class="tab-btn" data-tab="mod-calendario" onclick="showModuleTab('mod-calendario')">
+                <i class="fa-solid fa-calendar-days"></i> <span>Calendario</span>
+              </button>
+              <button class="tab-btn" data-tab="mod-medico" onclick="showModuleTab('mod-medico')">
+                <i class="fa-solid fa-staff-snake"></i> <span>Enfermería</span>
+              </button>
+              <button class="tab-btn" data-tab="mod-estadisticas" onclick="showModuleTab('mod-estadisticas')">
+                <i class="fa-solid fa-chart-line"></i> <span>Rendimiento</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- GRUPO 3: FINANZAS Y FAMILIAS -->
+          <div class="nav-group open" id="navGroupFinance">
+            <button class="nav-group-header" onclick="toggleNavGroup('navGroupFinance')">
+              <span><i class="fa-solid fa-wallet text-success"></i> FINANZAS & FAMILIAS</span>
+              <i class="fa-solid fa-chevron-down chevron-icon"></i>
+            </button>
+            <div class="nav-group-body">
+              <button class="tab-btn" data-tab="mod-pagos" onclick="showModuleTab('mod-pagos')">
+                <i class="fa-solid fa-money-bill-wave"></i> <span>Pagos y Hermanos</span>
+              </button>
+            </div>
+          </div>
           
           <div class="sidebar-bottom">
             <div class="current-user-info margin-bottom">
@@ -220,8 +302,13 @@
           <!-- 02. PIZARRA TÁCTICA -->
           <div id="mod-alineacion" class="module-panel">
             <div class="grid-2-cols">
-              <div class="glass-card fade-in-up">
-                <h3 class="card-title">Pizarra Táctica (XI)</h3>
+              <div id="tacticalBoardCard" class="glass-card fade-in-up">
+                <div style="display: flex; justify-content: space-between; align-items: center;" class="margin-bottom">
+                  <h3 class="card-title" style="margin-bottom: 0;">Pizarra Táctica (XI)</h3>
+                  <button id="btnFullscreenPitch" class="btn btn-outline" style="padding: 0.5rem 1rem;" title="Ver en pantalla completa">
+                    <i class="fa-solid fa-expand"></i>
+                  </button>
+                </div>
                 <p class="subtitle-text margin-bottom">Haz clic en un jugador para cambiar la convocatoria.</p>
                 
                 <div class="tactical-pitch" id="tacticalPitch">
@@ -501,6 +588,21 @@
                 <form id="playerRegForm" class="modern-form" onsubmit="handlePlayerRegSubmit(event)">
                   <input type="hidden" id="regEditId" value="" />
 
+                  <!-- Carga de Fotografía -->
+                  <div class="photo-upload-container margin-bottom">
+                    <label>Fotografía Oficial del Niño</label>
+                    <div class="photo-upload-box">
+                      <img id="regPhotoPreview" src="LAGUNA.jpg" alt="Foto del niño" class="photo-preview-img" />
+                      <div class="photo-upload-controls">
+                        <input type="file" id="regPhotoInput" accept="image/*" onchange="handlePhotoSelect(event)" style="display:none;" />
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('regPhotoInput').click()">
+                          <i class="fa-solid fa-camera"></i> Subir / Cambiar Foto
+                        </button>
+                        <small class="text-muted block mt-1">Formato JPG o PNG.</small>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="reg-form-grid">
                     <div class="form-group">
                       <label>Nombre Completo *</label>
@@ -509,6 +611,19 @@
                     <div class="form-group">
                       <label>Número de Dorsal *</label>
                       <input type="number" id="regNumber" class="form-control" placeholder="Ej. 10" min="1" max="99" required />
+                    </div>
+                  </div>
+
+                  <!-- Tutor / Familia para Vinculación de Hermanos -->
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Padre / Tutor Responsable *</label>
+                      <input type="text" id="regTutorName" class="form-control" placeholder="Ej. Carlos Martínez (Familia Martínez)" required />
+                      <small class="text-muted">Mismo nombre/familia para vincular hermanos.</small>
+                    </div>
+                    <div class="form-group">
+                      <label>Teléfono de Contacto *</label>
+                      <input type="tel" id="regPhone" class="form-control" placeholder="+52 844 000 0000" required />
                     </div>
                   </div>
 
@@ -543,14 +658,32 @@
                       <input type="date" id="regBirthdate" class="form-control" />
                     </div>
                     <div class="form-group">
-                      <label>Teléfono / WhatsApp</label>
-                      <input type="tel" id="regPhone" class="form-control" placeholder="+52 844 000 0000" />
+                      <label>Correo Electrónico</label>
+                      <input type="email" id="regEmail" class="form-control" placeholder="jugador@correo.com" />
                     </div>
                   </div>
 
-                  <div class="form-group">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="regEmail" class="form-control" placeholder="jugador@correo.com" />
+                  <!-- Expediente Documental -->
+                  <div class="form-group document-checklist-box">
+                    <label><i class="fa-solid fa-folder-open text-primary"></i> Documentación Entregada por Niño</label>
+                    <div class="doc-checklist-grid">
+                      <label class="doc-check-item">
+                        <input type="checkbox" id="docActa" />
+                        <span>Acta de Nacimiento</span>
+                      </label>
+                      <label class="doc-check-item">
+                        <input type="checkbox" id="docCURP" />
+                        <span>CURP Oficial</span>
+                      </label>
+                      <label class="doc-check-item">
+                        <input type="checkbox" id="docMedico" />
+                        <span>Certificado Médico</span>
+                      </label>
+                      <label class="doc-check-item">
+                        <input type="checkbox" id="docINE" />
+                        <span>Identificación del Tutor</span>
+                      </label>
+                    </div>
                   </div>
 
                   <div class="reg-form-grid">
@@ -630,6 +763,250 @@
             </div>
           </div>
           <!-- /REGISTRO DE JUGADORES -->
+
+          <!-- 08. SISTEMA DE PAGOS Y HERMANOS -->
+          <div id="mod-pagos" class="module-panel">
+
+            <!-- Banner Hero Pagos -->
+            <div class="hero-event-card glass-panel margin-bottom fade-in-up" style="background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(59,130,246,0.08) 100%); border-left: 4px solid var(--accent-neon);">
+              <div class="hero-event-info">
+                <span class="badge badge-neon">CONTROL FINANCIERO Y COLEGIO</span>
+                <h2>Gestión de Pagos y Mensualidades</h2>
+                <p>Cobro de colegiaturas mensuales por Transferencia SPEI o Manual en Efectivo con descuento por hermanos.</p>
+              </div>
+              <div class="hero-stats">
+                <div class="stat-box" style="color:var(--accent-neon);">
+                  <i class="fa-solid fa-coins"></i>
+                  <span id="payTotalCollected">$0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resumen Rápido Finanzas -->
+            <div class="grid-2-cols gap-2 margin-bottom fade-in-up" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+              <div class="stat-card-mini glass-card text-center">
+                <p class="subtitle-text">Total Recaudado</p>
+                <h3 id="statTotalPaid" class="mono-text text-success mt-1">$0</h3>
+              </div>
+              <div class="stat-card-mini glass-card text-center">
+                <p class="subtitle-text">Pagos Pendientes</p>
+                <h3 id="statTotalPending" class="mono-text text-warning mt-1">$0</h3>
+              </div>
+              <div class="stat-card-mini glass-card text-center">
+                <p class="subtitle-text">Familias Beneficiadas</p>
+                <h3 id="statSiblingsCount" class="mono-text text-primary mt-1">0 Familias</h3>
+              </div>
+              <div class="stat-card-mini glass-card text-center">
+                <p class="subtitle-text">Total Descuentos Hermanos</p>
+                <h3 id="statTotalDiscounts" class="mono-text text-neon mt-1">$0</h3>
+              </div>
+            </div>
+
+            <div class="grid-2-cols margin-bottom">
+
+              <!-- Formulario de Cobro de Mensualidad / Pago -->
+              <div class="glass-card fade-in-up" style="animation-delay:0.1s;">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-credit-card text-primary"></i> Registrar Pago / Mensualidad
+                </h3>
+
+                <!-- Switch Cobro Alumno vs Paquete Familia -->
+                <div class="payment-mode-tabs margin-bottom">
+                  <button type="button" class="pay-mode-btn active" id="btnModeIndividual" onclick="togglePaymentScope('individual')">
+                    <i class="fa-solid fa-user"></i> Cobro por Alumno
+                  </button>
+                  <button type="button" class="pay-mode-btn" id="btnModeFamily" onclick="togglePaymentScope('family')">
+                    <i class="fa-solid fa-people-roof"></i> PAQUETE FAMILIA (PRECIO ÚNICO)
+                  </button>
+                </div>
+
+                <!-- Selector del Método de Pago -->
+                <label style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:0.5rem;">Modalidad de Pago:</label>
+                <div class="payment-type-selector">
+                  <div class="pay-type-card active" id="payCardTransfer" onclick="setPaymentType('Transferencia SPEI')">
+                    <i class="fa-solid fa-building-columns text-primary"></i>
+                    <strong>Transferencia SPEI</strong>
+                    <small class="text-muted block mt-1">Vía Banco / CLABE</small>
+                  </div>
+                  <div class="pay-type-card" id="payCardManual" onclick="setPaymentType('Manual Efectivo')">
+                    <i class="fa-solid fa-money-bill-wave text-success"></i>
+                    <strong>Manual en Efectivo</strong>
+                    <small class="text-muted block mt-1">Pago en Caja / Ventanilla</small>
+                  </div>
+                </div>
+
+                <form id="paymentForm" class="modern-form" onsubmit="handlePaymentSubmit(event)">
+                  <input type="hidden" id="payMethodSelected" value="Transferencia SPEI" />
+                  <input type="hidden" id="payScopeMode" value="individual" />
+
+                  <!-- Modo Individual -->
+                  <div class="form-group" id="groupPlayerSelect">
+                    <label>Alumno / Niño Registrado *</label>
+                    <select id="payPlayerSelect" class="form-control" onchange="onPaymentPlayerChange()">
+                      <option value="" disabled selected>Selecciona un alumno...</option>
+                    </select>
+                  </div>
+
+                  <!-- Modo Familia (Cobro Unificado) -->
+                  <div class="form-group hidden" id="groupFamilySelect">
+                    <label><i class="fa-solid fa-people-roof text-warning"></i> Seleccionar Familia de Hermanos *</label>
+                    <select id="payFamilySelect" class="form-control" onchange="onPaymentFamilyChange()">
+                      <option value="" disabled selected>Selecciona una familia...</option>
+                    </select>
+                  </div>
+
+                  <!-- Tarjeta Destacada Paquete Familia Unificado -->
+                  <div id="familyBundleCard" class="family-bundle-card hidden margin-bottom">
+                    <div class="flex-between">
+                      <h4 class="card-title text-warning" style="margin-bottom:0;" id="famCardTitle"><i class="fa-solid fa-people-roof"></i> PAQUETE FAMILIA</h4>
+                      <span class="badge badge-neon" id="famCardBadge">2 HERMANOS</span>
+                    </div>
+                    <div id="famChildrenList" class="fam-children-list mt-2">
+                      <!-- Dinámico -->
+                    </div>
+                    <div class="fam-total-banner mt-3">
+                      <span>PRECIO ÚNICO GLOBAL FAMILIAR:</span>
+                      <strong id="famGrandTotalDisplay">$0.00 MXN</strong>
+                    </div>
+                  </div>
+
+                  <!-- Alerta detección de hermanos individual -->
+                  <div id="siblingAlertBox" class="alert alert-success hidden margin-bottom">
+                    <i class="fa-solid fa-people-roof"></i>
+                    <div>
+                      <strong id="siblingAlertTitle">¡Hermanos Detectados!</strong>
+                      <p id="siblingAlertDesc" style="font-size:0.8rem;" class="mt-1">Se aplica descuento automáticamente.</p>
+                    </div>
+                  </div>
+
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Concepto de Cobro *</label>
+                      <select id="payConcept" class="form-control" onchange="onPaymentConceptChange()" required>
+                        <option value="Colegiatura Mensual" data-amount="1200">Colegiatura Mensual ($1,200)</option>
+                        <option value="Inscripción Anual" data-amount="2500">Inscripción Anual ($2,500)</option>
+                        <option value="Kit Uniforme Completo" data-amount="1800">Kit Uniforme Completo ($1,800)</option>
+                        <option value="Torneo / Arbitraje" data-amount="600">Torneo / Arbitraje ($600)</option>
+                        <option value="Otro Concepto" data-amount="0">Otro Concepto...</option>
+                      </select>
+                    </div>
+
+                    <!-- Selector de Mes de Mensualidad -->
+                    <div class="form-group" id="payMonthGroup">
+                      <label>Mes Correspondiente *</label>
+                      <select id="payMonthSelect" class="form-control">
+                        <option value="Agosto 2026" selected>Agosto 2026</option>
+                        <option value="Septiembre 2026">Septiembre 2026</option>
+                        <option value="Octubre 2026">Octubre 2026</option>
+                        <option value="Noviembre 2026">Noviembre 2026</option>
+                        <option value="Diciembre 2026">Diciembre 2026</option>
+                        <option value="Inscripción / Evento">Inscripción / Evento</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Monto Base ($) *</label>
+                      <input type="number" id="payBaseAmount" class="form-control" placeholder="1200" min="0" oninput="recalculatePaymentTotals()" required />
+                    </div>
+                    <div class="form-group">
+                      <label>Descuento Hermano (%)</label>
+                      <input type="number" id="payDiscountPct" class="form-control" placeholder="0" min="0" max="100" oninput="recalculatePaymentTotals()" />
+                    </div>
+                  </div>
+
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Monto Final Neto ($)</label>
+                      <input type="number" id="payFinalAmount" class="form-control mono-text" style="font-weight:700; color:var(--accent-neon); font-size:1.2rem;" readonly />
+                    </div>
+                    <div class="form-group">
+                      <label>Estatus del Pago</label>
+                      <select id="payStatus" class="form-control">
+                        <option value="Pagado">Pagado (Confirmado)</option>
+                        <option value="Pendiente">Pendiente de Verificación</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Fecha de Operación</label>
+                      <input type="date" id="payDate" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                      <label id="payNotesLabel">Folio / Referencia SPEI *</label>
+                      <input type="text" id="payNotes" class="form-control" placeholder="Ej. SPEI Ref 948271" />
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary btn-block mt-3">
+                    <i class="fa-solid fa-receipt"></i> CONFIRMAR PAGO Y EMITIR RECIBO
+                  </button>
+                </form>
+              </div>
+
+              <!-- Matriz de Control de Mensualidades por Niño -->
+              <div class="glass-card fade-in-up" style="animation-delay:0.2s;">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-calendar-check text-success"></i> Matriz de Mensualidades 2026
+                </h3>
+                <p class="subtitle-text margin-bottom" style="font-size:0.85rem;">Seguimiento rápido del estado mensual de cada niño inscrito.</p>
+
+                <div class="table-responsive" style="max-height:480px; overflow-y:auto;">
+                  <table class="modern-table" id="monthlyMatrixTable" style="min-width:550px;">
+                    <thead>
+                      <tr>
+                        <th>Alumno & Familia</th>
+                        <th>Estado de Cobro</th>
+                        <th>Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody id="monthlyMatrixBody">
+                      <!-- Dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Tabla de Historial de Cobranza General -->
+            <div class="glass-card fade-in-up">
+              <div class="flex-between margin-bottom">
+                <h3 class="card-title" style="margin-bottom:0;">
+                  <i class="fa-solid fa-clock-rotate-left text-primary"></i> Historial de Cobranza Registrada
+                </h3>
+                <div class="reg-search-box">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="paySearchInput" class="form-control" placeholder="Buscar alumno, folio o concepto..." oninput="renderPaymentsTable()" style="padding:0.5rem 0.8rem; font-size:0.85rem;" />
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="modern-table" id="paymentsTable">
+                  <thead>
+                    <tr>
+                      <th>Folio / Fecha</th>
+                      <th>Alumno & Familia</th>
+                      <th>Concepto / Mes</th>
+                      <th>Método</th>
+                      <th>Monto Neto</th>
+                      <th>Estatus</th>
+                      <th>Comprobante</th>
+                    </tr>
+                  </thead>
+                  <tbody id="paymentsTableBody">
+                    <!-- Dinámico -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+          <!-- /SISTEMA DE PAGOS Y HERMANOS -->
+          <!-- /SISTEMA DE PAGOS Y HERMANOS -->
 
         </div>
       </main>
@@ -751,9 +1128,118 @@
           <button class="btn btn-ghost" onclick="closeMatchResultModal()">Cancelar</button>
           <button class="btn btn-primary" onclick="saveMatchResult()">Guardar Resultado</button>
         </div>
+    <!-- Modal Expediente y Documentación Completa del Niño -->
+    <div id="playerDocModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 650px;">
+        <div class="profile-header flex-between mb-2">
+          <h3 class="card-title" style="margin-bottom: 0;">
+            <i class="fa-solid fa-folder-open text-primary"></i> Expediente del Niño
+          </h3>
+          <button class="btn btn-ghost" style="padding: 0.4rem 0.8rem;" onclick="closeDocModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div id="docModalPrintArea" class="doc-modal-print-area">
+          <div class="doc-player-header margin-top margin-bottom">
+            <img id="docModalPhoto" src="LAGUNA.jpg" alt="Fotografía" class="doc-player-photo" />
+            <div class="doc-player-info">
+              <h2 id="docModalName" style="font-family:var(--font-heading); margin-bottom: 0.2rem;">Nombre Niño</h2>
+              <p id="docModalSub" class="text-muted" style="font-size:0.9rem;">Dorsal #10 · Medio Ofensivo</p>
+              <div class="mt-2 flex-gap flex-wrap">
+                <span id="docModalTutor" class="badge badge-neon"><i class="fa-solid fa-user-group"></i> Tutor: Familia</span>
+                <span id="docModalPhone" class="badge" style="border-color:var(--border-strong);"><i class="fa-solid fa-phone"></i> Contacto</span>
+              </div>
+            </div>
+          </div>
+
+          <h4 class="card-title mt-4 mb-2" style="font-size:1rem;">Documentación Oficial Registrada:</h4>
+          <div class="doc-items-grid margin-bottom" id="docModalItems">
+            <!-- Dinámico -->
+          </div>
+
+          <div class="doc-meta-info glass-panel p-3 rounded mb-3" style="padding: 1rem; border-radius: 8px;">
+            <p class="subtitle-text" style="font-size: 0.85rem;"><i class="fa-solid fa-circle-info text-primary"></i> <strong>Nota del Club:</strong> Este expediente digital avala la inscripción oficial del alumno para la temporada 2026 en Laguna Athletic.</p>
+          </div>
+        </div>
+
+        <div class="flex-end gap-2 mt-4">
+          <button class="btn btn-ghost" onclick="closeDocModal()">Cerrar</button>
+          <button class="btn btn-primary" onclick="printOrDownloadDoc()">
+            <i class="fa-solid fa-download"></i> DESCARGAR EXPEDIENTE (PDF / PRINT)
+          </button>
+        </div>
       </div>
     </div>
 
+    <!-- Modal Recibo Oficial de Pago -->
+    <div id="paymentReceiptModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 550px;">
+        <div class="profile-header flex-between mb-2">
+          <h3 class="card-title" style="margin-bottom: 0;">
+            <i class="fa-solid fa-file-invoice text-success"></i> Recibo Oficial de Pago
+          </h3>
+          <button class="btn btn-ghost" style="padding: 0.4rem 0.8rem;" onclick="closeReceiptModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div id="receiptPrintArea" class="receipt-card-print mt-3">
+          <div class="receipt-header text-center pb-3 border-bottom">
+            <img src="LAGUNA.jpg" alt="Laguna Athletic" style="width:50px; height:50px; border-radius:50%;" />
+            <h2 style="font-family:var(--font-heading); margin-top:0.5rem; font-size:1.4rem;">LAGUNA ATHLETIC 2026</h2>
+            <p class="mono-text text-muted" style="font-size:0.75rem;">COMPROBANTE OFICIAL DE COBRANZA</p>
+            <span id="receiptFolio" class="badge badge-neon mt-2">FOLIO: #LA-PAGO-0000</span>
+          </div>
+
+          <div class="receipt-body mt-3">
+            <div class="flex-between mb-2">
+              <span class="text-muted">Fecha:</span>
+              <strong id="receiptDate" class="mono-text">-</strong>
+            </div>
+            <div class="flex-between mb-2">
+              <span class="text-muted">Alumno:</span>
+              <strong id="receiptStudent">-</strong>
+            </div>
+            <div class="flex-between mb-2">
+              <span class="text-muted">Padre / Tutor:</span>
+              <span id="receiptTutor" class="mono-text">-</span>
+            </div>
+            <div class="flex-between mb-2">
+              <span class="text-muted">Concepto:</span>
+              <strong id="receiptConcept" class="text-primary">-</strong>
+            </div>
+            <div class="flex-between mb-2">
+              <span class="text-muted">Método de Pago:</span>
+              <span id="receiptMethod">-</span>
+            </div>
+
+            <div class="receipt-breakdown mt-3 p-3" style="background:var(--bg-input); border-radius:8px; padding:1rem;">
+              <div class="flex-between mb-1">
+                <span>Monto Base:</span>
+                <span id="receiptBase" class="mono-text">$0.00</span>
+              </div>
+              <div class="flex-between mb-1 text-warning" id="receiptDiscountRow">
+                <span><i class="fa-solid fa-users text-warning"></i> Desc. Hermano:</span>
+                <span id="receiptDiscount" class="mono-text">-$0.00</span>
+              </div>
+              <div class="flex-between border-top pt-2 mt-2" style="font-size:1.1rem; font-weight:700;">
+                <span>TOTAL PAGADO:</span>
+                <span id="receiptTotal" class="mono-text text-success">$0.00</span>
+              </div>
+            </div>
+
+            <div class="receipt-footer text-center mt-4 pt-3 border-top text-muted" style="font-size:0.75rem;">
+              <p>¡Gracias por formar parte de la familia Laguna Athletic!</p>
+              <small class="mono-text mt-1 block">Documento de control interno digital · 2026</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-end gap-2 mt-4">
+          <button class="btn btn-ghost" onclick="closeReceiptModal()">Cerrar</button>
+          <button class="btn btn-primary" onclick="printReceipt()">
+            <i class="fa-solid fa-print"></i> IMPRIMIR / DESCARGAR RECIBO
+          </button>
+        </div>
+      </div>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>

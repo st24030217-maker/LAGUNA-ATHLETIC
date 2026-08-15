@@ -6,26 +6,21 @@ let squadData = [];
 let calendarEvents = [];
 let justificationsData = [];
 let injuredData = [];
+let paymentsData = [];
 
 let currentRole = null;
 let loggedInUser = null;
 let attendanceChart = null;
 
 const defaultSquadData = [
-  { id: 1, number: 1, name: "Mateo Silva", position: "Portero", attendancePct: 96, streak: "12 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 0, assists: 1, mins: 1440, cards: 0 },
-  { id: 2, number: 2, name: "Lucas Sánchez", position: "Lateral Derecho", attendancePct: 92, streak: "8 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 1, assists: 3, mins: 1280, cards: 1 },
-  { id: 3, number: 3, name: "Gabriel Gómez", position: "Lateral Izquierdo", attendancePct: 100, streak: "15 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 2, assists: 5, mins: 1350, cards: 2 },
-  { id: 4, number: 4, name: "Nicolás Ramos", position: "Defensa Central", attendancePct: 88, streak: "4 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 3, assists: 0, mins: 1100, cards: 4 },
-  { id: 5, number: 5, name: "Santiago Pérez", position: "Defensa Central", attendancePct: 94, streak: "10 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 1, assists: 1, mins: 1300, cards: 1 },
-  { id: 6, number: 6, name: "Carlos Alcaraz", position: "Medio Defensivo", attendancePct: 91, streak: "7 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 0, assists: 4, mins: 1150, cards: 3 },
-  { id: 7, number: 7, name: "Joaquín Torres", position: "Extremo Derecho", attendancePct: 85, streak: "2 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 6, assists: 7, mins: 980, cards: 0 },
-  { id: 8, number: 8, name: "Diego Valdés", position: "Mediocampista", attendancePct: 95, streak: "11 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 4, assists: 8, mins: 1400, cards: 1 },
-  { id: 9, number: 9, name: "Javier Martínez", position: "Delantero Centro", attendancePct: 98, streak: "14 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 15, assists: 2, mins: 1380, cards: 1 },
-  { id: 10, number: 10, name: "Emilio Suárez", position: "Medio Ofensivo", attendancePct: 90, streak: "6 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 12, assists: 10, mins: 1240, cards: 2 },
-  { id: 11, number: 11, name: "Tomás López", position: "Extremo Izquierdo", attendancePct: 89, streak: "5 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 8, assists: 6, mins: 1190, cards: 0 },
-  { id: 12, number: 12, name: "Adrián Fernández", position: "Portero", attendancePct: 93, streak: "9 A", status: "Ausente", checkinTime: "-", starter: false, injured: false, goals: 0, assists: 0, mins: 90, cards: 0 },
-  { id: 13, number: 13, name: "Rodrigo Morales", position: "Defensa Central", attendancePct: 82, streak: "1 A", status: "Ausente", checkinTime: "-", starter: false, injured: false, goals: 0, assists: 0, mins: 450, cards: 2 },
-  { id: 14, number: 14, name: "Bautista Castro", position: "Mediocampista", attendancePct: 87, streak: "3 A", status: "Ausente", checkinTime: "-", starter: false, injured: false, goals: 2, assists: 1, mins: 600, cards: 1 }
+  { id: 10, number: 10, name: "Emilio Suárez", position: "Medio Ofensivo", attendancePct: 95, streak: "10 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 6, assists: 4, mins: 900, cards: 1, tutorName: "Familia Suárez", phone: "+52 844 123 4567", docActa: true, docCURP: true, docMedico: true, docINE: true, photo: "LAGUNA.jpg" },
+  { id: 15, number: 15, name: "Mateo Suárez", position: "Delantero Centro", attendancePct: 92, streak: "8 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 4, assists: 2, mins: 750, cards: 0, tutorName: "Familia Suárez", phone: "+52 844 123 4567", docActa: true, docCURP: true, docMedico: true, docINE: true, photo: "LAGUNA.jpg" },
+  { id: 2, number: 2, name: "Lucas Sánchez", position: "Lateral Derecho", attendancePct: 90, streak: "6 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 1, assists: 3, mins: 680, cards: 0, tutorName: "Familia Sánchez", phone: "+52 844 222 3344", docActa: true, docCURP: true, docMedico: true, docINE: false, photo: "LAGUNA.jpg" }
+];
+
+const defaultPayments = [
+  { id: 101, folio: "LA-PAGO-1001", playerId: 10, playerName: "Emilio Suárez (#10)", tutorName: "Familia Suárez", concept: "Colegiatura Mensual", baseAmount: 1200, discountPct: 0, discountAmount: 0, finalAmount: 1200, method: "Transferencia SPEI", date: "2026-08-01", status: "Pagado", notes: "Colegiatura Agosto" },
+  { id: 102, folio: "LA-PAGO-1002", playerId: 15, playerName: "Mateo Suárez (#15)", tutorName: "Familia Suárez", concept: "Colegiatura Mensual", baseAmount: 1200, discountPct: 20, discountAmount: 240, finalAmount: 960, method: "Efectivo", date: "2026-08-01", status: "Pagado", notes: "Descuento 2º Hermano Suárez" }
 ];
 
 const defaultCalendarEvents = [
@@ -62,30 +57,32 @@ function showToast(message, type = "info") {
 // --- PERSISTENCE ---
 function loadData() {
   try {
-    const savedSquad = localStorage.getItem("laguna_squad_v2");
-    const savedEvents = localStorage.getItem("laguna_events_v2");
-    const savedJust = localStorage.getItem("laguna_justifications_v2");
-    const savedInjured = localStorage.getItem("laguna_injured_v2");
+    const savedSquad = localStorage.getItem("laguna_squad_v3");
+    const savedEvents = localStorage.getItem("laguna_events_v3");
+    const savedJust = localStorage.getItem("laguna_justifications_v3");
+    const savedPayments = localStorage.getItem("laguna_payments_v3");
 
     squadData = savedSquad ? JSON.parse(savedSquad) : [...defaultSquadData];
     calendarEvents = savedEvents ? JSON.parse(savedEvents) : [...defaultCalendarEvents];
     justificationsData = savedJust ? JSON.parse(savedJust) : [...defaultJustifications];
-    injuredData = savedInjured ? JSON.parse(savedInjured) : [];
+    injuredData = [];
+    paymentsData = savedPayments ? JSON.parse(savedPayments) : [...defaultPayments];
   } catch (error) {
     console.error("Error loading data:", error);
     squadData = [...defaultSquadData];
     calendarEvents = [...defaultCalendarEvents];
     justificationsData = [...defaultJustifications];
     injuredData = [];
+    paymentsData = [...defaultPayments];
   }
 }
 
 function saveData() {
   try {
-    localStorage.setItem("laguna_squad_v2", JSON.stringify(squadData));
-    localStorage.setItem("laguna_events_v2", JSON.stringify(calendarEvents));
-    localStorage.setItem("laguna_justifications_v2", JSON.stringify(justificationsData));
-    localStorage.setItem("laguna_injured_v2", JSON.stringify(injuredData));
+    localStorage.setItem("laguna_squad_v3", JSON.stringify(squadData));
+    localStorage.setItem("laguna_events_v3", JSON.stringify(calendarEvents));
+    localStorage.setItem("laguna_justifications_v3", JSON.stringify(justificationsData));
+    localStorage.setItem("laguna_payments_v3", JSON.stringify(paymentsData));
   } catch (error) {
     showToast("Error guardando datos localmente.", "error");
   }
@@ -105,6 +102,57 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// --- LOADING SYSTEM FUTURISTA ---
+function triggerAppLoading(message = "Cargando sistema...", durationMs = 1800, callback = null) {
+  const loadingOverlay = document.getElementById("appLoadingScreen");
+  const barFill = document.getElementById("loadingBarFill");
+  const percentText = document.getElementById("loadingPercent");
+  const statusText = document.getElementById("loadingStatusText");
+
+  if (!loadingOverlay) {
+    if (callback) callback();
+    return;
+  }
+
+  barFill.style.width = "0%";
+  percentText.innerText = "0%";
+  statusText.innerText = "[SYSTEM] Autenticando credenciales oficiales...";
+
+  loadingOverlay.classList.remove("hidden");
+  loadingOverlay.style.opacity = "1";
+
+  const startTime = Date.now();
+  const interval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(100, Math.floor((elapsed / durationMs) * 100));
+
+    barFill.style.width = `${progress}%`;
+    percentText.innerText = `${progress}%`;
+
+    // Mensajes dinámicos según el progreso
+    if (progress < 25) {
+      statusText.innerText = "[AUTH] Validando perfil Laguna 2026...";
+    } else if (progress < 55) {
+      statusText.innerText = "[DATABASE] Cargando plantillas, expedientes y fotos...";
+    } else if (progress < 85) {
+      statusText.innerText = "[FINANCES] Sincronizando matriz de cobros y paquetes...";
+    } else {
+      statusText.innerText = "[ACCESO CONCEDIDO] Entorno listo. Bienvenido.";
+    }
+
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        loadingOverlay.style.opacity = "0";
+        setTimeout(() => {
+          loadingOverlay.classList.add("hidden");
+          if (callback) callback();
+        }, 300);
+      }, 250);
+    }
+  }, 35);
+}
+
 // --- LOGIN MODULE ---
 function handleLogin(e) {
   e.preventDefault();
@@ -114,15 +162,16 @@ function handleLogin(e) {
   currentRole = role;
   sessionStorage.setItem("laguna_active_role", role);
   
-  // Fake animation
   document.getElementById("loginScreen").style.opacity = '0';
   document.getElementById("loginScreen").style.transition = 'opacity 0.4s ease';
   
   setTimeout(() => {
     document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("appLayout").style.display = "grid";
-    postLoginInit();
-    showToast("Sesión iniciada correctamente.", "success");
+    triggerAppLoading("Autenticando usuario y preparando entorno 2026...", 1400, () => {
+      document.getElementById("appLayout").style.display = "grid";
+      postLoginInit();
+      showToast("Sesión iniciada correctamente.", "success");
+    });
   }, 400);
 }
 
@@ -141,6 +190,10 @@ function postLoginInit() {
   renderRankingTable();
   renderInjuredTable();
   renderRegTable();
+  populatePaymentPlayerSelect();
+  renderPaymentsTable();
+  renderMonthlyMatrix();
+  updatePaymentSummaryStats();
   initChart();
   updateNoticeTemplate();
   initDragAndDrop();
@@ -181,6 +234,13 @@ function postLoginInit() {
 }
 
 // --- UI NAVIGATION ---
+function toggleNavGroup(groupId) {
+  const group = document.getElementById(groupId);
+  if (group) {
+    group.classList.toggle("open");
+  }
+}
+
 function showModuleTab(tabId) {
   document.querySelectorAll(".module-panel").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
@@ -189,7 +249,14 @@ function showModuleTab(tabId) {
   if (targetPanel) targetPanel.classList.add("active");
 
   const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-  if (tabBtn) tabBtn.classList.add("active");
+  if (tabBtn) {
+    tabBtn.classList.add("active");
+    // Asegurar que el grupo padre esté abierto
+    const parentGroup = tabBtn.closest(".nav-group");
+    if (parentGroup && !parentGroup.classList.contains("open")) {
+      parentGroup.classList.add("open");
+    }
+  }
 
   if (tabId === "mod-estadisticas" && attendanceChart) {
     setTimeout(() => attendanceChart.resize(), 100);
@@ -805,23 +872,38 @@ function onDragEnd() {
 }
 
 // ==========================================================================
-// MODULE: REGISTRO DE JUGADORES
+// MODULE: REGISTRO DE JUGADORES, FOTOGRAFÍAS Y EXPEDIENTES
 // ==========================================================================
 
 let regFilter = 'todos';    // filtro activo de estatus
 let regEditingId = null;    // id del jugador en edición (null = nuevo)
+let currentSelectedPhoto = 'LAGUNA.jpg'; // photo temp
 
-/**
- * Inicializa los datos extra de registro en cada jugador si no existen.
- * Garantiza compatibilidad con el array defaultSquadData ya existente.
- */
 function ensureRegFields(player) {
   if (!player.regStatus)    player.regStatus    = 'Activo';
   if (!player.birthdate)    player.birthdate    = '';
-  if (!player.phone)        player.phone        = '';
+  if (!player.phone)        player.phone        = '+52 844 000 0000';
+  if (!player.tutorName)    player.tutorName    = 'Familia ' + player.name.split(' ').pop();
   if (!player.email)        player.email        = '';
   if (!player.regNotes)     player.regNotes     = '';
+  if (!player.photo)        player.photo        = 'LAGUNA.jpg';
+  if (player.docActa === undefined) player.docActa = true;
+  if (player.docCURP === undefined) player.docCURP = true;
+  if (player.docMedico === undefined) player.docMedico = true;
+  if (player.docINE === undefined) player.docINE = true;
   return player;
+}
+
+/** Handles photo selection and converts to DataURL */
+function handlePhotoSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    currentSelectedPhoto = evt.target.result;
+    document.getElementById('regPhotoPreview').src = currentSelectedPhoto;
+  };
+  reader.readAsDataURL(file);
 }
 
 /** Renders the registration table with current filter + search */
@@ -832,7 +914,6 @@ function renderRegTable() {
   if (!tbody) return;
   tbody.innerHTML   = '';
 
-  // Ensure fields exist on all players
   squadData.forEach(ensureRegFields);
 
   const filtered = squadData.filter(p => {
@@ -840,14 +921,15 @@ function renderRegTable() {
     const matchSearch = !searchVal ||
       p.name.toLowerCase().includes(searchVal) ||
       String(p.number).includes(searchVal) ||
+      (p.tutorName && p.tutorName.toLowerCase().includes(searchVal)) ||
       p.position.toLowerCase().includes(searchVal);
     return matchFilter && matchSearch;
   });
 
-  if (countEl) countEl.textContent = `${squadData.length} Jugador${squadData.length !== 1 ? 'es' : ''}`;
+  if (countEl) countEl.textContent = `${squadData.length} Niño${squadData.length !== 1 ? 's' : ''}`;
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:2rem;">Sin jugadores con ese criterio.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:2rem;">Sin niños registrados con ese criterio.</td></tr>`;
     return;
   }
 
@@ -856,27 +938,45 @@ function renderRegTable() {
   filtered.sort((a, b) => a.number - b.number).forEach(p => {
     const statusKey = (p.regStatus || 'Activo').toLowerCase().replace(/ /g, '');
     const badgeClass = `badge badge-status-${statusKey}`;
-    const starterLabel = p.starter ? 'Titular' : 'Suplente';
+    
+    // Contar documentos cargados (máx 4)
+    const docCount = (p.docActa ? 1 : 0) + (p.docCURP ? 1 : 0) + (p.docMedico ? 1 : 0) + (p.docINE ? 1 : 0);
+    const docBadge = docCount === 4 ? '<span class="badge badge-neon" style="font-size:0.65rem;">Docs: 4/4 Complete</span>' : `<span class="badge badge-warning" style="font-size:0.65rem;">Docs: ${docCount}/4</span>`;
 
     const actionsCells = isDT ? `
       <td>
+        <button class="reg-action-btn doc" title="Ver Expediente / Descargar" onclick="openDocModal(${p.id})">
+          <i class="fa-solid fa-folder-open"></i>
+        </button>
         <button class="reg-action-btn edit" title="Editar" onclick="openEditPlayer(${p.id})">
           <i class="fa-solid fa-pen"></i>
         </button>
         <button class="reg-action-btn delete" title="Eliminar" onclick="confirmDeletePlayer(${p.id})">
           <i class="fa-solid fa-trash"></i>
         </button>
-      </td>` : '<td></td>';
+      </td>` : `<td>
+        <button class="reg-action-btn doc" title="Ver Expediente / Descargar" onclick="openDocModal(${p.id})">
+          <i class="fa-solid fa-folder-open"></i> Ver Expediente
+        </button>
+      </td>`;
 
     tbody.innerHTML += `
       <tr>
-        <td class="mono-text text-primary" style="font-weight:700;">${p.number}</td>
+        <td class="mono-text text-primary" style="font-weight:700;">#${p.number}</td>
         <td>
-          <strong>${p.name}</strong>
-          <br><small class="text-muted">${starterLabel}${p.phone ? ' · ' + p.phone : ''}</small>
+          <div style="display:flex; align-items:center; gap:0.8rem;">
+            <img src="${p.photo || 'LAGUNA.jpg'}" alt="${p.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
+            <div>
+              <strong>${p.name}</strong>
+              <br><small class="text-muted">Tutor: ${p.tutorName || 'N/A'}</small>
+            </div>
+          </div>
         </td>
         <td class="text-muted" style="font-size:0.85rem;">${p.position}</td>
-        <td><span class="${badgeClass}">${p.regStatus}</span></td>
+        <td>
+          <span class="${badgeClass}">${p.regStatus}</span>
+          <br>${docBadge}
+        </td>
         ${actionsCells}
       </tr>`;
   });
@@ -884,7 +984,6 @@ function renderRegTable() {
   applyRolePermissions();
 }
 
-/** Sets active filter and re-renders */
 function setRegFilter(filter, btn) {
   regFilter = filter;
   document.querySelectorAll('.reg-filter-btn').forEach(b => b.classList.remove('active'));
@@ -892,26 +991,28 @@ function setRegFilter(filter, btn) {
   renderRegTable();
 }
 
-/** Live search handler */
-function filterRegTable() {
-  renderRegTable();
-}
+function filterRegTable() { renderRegTable(); }
 
-/** Handles form submit for both new player and edit */
 function handlePlayerRegSubmit(e) {
   e.preventDefault();
 
   const name      = document.getElementById('regName').value.trim();
   const number    = parseInt(document.getElementById('regNumber').value);
+  const tutorName = document.getElementById('regTutorName').value.trim();
+  const phone     = document.getElementById('regPhone').value.trim();
   const position  = document.getElementById('regPosition').value;
   const birthdate = document.getElementById('regBirthdate').value;
-  const phone     = document.getElementById('regPhone').value.trim();
   const email     = document.getElementById('regEmail').value.trim();
   const regStatus = document.getElementById('regStatus').value;
   const starter   = document.getElementById('regStarter').value === 'true';
   const regNotes  = document.getElementById('regNotes').value.trim();
 
-  // Validate dorsal uniqueness
+  // Documentos
+  const docActa   = document.getElementById('docActa').checked;
+  const docCURP   = document.getElementById('docCURP').checked;
+  const docMedico = document.getElementById('docMedico').checked;
+  const docINE    = document.getElementById('docINE').checked;
+
   const dorsalTaken = squadData.find(p => p.number === number && p.id !== regEditingId);
   if (dorsalTaken) {
     showToast(`El dorsal #${number} ya pertenece a ${dorsalTaken.name}.`, 'error');
@@ -919,96 +1020,99 @@ function handlePlayerRegSubmit(e) {
   }
 
   if (regEditingId !== null) {
-    // --- EDIT MODE ---
     const p = squadData.find(x => x.id === regEditingId);
     if (p) {
       p.name      = name;
       p.number    = number;
+      p.tutorName = tutorName;
+      p.phone     = phone;
       p.position  = position;
       p.birthdate = birthdate;
-      p.phone     = phone;
       p.email     = email;
       p.regStatus = regStatus;
       p.starter   = starter;
       p.regNotes  = regNotes;
+      p.photo     = currentSelectedPhoto;
+      p.docActa   = docActa;
+      p.docCURP   = docCURP;
+      p.docMedico = docMedico;
+      p.docINE    = docINE;
       saveData();
-      showToast(`Jugador ${name} actualizado.`, 'success');
+      showToast(`Información y documentos de ${name} actualizados.`, 'success');
     }
   } else {
-    // --- NEW PLAYER ---
     const newId = Date.now();
     squadData.push({
       id: newId, number, name, position,
-      attendancePct: 0, streak: '0 A',
-      status: 'Ausente', checkinTime: '-',
-      starter, injured: false,
-      goals: 0, assists: 0, mins: 0, cards: 0,
-      // Extended fields
-      birthdate, phone, email, regStatus, regNotes
+      tutorName, phone, birthdate, email, regStatus, starter, regNotes,
+      photo: currentSelectedPhoto,
+      docActa, docCURP, docMedico, docINE,
+      attendancePct: 100, streak: '1 A',
+      status: 'Ausente', checkinTime: '-', injured: false,
+      goals: 0, assists: 0, mins: 0, cards: 0
     });
     saveData();
-    showToast(`${name} registrado en la plantilla.`, 'success');
+    showToast(`Niño ${name} registrado correctamente con su expediente.`, 'success');
   }
 
   resetRegForm();
   renderRegTable();
   renderSquadCallupList();
   populateQuickPlayerSelect();
+  populatePaymentPlayerSelect();
+  updatePaymentSummaryStats();
 }
 
-/** Populates the form for editing an existing player */
 function openEditPlayer(id) {
   const p = squadData.find(x => x.id === id);
   if (!p) return;
   ensureRegFields(p);
 
   regEditingId = id;
+  currentSelectedPhoto = p.photo || 'LAGUNA.jpg';
 
   document.getElementById('regEditId').value      = id;
   document.getElementById('regName').value        = p.name;
   document.getElementById('regNumber').value      = p.number;
+  document.getElementById('regTutorName').value   = p.tutorName || '';
+  document.getElementById('regPhone').value       = p.phone || '';
   document.getElementById('regPosition').value    = p.position;
   document.getElementById('regBirthdate').value   = p.birthdate || '';
-  document.getElementById('regPhone').value       = p.phone || '';
   document.getElementById('regEmail').value       = p.email || '';
   document.getElementById('regStatus').value      = p.regStatus || 'Activo';
   document.getElementById('regStarter').value     = p.starter ? 'true' : 'false';
   document.getElementById('regNotes').value       = p.regNotes || '';
+  document.getElementById('regPhotoPreview').src  = currentSelectedPhoto;
 
-  // Update form title & buttons
-  document.getElementById('regFormTitle').innerHTML =
-    `<i class="fa-solid fa-pen text-primary"></i> Editando: ${p.name}`;
-  document.getElementById('regSubmitBtn').innerHTML =
-    `<i class="fa-solid fa-cloud-arrow-up"></i> GUARDAR CAMBIOS`;
+  document.getElementById('docActa').checked   = !!p.docActa;
+  document.getElementById('docCURP').checked   = !!p.docCURP;
+  document.getElementById('docMedico').checked = !!p.docMedico;
+  document.getElementById('docINE').checked    = !!p.docINE;
+
+  document.getElementById('regFormTitle').innerHTML = `<i class="fa-solid fa-pen text-primary"></i> Editando: ${p.name}`;
+  document.getElementById('regSubmitBtn').innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> GUARDAR CAMBIOS`;
   document.getElementById('regCancelBtn').style.display = '';
 
-  // Scroll form into view
   document.getElementById('playerRegForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/** Cancels edit mode and resets the form */
-function cancelPlayerEdit() {
-  regEditingId = null;
-  resetRegForm();
-}
+function cancelPlayerEdit() { resetRegForm(); }
 
 function resetRegForm() {
   regEditingId = null;
+  currentSelectedPhoto = 'LAGUNA.jpg';
   document.getElementById('playerRegForm').reset();
+  document.getElementById('regPhotoPreview').src = 'LAGUNA.jpg';
   document.getElementById('regEditId').value = '';
-  document.getElementById('regFormTitle').innerHTML =
-    `<i class="fa-solid fa-user-plus text-primary"></i> Nuevo Jugador`;
-  document.getElementById('regSubmitBtn').innerHTML =
-    `<i class="fa-solid fa-user-plus"></i> REGISTRAR JUGADOR`;
+  document.getElementById('regFormTitle').innerHTML = `<i class="fa-solid fa-user-plus text-primary"></i> Nuevo Jugador`;
+  document.getElementById('regSubmitBtn').innerHTML = `<i class="fa-solid fa-user-plus"></i> REGISTRAR JUGADOR`;
   document.getElementById('regCancelBtn').style.display = 'none';
 }
 
-/** Asks for confirmation before permanently deleting a player */
 function confirmDeletePlayer(id) {
   const p = squadData.find(x => x.id === id);
   if (!p) return;
 
-  // Use a simple confirm; in a real app you'd use a modal
   if (!confirm(`¿Eliminar permanentemente a ${p.name} (#${p.number}) del equipo?`)) return;
 
   squadData = squadData.filter(x => x.id !== id);
@@ -1018,5 +1122,592 @@ function confirmDeletePlayer(id) {
   renderRegTable();
   renderSquadCallupList();
   populateQuickPlayerSelect();
+  populatePaymentPlayerSelect();
+  updatePaymentSummaryStats();
 }
+
+// --- MODAL EXPEDIENTE DOCUMENTAL DEL NIÑO ---
+let currentDocPlayerId = null;
+
+function openDocModal(playerId) {
+  const p = squadData.find(x => x.id === playerId);
+  if (!p) return;
+  ensureRegFields(p);
+
+  currentDocPlayerId = playerId;
+
+  document.getElementById('docModalPhoto').src = p.photo || 'LAGUNA.jpg';
+  document.getElementById('docModalName').innerText = p.name;
+  document.getElementById('docModalSub').innerText = `Dorsal #${p.number} · ${p.position} · ${p.regStatus}`;
+  document.getElementById('docModalTutor').innerHTML = `<i class="fa-solid fa-user-group"></i> Tutor: ${p.tutorName || 'N/A'}`;
+  document.getElementById('docModalPhone').innerHTML = `<i class="fa-solid fa-phone"></i> Tel: ${p.phone || 'N/A'}`;
+
+  const container = document.getElementById('docModalItems');
+  container.innerHTML = '';
+
+  const docs = [
+    { title: 'Acta de Nacimiento', key: 'docActa' },
+    { title: 'CURP Oficial', key: 'docCURP' },
+    { title: 'Certificado Médico', key: 'docMedico' },
+    { title: 'Identificación del Tutor', key: 'docINE' }
+  ];
+
+  docs.forEach(d => {
+    const isReady = p[d.key];
+    const badge = isReady
+      ? '<span class="badge badge-success"><i class="fa-solid fa-check"></i> ENTREGADO Y VERIFICADO</span>'
+      : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> PENDIENTE</span>';
+
+    container.innerHTML += `
+      <div class="doc-status-card">
+        <div>
+          <strong>${d.title}</strong>
+          <br><small class="text-muted">Documento Oficial Expediente</small>
+        </div>
+        <div>${badge}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById('playerDocModal').classList.remove('hidden');
+}
+
+function closeDocModal() {
+  document.getElementById('playerDocModal').classList.add('hidden');
+}
+
+function printOrDownloadDoc() {
+  showToast('Generando Ficha Oficial en PDF para impresión...', 'info');
+  window.print();
+}
+
+// ==========================================================================
+// MODULE: SISTEMA DE PAGOS Y HERMANOS
+// ==========================================================================
+
+function populatePaymentPlayerSelect() {
+  const select = document.getElementById('payPlayerSelect');
+  const familySelect = document.getElementById('payFamilySelect');
+  if (!select) return;
+
+  select.innerHTML = '<option value="" disabled selected>Selecciona un alumno...</option>';
+  if (familySelect) familySelect.innerHTML = '<option value="" disabled selected>Selecciona una familia...</option>';
+
+  const familiesMap = {};
+
+  squadData.forEach(p => {
+    ensureRegFields(p);
+    const siblings = detectSiblings(p.id);
+    const sibLabel = siblings.length > 0 ? ` (Hermano: ${siblings.map(s => '#' + s.number + ' ' + s.name).join(', ')})` : '';
+    select.innerHTML += `<option value="${p.id}">#${p.number} ${p.name} - Tutor: ${p.tutorName}${sibLabel}</option>`;
+
+    // Agrupar por tutor/familia
+    const tName = p.tutorName || 'Sin Tutor';
+    if (!familiesMap[tName]) familiesMap[tName] = [];
+    familiesMap[tName].push(p);
+  });
+
+  if (familySelect) {
+    Object.keys(familiesMap).forEach(famName => {
+      const children = familiesMap[famName];
+      const tag = children.length > 1 ? ` (${children.length} Hermanos - PLAN FAMILIA)` : ` (1 Hijo)`;
+      familySelect.innerHTML += `<option value="${famName}">${famName}${tag}</option>`;
+    });
+  }
+
+  document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+}
+
+function togglePaymentScope(mode) {
+  const btnInd = document.getElementById('btnModeIndividual');
+  const btnFam = document.getElementById('btnModeFamily');
+  const groupInd = document.getElementById('groupPlayerSelect');
+  const groupFam = document.getElementById('groupFamilySelect');
+  const scopeInput = document.getElementById('payScopeMode');
+  const bundleCard = document.getElementById('familyBundleCard');
+  const siblingAlert = document.getElementById('siblingAlertBox');
+
+  scopeInput.value = mode;
+
+  if (mode === 'family') {
+    btnFam.classList.add('active');
+    btnInd.classList.remove('active');
+    groupFam.classList.remove('hidden');
+    groupInd.classList.add('hidden');
+    siblingAlert.classList.add('hidden');
+    populatePaymentFamilySelect();
+  } else {
+    btnInd.classList.add('active');
+    btnFam.classList.remove('active');
+    groupInd.classList.remove('hidden');
+    groupFam.classList.add('hidden');
+    bundleCard.classList.add('hidden');
+  }
+}
+
+function onPaymentFamilyChange() {
+  const familyName = document.getElementById('payFamilySelect').value;
+  const children = squadData.filter(p => p.tutorName && p.tutorName.trim().toLowerCase() === familyName.trim().toLowerCase());
+
+  const bundleCard = document.getElementById('familyBundleCard');
+  const cardTitle = document.getElementById('famCardTitle');
+  const cardBadge = document.getElementById('famCardBadge');
+  const childrenList = document.getElementById('famChildrenList');
+  const grandTotalEl = document.getElementById('famGrandTotalDisplay');
+
+  if (children.length === 0) return;
+
+  cardTitle.innerHTML = `<i class="fa-solid fa-people-roof text-warning"></i> PAQUETE: ${familyName.toUpperCase()}`;
+  cardBadge.innerText = `${children.length} HERMANO${children.length > 1 ? 'S' : ''}`;
+  childrenList.innerHTML = '';
+
+  const conceptSelect = document.getElementById('payConcept');
+  const basePrice = parseFloat(conceptSelect.options[conceptSelect.selectedIndex].getAttribute('data-amount')) || 1200;
+
+  let grandTotal = 0;
+  let totalDiscounts = 0;
+
+  children.forEach((child, index) => {
+    let childPrice = basePrice;
+    let discTag = '';
+
+    if (index > 0) {
+      // 2º Hermano en adelante tiene 20% de descuento
+      const disc = basePrice * 0.20;
+      childPrice = basePrice - disc;
+      totalDiscounts += disc;
+      discTag = `<span class="badge badge-warning"><i class="fa-solid fa-tag"></i> 2º Hermano (-20%)</span>`;
+    } else {
+      discTag = `<span class="badge badge-neon"><i class="fa-solid fa-user-check"></i> 1er Hijo (Normal)</span>`;
+    }
+
+    grandTotal += childPrice;
+
+    childrenList.innerHTML += `
+      <div class="fam-child-row">
+        <div class="fam-child-info">
+          <img src="${child.photo || 'LAGUNA.jpg'}" alt="${child.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
+          <div>
+            <strong>#${child.number} ${child.name}</strong>
+            <br><small class="text-muted">${child.position}</small>
+          </div>
+        </div>
+        <div class="fam-child-price-col">
+          ${discTag}
+          <div class="mono-text font-bold text-success mt-1">$${childPrice.toLocaleString('es-MX', {minimumFractionDigits:2})} MXN</div>
+        </div>
+      </div>
+    `;
+  });
+
+  grandTotalEl.innerText = `$${grandTotal.toLocaleString('es-MX', {minimumFractionDigits:2})} MXN`;
+  document.getElementById('payBaseAmount').value = (basePrice * children.length);
+  document.getElementById('payDiscountPct').value = ((totalDiscounts / (basePrice * children.length)) * 100).toFixed(0);
+  document.getElementById('payFinalAmount').value = grandTotal.toFixed(2);
+
+  bundleCard.classList.remove('hidden');
+}
+
+/** Detecta si un niño tiene hermanos registrados compartiendo el mismo tutorName */
+function detectSiblings(playerId) {
+  const player = squadData.find(p => p.id === playerId);
+  if (!player || !player.tutorName) return [];
+
+  const tutorClean = player.tutorName.trim().toLowerCase();
+  if (!tutorClean) return [];
+
+  return squadData.filter(p => p.id !== playerId && p.tutorName && p.tutorName.trim().toLowerCase() === tutorClean);
+}
+
+function onPaymentPlayerChange() {
+  const select = document.getElementById('payPlayerSelect');
+  const playerId = parseInt(select.value);
+  const siblings = detectSiblings(playerId);
+
+  const alertBox = document.getElementById('siblingAlertBox');
+  const alertTitle = document.getElementById('siblingAlertTitle');
+  const alertDesc = document.getElementById('siblingAlertDesc');
+  const discountInput = document.getElementById('payDiscountPct');
+
+  if (siblings.length > 0) {
+    const sibNames = siblings.map(s => s.name).join(', ');
+    alertTitle.innerHTML = `<i class="fa-solid fa-people-roof"></i> ¡Hermanos en el club! (${siblings.length + 1} inscritos)`;
+    alertDesc.innerText = `Hermano(s): ${sibNames}. Se aplicará automáticamente 20% de descuento.`;
+    alertBox.classList.remove('hidden');
+
+    discountInput.value = 20; // 20% descuento por hermano
+  } else {
+    alertBox.classList.add('hidden');
+    discountInput.value = 0;
+  }
+
+  recalculatePaymentTotals();
+}
+
+function onPaymentConceptChange() {
+  const select = document.getElementById('payConcept');
+  const selectedOption = select.options[select.selectedIndex];
+  const defaultAmount = parseFloat(selectedOption.getAttribute('data-amount')) || 0;
+  document.getElementById('payBaseAmount').value = defaultAmount;
+  recalculatePaymentTotals();
+}
+
+function recalculatePaymentTotals() {
+  const base = parseFloat(document.getElementById('payBaseAmount').value) || 0;
+  const pct = parseFloat(document.getElementById('payDiscountPct').value) || 0;
+
+  const discountVal = (base * (pct / 100));
+  const finalVal = Math.max(0, base - discountVal);
+
+  document.getElementById('payFinalAmount').value = finalVal.toFixed(2);
+}
+
+function setPaymentType(type) {
+  const cardTransfer = document.getElementById('payCardTransfer');
+  const cardManual = document.getElementById('payCardManual');
+  const inputMethod = document.getElementById('payMethodSelected');
+  const labelNotes = document.getElementById('payNotesLabel');
+  const inputNotes = document.getElementById('payNotes');
+
+  if (type === 'Transferencia SPEI') {
+    cardTransfer.classList.add('active');
+    cardManual.classList.remove('active');
+    inputMethod.value = 'Transferencia SPEI';
+    labelNotes.innerText = 'Folio / Clave de Rastrèo SPEI *';
+    inputNotes.placeholder = 'Ej. SPEI 94827110293';
+  } else {
+    cardManual.classList.add('active');
+    cardTransfer.classList.remove('active');
+    inputMethod.value = 'Manual Efectivo';
+    labelNotes.innerText = 'Cajero / Entregado En Caja *';
+    inputNotes.placeholder = 'Ej. Recibido por Admin / Caja Central';
+  }
+}
+
+function renderMonthlyMatrix() {
+  const tbody = document.getElementById('monthlyMatrixBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  squadData.forEach(p => {
+    ensureRegFields(p);
+
+    // Buscar mensualidad pagada para Agosto 2026
+    const hasAugustPaid = paymentsData.some(pay => pay.playerId === p.id && pay.concept.includes('Colegiatura') && (pay.notes.includes('Agosto') || pay.month === 'Agosto 2026') && pay.status === 'Pagado');
+    const statusBadge = hasAugustPaid
+      ? '<span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> AGOSTO PAGADO</span>'
+      : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> AGOSTO PENDIENTE</span>';
+
+    const siblings = detectSiblings(p.id);
+    const sibTag = siblings.length > 0 ? `<br><small class="text-warning"><i class="fa-solid fa-users"></i> Descuento Hermano Active (-20%)</small>` : '';
+
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <div style="display:flex; align-items:center; gap:0.6rem;">
+            <img src="${p.photo || 'LAGUNA.jpg'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" />
+            <div>
+              <strong>#${p.number} ${p.name}</strong>
+              <br><small class="text-muted">${p.tutorName}</small>
+              ${sibTag}
+            </div>
+          </div>
+        </td>
+        <td style="white-space:nowrap;">${statusBadge}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-ghost" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="quickChargeMonth(${p.id}, 'Agosto 2026')">
+            <i class="fa-solid fa-cash-register text-success"></i> Cobrar Mes
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function quickChargeMonth(playerId, monthName) {
+  const select = document.getElementById('payPlayerSelect');
+  select.value = playerId;
+  onPaymentPlayerChange();
+
+  document.getElementById('payConcept').value = 'Colegiatura Mensual';
+  onPaymentConceptChange();
+
+  const monthSelect = document.getElementById('payMonthSelect');
+  if (monthSelect) monthSelect.value = monthName;
+
+  document.getElementById('paymentForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast(`Registrando cobro de ${monthName}...`, 'info');
+}
+
+function handlePaymentSubmit(e) {
+  e.preventDefault();
+
+  const scopeMode = document.getElementById('payScopeMode').value;
+  const conceptSelect = document.getElementById('payConcept').value;
+  const monthSelect = document.getElementById('payMonthSelect')?.value || '';
+  const concept = conceptSelect === 'Colegiatura Mensual' ? `Colegiatura Mensual (${monthSelect})` : conceptSelect;
+  const method = document.getElementById('payMethodSelected').value;
+  const date = document.getElementById('payDate').value;
+  const status = document.getElementById('payStatus').value;
+  const notes = document.getElementById('payNotes').value.trim();
+
+  const baseAmount = parseFloat(document.getElementById('payBaseAmount').value) || 0;
+  const discountPct = parseFloat(document.getElementById('payDiscountPct').value) || 0;
+  const discountAmount = baseAmount * (discountPct / 100);
+  const finalAmount = parseFloat(document.getElementById('payFinalAmount').value) || 0;
+
+  const newId = Date.now();
+  const folio = `LA-PAGO-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  if (scopeMode === 'family') {
+    const familyName = document.getElementById('payFamilySelect').value;
+    const children = squadData.filter(p => p.tutorName && p.tutorName.trim().toLowerCase() === familyName.trim().toLowerCase());
+
+    if (children.length === 0) return showToast('Selecciona una familia válida.', 'error');
+
+    const namesStr = children.map(c => `#${c.number} ${c.name}`).join(', ');
+
+    const newPayment = {
+      id: newId,
+      folio,
+      playerId: children[0].id,
+      playerName: `PLAN FAMILIA (${children.length} Hermanos: ${namesStr})`,
+      tutorName: familyName,
+      concept: `PAQUETE FAMILIAR - ${concept}`,
+      month: monthSelect,
+      baseAmount,
+      discountPct,
+      discountAmount,
+      finalAmount,
+      method,
+      date,
+      status,
+      isFamilyBundle: true,
+      childrenNames: namesStr,
+      notes: notes || (method === 'Transferencia SPEI' ? 'Pago Único SPEI Familia' : 'Pago Efectivo Caja Familia')
+    };
+
+    paymentsData.unshift(newPayment);
+    saveData();
+
+    showToast(`Cobro Unificado ${folio} por $${finalAmount.toFixed(2)} registrado para ${familyName}.`, 'success');
+  } else {
+    const playerId = parseInt(document.getElementById('payPlayerSelect').value);
+    const player = squadData.find(p => p.id === playerId);
+    if (!player) return showToast('Selecciona un niño válido.', 'error');
+
+    const newPayment = {
+      id: newId,
+      folio,
+      playerId: player.id,
+      playerName: `${player.name} (#${player.number})`,
+      tutorName: player.tutorName,
+      concept,
+      month: monthSelect,
+      baseAmount,
+      discountPct,
+      discountAmount,
+      finalAmount,
+      method,
+      date,
+      status,
+      isFamilyBundle: false,
+      notes: notes || (method === 'Transferencia SPEI' ? 'Comprobante SPEI' : 'Pago Efectivo Caja')
+    };
+
+    paymentsData.unshift(newPayment);
+    saveData();
+
+    showToast(`Pago ${folio} por ${method} registrado con éxito.`, 'success');
+  }
+
+  renderPaymentsTable();
+  renderMonthlyMatrix();
+  updatePaymentSummaryStats();
+
+  openReceiptModal(newId);
+}
+
+function renderPaymentsTable() {
+  const tbody = document.getElementById('paymentsTableBody');
+  const searchVal = (document.getElementById('paySearchInput')?.value || '').toLowerCase();
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const filtered = paymentsData.filter(p => {
+    return !searchVal ||
+      p.folio.toLowerCase().includes(searchVal) ||
+      p.playerName.toLowerCase().includes(searchVal) ||
+      p.tutorName.toLowerCase().includes(searchVal) ||
+      p.concept.toLowerCase().includes(searchVal) ||
+      (p.method && p.method.toLowerCase().includes(searchVal));
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding:2rem;">Sin registros de pagos en el historial.</td>8/tr>`;
+    return;
+  }
+
+  filtered.forEach(p => {
+    const badgeStatus = p.status === 'Pagado' ? 'badge-success' : 'badge-warning';
+    const hasDiscount = p.discountPct > 0;
+    const discountBadge = hasDiscount ? `<span class="badge badge-warning" style="font-size:0.65rem;"><i class="fa-solid fa-tag"></i> -${p.discountPct}% Hermano</span>` : '';
+    const methodBadge = p.method === 'Transferencia SPEI' ? '<span class="badge badge-neon" style="font-size:0.65rem;"><i class="fa-solid fa-building-columns"></i> SPEI</span>' : '<span class="badge" style="font-size:0.65rem; border-color:var(--border-strong);"><i class="fa-solid fa-money-bill"></i> Efectivo</span>';
+
+    tbody.innerHTML += `
+      <tr>
+        <td class="mono-text" style="white-space:nowrap;">
+          <strong>${p.folio}</strong>
+          <br><small class="text-muted">${p.date}</small>
+        </td>
+        <td>
+          <strong>${p.playerName}</strong>
+          <br><small class="text-muted">Tutor: ${p.tutorName}</small>
+        </td>
+        <td>${p.concept}</td>
+        <td style="white-space:nowrap;">${methodBadge}</td>
+        <td class="mono-text text-success font-bold" style="white-space:nowrap;">
+          $${p.finalAmount.toFixed(2)}
+          <br>${discountBadge}
+        </td>
+        <td style="white-space:nowrap;"><span class="badge ${badgeStatus}">${p.status}</span></td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-ghost" style="padding:0.4rem 0.6rem; font-size:0.8rem;" onclick="openReceiptModal(${p.id})">
+            <i class="fa-solid fa-receipt text-primary"></i> Recibo
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function updatePaymentSummaryStats() {
+  let paidTotal = 0;
+  let pendingTotal = 0;
+  let totalDiscounts = 0;
+  const siblingFamiliesSet = new Set();
+
+  paymentsData.forEach(p => {
+    if (p.status === 'Pagado') {
+      paidTotal += p.finalAmount;
+    } else {
+      pendingTotal += p.finalAmount;
+    }
+    totalDiscounts += (p.discountAmount || 0);
+
+    if (p.discountPct > 0) {
+      siblingFamiliesSet.add(p.tutorName);
+    }
+  });
+
+  const totalCollectedEl = document.getElementById('payTotalCollected');
+  const paidEl = document.getElementById('statTotalPaid');
+  const pendingEl = document.getElementById('statTotalPending');
+  const sibEl = document.getElementById('statSiblingsCount');
+  const discEl = document.getElementById('statTotalDiscounts');
+
+  if (totalCollectedEl) totalCollectedEl.innerText = `$${paidTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+  if (paidEl) paidEl.innerText = `$${paidTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+  if (pendingEl) pendingEl.innerText = `$${pendingTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+  if (sibEl) sibEl.innerText = `${siblingFamiliesSet.size} Familias`;
+  if (discEl) discEl.innerText = `$${totalDiscounts.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+}
+
+// --- MODAL RECIBO DE PAGO ---
+let currentReceiptPaymentId = null;
+
+function openReceiptModal(paymentId) {
+  const p = paymentsData.find(x => x.id === paymentId);
+  if (!p) return;
+
+  currentReceiptPaymentId = paymentId;
+
+  document.getElementById('receiptFolio').innerText = `FOLIO: #${p.folio}`;
+  document.getElementById('receiptDate').innerText = p.date;
+  document.getElementById('receiptStudent').innerText = p.playerName;
+  document.getElementById('receiptTutor').innerText = p.tutorName;
+  document.getElementById('receiptConcept').innerText = p.concept;
+  document.getElementById('receiptMethod').innerText = p.method;
+
+  document.getElementById('receiptBase').innerText = `$${p.baseAmount.toFixed(2)}`;
+
+  const discountRow = document.getElementById('receiptDiscountRow');
+  if (p.discountPct > 0) {
+    discountRow.style.display = 'flex';
+    document.getElementById('receiptDiscount').innerText = `-$${p.discountAmount.toFixed(2)} (${p.discountPct}% Hermanos)`;
+  } else {
+    discountRow.style.display = 'none';
+  }
+
+  document.getElementById('receiptTotal').innerText = `$${p.finalAmount.toFixed(2)} MXN`;
+
+  document.getElementById('paymentReceiptModal').classList.remove('hidden');
+}
+
+function closeReceiptModal() {
+  document.getElementById('paymentReceiptModal').classList.add('hidden');
+}
+
+function printReceipt() {
+  window.print();
+}
+// --- TACTICAL PITCH FULLSCREEN LOGIC ---
+document.addEventListener('DOMContentLoaded', () => {
+  const btnFullscreen = document.getElementById('btnFullscreenPitch');
+  const tacticalBoardCard = document.getElementById('tacticalBoardCard');
+  const tacticalPitch = document.getElementById('tacticalPitch');
+
+  if (btnFullscreen && tacticalBoardCard && tacticalPitch) {
+    btnFullscreen.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        if (tacticalBoardCard.requestFullscreen) {
+          tacticalBoardCard.requestFullscreen();
+        } else if (tacticalBoardCard.webkitRequestFullscreen) { /* Safari */
+          tacticalBoardCard.webkitRequestFullscreen();
+        } else if (tacticalBoardCard.msRequestFullscreen) { /* IE11 */
+          tacticalBoardCard.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+          document.msExitFullscreen();
+        }
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      const icon = btnFullscreen.querySelector('i');
+      if (document.fullscreenElement) {
+        icon.classList.remove('fa-expand');
+        icon.classList.add('fa-compress');
+        btnFullscreen.title = "Salir de pantalla completa";
+        
+        tacticalBoardCard.style.backgroundColor = 'var(--bg-dark)';
+        tacticalBoardCard.style.overflow = 'auto';
+        tacticalBoardCard.style.display = 'flex';
+        tacticalBoardCard.style.flexDirection = 'column';
+        
+        tacticalPitch.style.flex = '1';
+        tacticalPitch.style.height = 'auto'; 
+        tacticalPitch.style.minHeight = '600px'; 
+      } else {
+        icon.classList.remove('fa-compress');
+        icon.classList.add('fa-expand');
+        btnFullscreen.title = "Ver en pantalla completa";
+        
+        tacticalBoardCard.style.backgroundColor = '';
+        tacticalBoardCard.style.overflow = '';
+        tacticalBoardCard.style.display = '';
+        tacticalBoardCard.style.flexDirection = '';
+        
+        tacticalPitch.style.flex = '';
+        tacticalPitch.style.height = '500px'; 
+        tacticalPitch.style.minHeight = '';
+      }
+    });
+  }
+});
 
