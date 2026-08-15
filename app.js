@@ -1658,29 +1658,65 @@ document.addEventListener('DOMContentLoaded', () => {
   const tacticalPitch = document.getElementById('tacticalPitch');
 
   if (btnFullscreen && tacticalBoardCard && tacticalPitch) {
+    let isPseudoFullscreen = false;
+
     btnFullscreen.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        if (tacticalBoardCard.requestFullscreen) {
-          tacticalBoardCard.requestFullscreen();
-        } else if (tacticalBoardCard.webkitRequestFullscreen) { /* Safari */
-          tacticalBoardCard.webkitRequestFullscreen();
-        } else if (tacticalBoardCard.msRequestFullscreen) { /* IE11 */
-          tacticalBoardCard.msRequestFullscreen();
+      // iOS Safari and some tablets do not support requestFullscreen on standard Divs.
+      const hasNativeAPI = tacticalBoardCard.requestFullscreen || tacticalBoardCard.webkitRequestFullscreen || tacticalBoardCard.msRequestFullscreen;
+      
+      if (hasNativeAPI) {
+        // Use Native Fullscreen API
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          if (tacticalBoardCard.requestFullscreen) {
+            tacticalBoardCard.requestFullscreen().catch(() => {
+              // Si falla (por ej. en algunas tablets), usar fallback
+              togglePseudoFullscreen();
+            });
+          } else if (tacticalBoardCard.webkitRequestFullscreen) {
+            tacticalBoardCard.webkitRequestFullscreen();
+          } else if (tacticalBoardCard.msRequestFullscreen) {
+            tacticalBoardCard.msRequestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
         }
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) { /* Safari */
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { /* IE11 */
-          document.msExitFullscreen();
-        }
+        // Fallback para dispositivos que no soportan la API nativa (iPad, iOS)
+        togglePseudoFullscreen();
       }
     });
 
-    document.addEventListener('fullscreenchange', () => {
+    function togglePseudoFullscreen() {
+      isPseudoFullscreen = !isPseudoFullscreen;
       const icon = btnFullscreen.querySelector('i');
-      if (document.fullscreenElement) {
+      
+      if (isPseudoFullscreen) {
+        tacticalBoardCard.classList.add('tactical-fullscreen-mode');
+        icon.classList.remove('fa-expand');
+        icon.classList.add('fa-compress');
+        btnFullscreen.title = "Salir de pantalla completa";
+      } else {
+        tacticalBoardCard.classList.remove('tactical-fullscreen-mode');
+        icon.classList.remove('fa-compress');
+        icon.classList.add('fa-expand');
+        btnFullscreen.title = "Ver en pantalla completa";
+      }
+    }
+
+    // Listener para la API Nativa
+    document.addEventListener('fullscreenchange', handleNativeFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleNativeFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleNativeFullscreenChange);
+
+    function handleNativeFullscreenChange() {
+      const icon = btnFullscreen.querySelector('i');
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
         icon.classList.remove('fa-expand');
         icon.classList.add('fa-compress');
         btnFullscreen.title = "Salir de pantalla completa";
@@ -1707,7 +1743,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tacticalPitch.style.height = '500px'; 
         tacticalPitch.style.minHeight = '';
       }
-    });
+    }
   }
 });
 
