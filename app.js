@@ -282,12 +282,9 @@ function applyRolePermissions() {
   });
 
   document.querySelectorAll(".player-marker").forEach(el => {
-    if (!canEdit) {
-      el.classList.remove("role-editable");
-      el.style.cursor = "default";
-    } else {
-      el.classList.add("role-editable");
-    }
+    // Permitir manipulación a todos en la pizarra táctica
+    el.classList.add("role-editable");
+    el.style.cursor = "grab";
   });
 }
 
@@ -797,11 +794,8 @@ function initDragAndDrop() {
 function onDragStart(e) {
   const marker = e.currentTarget.closest('.player-marker');
   if (!marker) return;
-  if (currentRole !== 'dt') {
-    // Non-DT: just open profile on click
-    return;
-  }
 
+  // Se permite manipular jugadores sin importar el rol
   draggedMarker  = marker;
   isDragging     = false;
 
