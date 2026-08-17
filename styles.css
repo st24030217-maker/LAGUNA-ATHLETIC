@@ -1227,6 +1227,53 @@ body {
 }
 
 /* ==========================================================================
+   CONTACTS SECTION
+   ========================================================================== */
+.contacts-section {
+  background: var(--bg-input);
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-glass);
+}
+
+.contact-row {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-top: 0.6rem;
+}
+
+.contact-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.contact-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-remove-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent-danger);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.contact-remove-btn:hover {
+  background: rgba(239,68,68,0.1);
+}
+
+/* ==========================================================================
    ESTILOS MÓDULO DE PAGOS & IMPRESIÓN RECIBOS
    ========================================================================== */
 .stat-card-mini {

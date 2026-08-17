@@ -594,11 +594,19 @@
                     <div class="photo-upload-box">
                       <img id="regPhotoPreview" src="LAGUNA.jpg" alt="Foto del niño" class="photo-preview-img" />
                       <div class="photo-upload-controls">
+                        <!-- Galería -->
                         <input type="file" id="regPhotoInput" accept="image/*" onchange="handlePhotoSelect(event)" style="display:none;" />
-                        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('regPhotoInput').click()">
-                          <i class="fa-solid fa-camera"></i> Subir / Cambiar Foto
-                        </button>
-                        <small class="text-muted block mt-1">Formato JPG o PNG.</small>
+                        <!-- Cámara directa (capture) -->
+                        <input type="file" id="regCameraInput" accept="image/*" capture="environment" onchange="handlePhotoSelect(event)" style="display:none;" />
+                        <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+                          <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('regPhotoInput').click()">
+                            <i class="fa-solid fa-image"></i> Galería
+                          </button>
+                          <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('regCameraInput').click()" style="color:var(--accent-neon);">
+                            <i class="fa-solid fa-camera"></i> Tomar Foto
+                          </button>
+                        </div>
+                        <small class="text-muted block mt-1">JPG o PNG. Usa la cámara para tomarla en el momento.</small>
                       </div>
                     </div>
                   </div>
@@ -614,42 +622,161 @@
                     </div>
                   </div>
 
-                  <!-- Tutor / Familia para Vinculación de Hermanos -->
+                  <!-- Grupo del jugador -->
                   <div class="reg-form-grid">
                     <div class="form-group">
-                      <label>Padre / Tutor Responsable *</label>
-                      <input type="text" id="regTutorName" class="form-control" placeholder="Ej. Carlos Martínez (Familia Martínez)" required />
-                      <small class="text-muted">Mismo nombre/familia para vincular hermanos.</small>
+                      <label><i class="fa-solid fa-layer-group text-primary"></i> Grupo / Categoría</label>
+                      <select id="regGroup" class="form-control">
+                        <option value="">Sin categoría asignada</option>
+                        <option value="Sub-8">Sub-8</option>
+                        <option value="Sub-10">Sub-10</option>
+                        <option value="Sub-12">Sub-12</option>
+                        <option value="Sub-14">Sub-14</option>
+                        <option value="Sub-16">Sub-16</option>
+                        <option value="Sub-18">Sub-18</option>
+                      </select>
                     </div>
+                    <!-- Vinculación manual hermano -->
                     <div class="form-group">
-                      <label>Teléfono de Contacto *</label>
-                      <input type="tel" id="regPhone" class="form-control" placeholder="+52 844 000 0000" required />
+                      <label><i class="fa-solid fa-link text-warning"></i> Vincular Precio Hermano</label>
+                      <select id="regLinkedSibling" class="form-control">
+                        <option value="">Sin vinculación manual</option>
+                        <!-- Se llena dinámicamente -->
+                      </select>
+                      <small class="text-muted">Vincula manualmente para descuento de hermanos.</small>
                     </div>
                   </div>
 
-                  <div class="form-group">
-                    <label>Posición *</label>
-                    <select id="regPosition" class="form-control" required>
-                      <option value="" disabled selected>Selecciona una posición...</option>
-                      <optgroup label="Portería">
-                        <option value="Portero">Portero</option>
-                      </optgroup>
-                      <optgroup label="Defensa">
-                        <option value="Lateral Derecho">Lateral Derecho</option>
-                        <option value="Lateral Izquierdo">Lateral Izquierdo</option>
-                        <option value="Defensa Central">Defensa Central</option>
-                      </optgroup>
-                      <optgroup label="Mediocampo">
-                        <option value="Medio Defensivo">Medio Defensivo</option>
-                        <option value="Mediocampista">Mediocampista</option>
-                        <option value="Medio Ofensivo">Medio Ofensivo</option>
-                      </optgroup>
-                      <optgroup label="Delantera">
-                        <option value="Extremo Derecho">Extremo Derecho</option>
-                        <option value="Extremo Izquierdo">Extremo Izquierdo</option>
-                        <option value="Delantero Centro">Delantero Centro</option>
-                      </optgroup>
-                    </select>
+                  <!-- 3 Contactos -->
+                  <div class="form-group contacts-section">
+                    <label><i class="fa-solid fa-address-book text-primary"></i> Contactos para Mensajes</label>
+                    <!-- Contacto 1 -->
+                    <div class="contact-row" id="contactRow1">
+                      <div class="contact-row-header">
+                        <span class="contact-label">Contacto 1 (Principal)</span>
+                      </div>
+                      <div class="reg-form-grid" style="grid-template-columns: 2fr 2fr 1fr;">
+                        <div class="form-group" style="margin-bottom:0;">
+                          <input type="text" id="contact1Name" class="form-control" placeholder="Nombre del contacto" required />
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                          <input type="tel" id="contact1Phone" class="form-control" placeholder="+52 844 000 0000" required />
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                          <select id="contact1Relation" class="form-control">
+                            <option value="Padre">Padre</option>
+                            <option value="Madre">Madre</option>
+                            <option value="Tutor">Tutor</option>
+                            <option value="Abuelo/a">Abuelo/a</option>
+                            <option value="Familiar">Familiar</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Contacto 2 -->
+                    <div class="contact-row contact-optional hidden" id="contactRow2">
+                      <div class="contact-row-header">
+                        <span class="contact-label">Contacto 2 (Opcional)</span>
+                        <button type="button" class="contact-remove-btn" onclick="removeContact(2)"><i class="fa-solid fa-xmark"></i></button>
+                      </div>
+                      <div class="reg-form-grid" style="grid-template-columns: 2fr 2fr 1fr;">
+                        <div class="form-group" style="margin-bottom:0;">
+                          <input type="text" id="contact2Name" class="form-control" placeholder="Nombre del contacto" />
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                          <input type="tel" id="contact2Phone" class="form-control" placeholder="+52 844 000 0000" />
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                          <select id="contact2Relation" class="form-control">
+                            <option value="Padre">Padre</option>
+                            <option value="Madre">Madre</option>
+                            <option value="Tutor">Tutor</option>
+                            <option value="Abuelo/a">Abuelo/a</option>
+                            <option value="Familiar">Familiar</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Contacto 3 -->
+                    <div class="contact-row contact-optional hidden" id="contactRow3">
+                      <div class="contact-row-header">
+                        <span class="contact-label">Contacto 3 (Opcional)</span>
+                        <button type="button" class="contact-remove-btn" onclick="removeContact(3)"><i class="fa-solid fa-xmark"></i></button>
+                      </div>
+                      <div class="reg-form-grid" style="grid-template-columns: 2fr 2fr 1fr;">
+                        <div class="form-group" style="margin-bottom:0;">
+                          <input type="text" id="contact3Name" class="form-control" placeholder="Nombre del contacto" />
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                          <input type="tel" id="contact3Phone" class="form-control" placeholder="+52 844 000 0000" />
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                          <select id="contact3Relation" class="form-control">
+                            <option value="Padre">Padre</option>
+                            <option value="Madre">Madre</option>
+                            <option value="Tutor">Tutor</option>
+                            <option value="Abuelo/a">Abuelo/a</option>
+                            <option value="Familiar">Familiar</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Botón agregar contacto -->
+                    <button type="button" class="btn btn-ghost btn-sm mt-2" id="addContactBtn" onclick="addNextContact()" style="width:100%;">
+                      <i class="fa-solid fa-plus"></i> Agregar Contacto
+                    </button>
+                  </div>
+
+                  <!-- Posición Ideal y Alterna -->
+                  <div class="reg-form-grid">
+                    <div class="form-group">
+                      <label>Posición Ideal *</label>
+                      <select id="regPosition" class="form-control" required>
+                        <option value="" disabled selected>Posición principal...</option>
+                        <optgroup label="Portería">
+                          <option value="Portero">Portero</option>
+                        </optgroup>
+                        <optgroup label="Defensa">
+                          <option value="Lateral Derecho">Lateral Derecho</option>
+                          <option value="Lateral Izquierdo">Lateral Izquierdo</option>
+                          <option value="Defensa Central">Defensa Central</option>
+                        </optgroup>
+                        <optgroup label="Mediocampo">
+                          <option value="Medio Defensivo">Medio Defensivo</option>
+                          <option value="Mediocampista">Mediocampista</option>
+                          <option value="Medio Ofensivo">Medio Ofensivo</option>
+                        </optgroup>
+                        <optgroup label="Delantera">
+                          <option value="Extremo Derecho">Extremo Derecho</option>
+                          <option value="Extremo Izquierdo">Extremo Izquierdo</option>
+                          <option value="Delantero Centro">Delantero Centro</option>
+                        </optgroup>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Posición Alterna</label>
+                      <select id="regPositionAlt" class="form-control">
+                        <option value="">Ninguna / Sin posición alterna</option>
+                        <optgroup label="Portería">
+                          <option value="Portero">Portero</option>
+                        </optgroup>
+                        <optgroup label="Defensa">
+                          <option value="Lateral Derecho">Lateral Derecho</option>
+                          <option value="Lateral Izquierdo">Lateral Izquierdo</option>
+                          <option value="Defensa Central">Defensa Central</option>
+                        </optgroup>
+                        <optgroup label="Mediocampo">
+                          <option value="Medio Defensivo">Medio Defensivo</option>
+                          <option value="Mediocampista">Mediocampista</option>
+                          <option value="Medio Ofensivo">Medio Ofensivo</option>
+                        </optgroup>
+                        <optgroup label="Delantera">
+                          <option value="Extremo Derecho">Extremo Derecho</option>
+                          <option value="Extremo Izquierdo">Extremo Izquierdo</option>
+                          <option value="Delantero Centro">Delantero Centro</option>
+                        </optgroup>
+                      </select>
+                    </div>
                   </div>
 
                   <div class="reg-form-grid">
@@ -682,6 +809,10 @@
                       <label class="doc-check-item">
                         <input type="checkbox" id="docINE" />
                         <span>Identificación del Tutor</span>
+                      </label>
+                      <label class="doc-check-item">
+                        <input type="checkbox" id="docEscolar" />
+                        <span>Certificado Escolar / Credencial</span>
                       </label>
                     </div>
                   </div>
