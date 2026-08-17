@@ -305,9 +305,20 @@
               <div id="tacticalBoardCard" class="glass-card fade-in-up">
                 <div style="display: flex; justify-content: space-between; align-items: center;" class="margin-bottom">
                   <h3 class="card-title" style="margin-bottom: 0;">Pizarra Táctica (XI)</h3>
-                  <button id="btnFullscreenPitch" class="btn btn-outline" style="padding: 0.5rem 1rem;" title="Ver en pantalla completa">
-                    <i class="fa-solid fa-expand"></i>
-                  </button>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <select id="tacticalGroupSelect" class="form-control" onchange="renderSquadCallupList()" style="width: auto; padding: 0.2rem 0.5rem; font-size: 0.85rem;">
+                      <option value="Todos">Todas las Categorías</option>
+                      <option value="Sub-8">Sub-8</option>
+                      <option value="Sub-10">Sub-10</option>
+                      <option value="Sub-12">Sub-12</option>
+                      <option value="Sub-14">Sub-14</option>
+                      <option value="Sub-16">Sub-16</option>
+                      <option value="Sub-18">Sub-18</option>
+                    </select>
+                    <button id="btnFullscreenPitch" class="btn btn-outline" style="padding: 0.5rem 1rem;" title="Ver en pantalla completa">
+                      <i class="fa-solid fa-expand"></i>
+                    </button>
+                  </div>
                 </div>
                 <p class="subtitle-text margin-bottom">Haz clic en un jugador para cambiar la convocatoria.</p>
                 
@@ -519,6 +530,8 @@
                     <option value="entrenamiento">Próximo Entrenamiento</option>
                     <option value="partido">Próximo Partido Oficial</option>
                     <option value="falta">Aviso de Falta Injustificada</option>
+                    <option value="pago_mes">Recordatorio de Pago Mensual</option>
+                    <option value="pago_vencido">Aviso de Adeudo Vencido</option>
                   </select>
                 </div>
                 <div class="form-group">

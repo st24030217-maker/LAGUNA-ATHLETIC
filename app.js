@@ -199,6 +199,8 @@ function postLoginInit() {
   updateNoticeTemplate();
   initDragAndDrop();
 
+  // Activar recordatorios automáticos
+  checkAutomatedPaymentReminders();
 
   // Determine display name and greet
   let displayName = '';
@@ -378,8 +380,12 @@ function changePitchSlot(slotPos) {
   const select = document.getElementById("modalPlayerSelect");
   select.innerHTML = "";
 
+  const groupFilter = document.getElementById("tacticalGroupSelect") ? document.getElementById("tacticalGroupSelect").value : "Todos";
+
   squadData.forEach(p => {
     if(p.injured) return; // Injured players cannot play
+    if(groupFilter !== "Todos" && p.group !== groupFilter) return; // Filtro de categoría
+
     const opt = document.createElement("option");
     opt.value = p.id;
     opt.textContent = `#${p.number} ${p.name} (${p.position})`;
@@ -440,7 +446,11 @@ function renderSquadCallupList() {
   if (!container) return;
   container.innerHTML = "";
 
+  const groupFilter = document.getElementById("tacticalGroupSelect") ? document.getElementById("tacticalGroupSelect").value : "Todos";
+
   squadData.forEach((p) => {
+    if(groupFilter !== "Todos" && p.group !== groupFilter) return;
+
     const item = document.createElement("div");
     item.className = "squad-player-item";
     item.onclick = () => openProfileModal(p.id);
@@ -700,8 +710,29 @@ function updateNoticeTemplate() {
     area.value = `*LAGUNA ATHLETIC - RECORDATORIO*\n\nHola plantel,\nEl ${nt ? nt.date : 'Mañana'} tenemos *Entrenamiento Táctico* en ${nt ? nt.location : 'Cancha'} a las ${nt ? nt.time : '08:00'}.\n\nFavor de escanear su código QR. ⚽`;
   } else if (type === "partido") {
     area.value = `*LAGUNA ATHLETIC - CONVOCATORIA*\n\nOficial: *${nm ? nm.title : 'Partido Oficial'}*.\n📍 ${nm ? nm.location : 'Estadio Central'}\n\nFavor de revisar la alineación en la app.`;
+  } else if (type === "pago_mes") {
+    area.value = `*LAGUNA ATHLETIC - FINANZAS*\n\nEstimadas familias,\nLes recordamos que ya estamos a inicio de mes. Agradecemos su apoyo cubriendo la colegiatura correspondiente al mes en curso para seguir ofreciendo la mejor experiencia deportiva.\n\n¡Gracias por su puntualidad!`;
+  } else if (type === "pago_vencido") {
+    area.value = `*LAGUNA ATHLETIC - AVISO DE PAGO*\n\nHola,\nEste es un recordatorio automático. Nuestro sistema registra un saldo pendiente o atrasado en su cuenta.\nPor favor, póngase al corriente lo antes posible o comuníquese con la directiva si hay algún inconveniente.\n\nGracias.`;
   } else {
     area.value = `*LAGUNA ATHLETIC - AVISO*\n\nRegistramos una falta de asistencia sin justificar. Favor de ingresar a la plataforma y enviar su descargo.`;
+  }
+}
+
+function checkAutomatedPaymentReminders() {
+  const today = new Date();
+  const day = today.getDate();
+  const todayStr = today.toISOString().split('T')[0];
+  const lastSent = localStorage.getItem("laguna_last_automated_reminder");
+
+  if (lastSent === todayStr) return; // Ya se enviaron hoy
+
+  if (day === 1) {
+    showToast("Sistema: Recordatorio de pago del mes en curso enviado automáticamente.", "success");
+    localStorage.setItem("laguna_last_automated_reminder", todayStr);
+  } else if (day === 10 || day === 20 || day === 30) {
+    showToast("Sistema: Avisos de adeudo vencido enviados a contactos con saldo pendiente.", "warning");
+    localStorage.setItem("laguna_last_automated_reminder", todayStr);
   }
 }
 function simulateSendNotices() {
