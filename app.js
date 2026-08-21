@@ -13,23 +13,165 @@ let loggedInUser = null;
 let attendanceChart = null;
 
 const defaultSquadData = [
-  { id: 10, number: 10, name: "Emilio Suárez", position: "Medio Ofensivo", attendancePct: 95, streak: "10 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 6, assists: 4, mins: 900, cards: 1, tutorName: "Familia Suárez", phone: "+52 844 123 4567", docActa: true, docCURP: true, docMedico: true, docINE: true, photo: "LAGUNA.jpg" },
-  { id: 15, number: 15, name: "Mateo Suárez", position: "Delantero Centro", attendancePct: 92, streak: "8 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 4, assists: 2, mins: 750, cards: 0, tutorName: "Familia Suárez", phone: "+52 844 123 4567", docActa: true, docCURP: true, docMedico: true, docINE: true, photo: "LAGUNA.jpg" },
-  { id: 2, number: 2, name: "Lucas Sánchez", position: "Lateral Derecho", attendancePct: 90, streak: "6 A", status: "Ausente", checkinTime: "-", starter: true, injured: false, goals: 1, assists: 3, mins: 680, cards: 0, tutorName: "Familia Sánchez", phone: "+52 844 222 3344", docActa: true, docCURP: true, docMedico: true, docINE: false, photo: "LAGUNA.jpg" }
+  {
+    id: 10,
+    number: 10,
+    name: "Emilio Suárez",
+    position: "Medio Ofensivo",
+    attendancePct: 95,
+    streak: "10 A",
+    status: "Ausente",
+    checkinTime: "-",
+    starter: true,
+    injured: false,
+    goals: 6,
+    assists: 4,
+    mins: 900,
+    cards: 1,
+    tutorName: "Familia Suárez",
+    phone: "+52 844 123 4567",
+    docActa: true,
+    docCURP: true,
+    docMedico: true,
+    docINE: true,
+    photo: "LAGUNA.jpg",
+    gameInfo: [
+      {
+        id: 101,
+        title: "Resumen del partido vs. Real San Luis",
+        date: "2026-08-09",
+        type: "partido",
+        downloadUrl: "https://example.com/laguna/emilio-resumen.pdf",
+        notes:
+          "Buena recuperación defensiva y dos acciones de peligro en el segundo tiempo.",
+      },
+    ],
+  },
+  {
+    id: 15,
+    number: 15,
+    name: "Mateo Suárez",
+    position: "Delantero Centro",
+    attendancePct: 92,
+    streak: "8 A",
+    status: "Ausente",
+    checkinTime: "-",
+    starter: true,
+    injured: false,
+    goals: 4,
+    assists: 2,
+    mins: 750,
+    cards: 0,
+    tutorName: "Familia Suárez",
+    phone: "+52 844 123 4567",
+    docActa: true,
+    docCURP: true,
+    docMedico: true,
+    docINE: true,
+    photo: "LAGUNA.jpg",
+    gameInfo: [
+      {
+        id: 102,
+        title: "Análisis de rendimiento vs. Real San Luis",
+        date: "2026-08-09",
+        type: "partido",
+        downloadUrl: "https://example.com/laguna/mateo-analisis.pdf",
+        notes:
+          "Se mantuvo activo en presión alta y generó dos oportunidades claras.",
+      },
+    ],
+  },
+  {
+    id: 2,
+    number: 2,
+    name: "Lucas Sánchez",
+    position: "Lateral Derecho",
+    attendancePct: 90,
+    streak: "6 A",
+    status: "Ausente",
+    checkinTime: "-",
+    starter: true,
+    injured: false,
+    goals: 1,
+    assists: 3,
+    mins: 680,
+    cards: 0,
+    tutorName: "Familia Sánchez",
+    phone: "+52 844 222 3344",
+    docActa: true,
+    docCURP: true,
+    docMedico: true,
+    docINE: false,
+    photo: "LAGUNA.jpg",
+    gameInfo: [],
+  },
 ];
 
 const defaultPayments = [
-  { id: 101, folio: "LA-PAGO-1001", playerId: 10, playerName: "Emilio Suárez (#10)", tutorName: "Familia Suárez", concept: "Colegiatura Mensual", baseAmount: 1200, discountPct: 0, discountAmount: 0, finalAmount: 1200, method: "Transferencia SPEI", date: "2026-08-01", status: "Pagado", notes: "Colegiatura Agosto" },
-  { id: 102, folio: "LA-PAGO-1002", playerId: 15, playerName: "Mateo Suárez (#15)", tutorName: "Familia Suárez", concept: "Colegiatura Mensual", baseAmount: 1200, discountPct: 20, discountAmount: 240, finalAmount: 960, method: "Efectivo", date: "2026-08-01", status: "Pagado", notes: "Descuento 2º Hermano Suárez" }
+  {
+    id: 101,
+    folio: "LA-PAGO-1001",
+    playerId: 10,
+    playerName: "Emilio Suárez (#10)",
+    tutorName: "Familia Suárez",
+    concept: "Colegiatura Mensual",
+    baseAmount: 1200,
+    discountPct: 0,
+    discountAmount: 0,
+    finalAmount: 1200,
+    method: "Transferencia SPEI",
+    date: "2026-08-01",
+    status: "Pagado",
+    notes: "Colegiatura Agosto",
+  },
+  {
+    id: 102,
+    folio: "LA-PAGO-1002",
+    playerId: 15,
+    playerName: "Mateo Suárez (#15)",
+    tutorName: "Familia Suárez",
+    concept: "Colegiatura Mensual",
+    baseAmount: 1200,
+    discountPct: 20,
+    discountAmount: 240,
+    finalAmount: 960,
+    method: "Efectivo",
+    date: "2026-08-01",
+    status: "Pagado",
+    notes: "Descuento 2º Hermano Suárez",
+  },
 ];
 
 const defaultCalendarEvents = [
-  { id: 1, type: "entrenamiento", title: "Entrenamiento Táctico", date: "2026-08-07", time: "08:00", location: "Cancha 1", result: null },
-  { id: 2, type: "partido", title: "Partido vs Real San Luis", date: "2026-08-09", time: "16:00", location: "Estadio Central", result: null }
+  {
+    id: 1,
+    type: "entrenamiento",
+    title: "Entrenamiento Táctico",
+    date: "2026-08-07",
+    time: "08:00",
+    location: "Cancha 1",
+    result: null,
+  },
+  {
+    id: 2,
+    type: "partido",
+    title: "Partido vs Real San Luis",
+    date: "2026-08-09",
+    time: "16:00",
+    location: "Estadio Central",
+    result: null,
+  },
 ];
 
 const defaultJustifications = [
-  { id: 1, player: "Emilio Suárez (#10)", date: "2026-08-06", reason: "Examen Académico", detail: "Examen final universitario.", status: "Aprobada" }
+  {
+    id: 1,
+    player: "Emilio Suárez (#10)",
+    date: "2026-08-06",
+    reason: "Examen Académico",
+    detail: "Examen final universitario.",
+    status: "Aprobada",
+  },
 ];
 
 // --- TOASTS ---
@@ -39,17 +181,17 @@ function showToast(message, type = "info") {
 
   const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
-  
-  let icon = 'fa-circle-info';
-  if(type === 'success') icon = 'fa-circle-check';
-  if(type === 'warning') icon = 'fa-triangle-exclamation';
-  if(type === 'error') icon = 'fa-circle-xmark';
+
+  let icon = "fa-circle-info";
+  if (type === "success") icon = "fa-circle-check";
+  if (type === "warning") icon = "fa-triangle-exclamation";
+  if (type === "error") icon = "fa-circle-xmark";
 
   toast.innerHTML = `<i class="fa-solid ${icon} toast-icon"></i><span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
-    toast.style.opacity = '0';
+    toast.style.opacity = "0";
     setTimeout(() => toast.remove(), 300);
   }, 3500);
 }
@@ -63,10 +205,16 @@ function loadData() {
     const savedPayments = localStorage.getItem("laguna_payments_v3");
 
     squadData = savedSquad ? JSON.parse(savedSquad) : [...defaultSquadData];
-    calendarEvents = savedEvents ? JSON.parse(savedEvents) : [...defaultCalendarEvents];
-    justificationsData = savedJust ? JSON.parse(savedJust) : [...defaultJustifications];
+    calendarEvents = savedEvents
+      ? JSON.parse(savedEvents)
+      : [...defaultCalendarEvents];
+    justificationsData = savedJust
+      ? JSON.parse(savedJust)
+      : [...defaultJustifications];
     injuredData = [];
-    paymentsData = savedPayments ? JSON.parse(savedPayments) : [...defaultPayments];
+    paymentsData = savedPayments
+      ? JSON.parse(savedPayments)
+      : [...defaultPayments];
   } catch (error) {
     console.error("Error loading data:", error);
     squadData = [...defaultSquadData];
@@ -81,7 +229,10 @@ function saveData() {
   try {
     localStorage.setItem("laguna_squad_v3", JSON.stringify(squadData));
     localStorage.setItem("laguna_events_v3", JSON.stringify(calendarEvents));
-    localStorage.setItem("laguna_justifications_v3", JSON.stringify(justificationsData));
+    localStorage.setItem(
+      "laguna_justifications_v3",
+      JSON.stringify(justificationsData),
+    );
     localStorage.setItem("laguna_payments_v3", JSON.stringify(paymentsData));
   } catch (error) {
     showToast("Error guardando datos localmente.", "error");
@@ -91,7 +242,7 @@ function saveData() {
 // --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", () => {
   loadData();
-  
+
   // Check login state
   const savedRole = sessionStorage.getItem("laguna_active_role");
   if (savedRole) {
@@ -103,7 +254,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // --- LOADING SYSTEM FUTURISTA ---
-function triggerAppLoading(message = "Cargando sistema...", durationMs = 1800, callback = null) {
+function triggerAppLoading(
+  message = "Cargando sistema...",
+  durationMs = 1800,
+  callback = null,
+) {
   const loadingOverlay = document.getElementById("appLoadingScreen");
   const barFill = document.getElementById("loadingBarFill");
   const percentText = document.getElementById("loadingPercent");
@@ -133,9 +288,11 @@ function triggerAppLoading(message = "Cargando sistema...", durationMs = 1800, c
     if (progress < 25) {
       statusText.innerText = "[AUTH] Validando perfil Laguna 2026...";
     } else if (progress < 55) {
-      statusText.innerText = "[DATABASE] Cargando plantillas, expedientes y fotos...";
+      statusText.innerText =
+        "[DATABASE] Cargando plantillas, expedientes y fotos...";
     } else if (progress < 85) {
-      statusText.innerText = "[FINANCES] Sincronizando matriz de cobros y paquetes...";
+      statusText.innerText =
+        "[FINANCES] Sincronizando matriz de cobros y paquetes...";
     } else {
       statusText.innerText = "[ACCESO CONCEDIDO] Entorno listo. Bienvenido.";
     }
@@ -158,20 +315,24 @@ function handleLogin(e) {
   e.preventDefault();
   const role = document.getElementById("loginRole").value;
   if (!role) return;
-  
+
   currentRole = role;
   sessionStorage.setItem("laguna_active_role", role);
-  
-  document.getElementById("loginScreen").style.opacity = '0';
-  document.getElementById("loginScreen").style.transition = 'opacity 0.4s ease';
-  
+
+  document.getElementById("loginScreen").style.opacity = "0";
+  document.getElementById("loginScreen").style.transition = "opacity 0.4s ease";
+
   setTimeout(() => {
     document.getElementById("loginScreen").classList.add("hidden");
-    triggerAppLoading("Autenticando usuario y preparando entorno 2026...", 1400, () => {
-      document.getElementById("appLayout").style.display = "grid";
-      postLoginInit();
-      showToast("Sesión iniciada correctamente.", "success");
-    });
+    triggerAppLoading(
+      "Autenticando usuario y preparando entorno 2026...",
+      1400,
+      () => {
+        document.getElementById("appLayout").style.display = "grid";
+        postLoginInit();
+        showToast("Sesión iniciada correctamente.", "success");
+      },
+    );
   }, 400);
 }
 
@@ -183,11 +344,13 @@ function logout() {
 function postLoginInit() {
   applyRolePermissions();
   populateQuickPlayerSelect();
+  populateGameInfoPlayerSelect();
   renderAttendanceTable();
   renderSquadCallupList();
   renderCalendarEvents();
   renderJustifications();
   renderRankingTable();
+  renderPlayerGameInfo();
   renderInjuredTable();
   renderRegTable();
   populatePaymentPlayerSelect();
@@ -202,37 +365,41 @@ function postLoginInit() {
   // Activar recordatorios automáticos
   checkAutomatedPaymentReminders();
 
+  populateDynamicGroups(); // Llenar grupos dinámicos
+
   // Determine display name and greet
-  let displayName = '';
-  let displayRole = '';
-  if (currentRole === 'jugador') {
+  let displayName = "";
+  let displayRole = "";
+  if (currentRole === "jugador") {
     loggedInUser = squadData[0];
     displayName = loggedInUser.name;
     displayRole = `Jugador · #${loggedInUser.number} · ${loggedInUser.position}`;
-    document.getElementById("activeUserName").innerText = `${loggedInUser.name} (#${loggedInUser.number})`;
-  } else if (currentRole === 'dt') {
-    displayName = 'Coach Zúñiga';
-    displayRole = 'Director Técnico · Admin';
-    document.getElementById("activeUserName").innerText = "Coach Zúñiga (Admin)";
+    document.getElementById("activeUserName").innerText =
+      `${loggedInUser.name} (#${loggedInUser.number})`;
+  } else if (currentRole === "dt") {
+    displayName = "Coach Zúñiga";
+    displayRole = "Director Técnico · Admin";
+    document.getElementById("activeUserName").innerText =
+      "Coach Zúñiga (Admin)";
   } else {
-    displayName = 'Directiva';
-    displayRole = 'Acceso de Solo Lectura';
+    displayName = "Directiva";
+    displayRole = "Acceso de Solo Lectura";
     document.getElementById("activeUserName").innerText = "Directiva Club";
   }
 
   // Time-based greeting
   const hour = new Date().getHours();
-  let greeting = 'Buenos días';
-  if (hour >= 12 && hour < 19) greeting = 'Buenas tardes';
-  else if (hour >= 19) greeting = 'Buenas noches';
+  let greeting = "Buenos días";
+  if (hour >= 12 && hour < 19) greeting = "Buenas tardes";
+  else if (hour >= 19) greeting = "Buenas noches";
 
-  const greetingEl = document.getElementById('greetingHeader');
-  const subEl      = document.querySelector('.greeting-sub');
+  const greetingEl = document.getElementById("greetingHeader");
+  const subEl = document.querySelector(".greeting-sub");
   if (greetingEl) {
     greetingEl.innerHTML = `${greeting}, <span style="color:var(--accent-primary)">${displayName}</span>.`;
   }
   if (subEl) {
-    subEl.innerText = displayRole + ' · Temporada 2026';
+    subEl.innerText = displayRole + " · Temporada 2026";
   }
 }
 
@@ -245,8 +412,12 @@ function toggleNavGroup(groupId) {
 }
 
 function showModuleTab(tabId) {
-  document.querySelectorAll(".module-panel").forEach((el) => el.classList.remove("active"));
-  document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
+  document
+    .querySelectorAll(".module-panel")
+    .forEach((el) => el.classList.remove("active"));
+  document
+    .querySelectorAll(".tab-btn")
+    .forEach((el) => el.classList.remove("active"));
 
   const targetPanel = document.getElementById(tabId);
   if (targetPanel) targetPanel.classList.add("active");
@@ -264,8 +435,8 @@ function showModuleTab(tabId) {
   if (tabId === "mod-estadisticas" && attendanceChart) {
     setTimeout(() => attendanceChart.resize(), 100);
   }
-  
-  if(window.innerWidth <= 900) {
+
+  if (window.innerWidth <= 900) {
     document.getElementById("mainSidebar").classList.remove("open");
   }
 }
@@ -275,16 +446,25 @@ function toggleSidebar() {
 }
 
 // --- ROLE SYSTEM ---
+function canViewGameInfo() {
+  return ["dt", "auxiliar", "preparador"].includes(currentRole);
+}
+
 function applyRolePermissions() {
   const isDT = currentRole === "dt";
   const isDirectiva = currentRole === "directiva";
   const canEdit = isDT;
-  
-  document.querySelectorAll(".role-dt-only").forEach(el => {
+  const canViewSensitiveInfo = canViewGameInfo();
+
+  document.querySelectorAll(".role-dt-only").forEach((el) => {
     el.style.display = canEdit ? "" : "none";
   });
 
-  document.querySelectorAll(".player-marker").forEach(el => {
+  document.querySelectorAll(".role-admin-trainer-only").forEach((el) => {
+    el.style.display = canViewSensitiveInfo ? "" : "none";
+  });
+
+  document.querySelectorAll(".player-marker").forEach((el) => {
     // Permitir manipulación a todos en la pizarra táctica
     el.classList.add("role-editable");
     el.style.cursor = "grab";
@@ -292,17 +472,47 @@ function applyRolePermissions() {
 }
 
 // --- MODULE: ASISTENCIA QR ---
+function populateDynamicGroups() {
+  const groups = new Set(
+    squadData.map((p) => p.group).filter((g) => g && g.trim() !== ""),
+  );
+  const uniqueGroups = Array.from(groups).sort();
+
+  const groupOptions = document.getElementById("groupOptions");
+  if (groupOptions) {
+    groupOptions.innerHTML = uniqueGroups
+      .map((g) => `<option value="${g}">`)
+      .join("");
+  }
+
+  const updateSelect = (id) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const currentVal = sel.value;
+    sel.innerHTML =
+      '<option value="Todos">Todas las Categorías / Global</option>' +
+      uniqueGroups.map((g) => `<option value="${g}">${g}</option>`).join("");
+    if (uniqueGroups.includes(currentVal) || currentVal === "Todos") {
+      sel.value = currentVal;
+    }
+  };
+
+  updateSelect("tacticalGroupSelect");
+  updateSelect("noticeGroupSelect");
+  updateSelect("statsGroupSelect");
+}
+
 function populateQuickPlayerSelect() {
   const select = document.getElementById("quickPlayerSelect");
   const injurySelect = document.getElementById("injuryPlayerSelect");
   if (!select) return;
   select.innerHTML = "";
-  if(injurySelect) injurySelect.innerHTML = "";
-  
-  squadData.forEach(p => {
+  if (injurySelect) injurySelect.innerHTML = "";
+
+  squadData.forEach((p) => {
     const opt = `<option value="${p.id}">#${p.number} ${p.name}</option>`;
     select.innerHTML += opt;
-    if(injurySelect && !p.injured) injurySelect.innerHTML += opt;
+    if (injurySelect && !p.injured) injurySelect.innerHTML += opt;
   });
 }
 
@@ -318,14 +528,18 @@ function simulateQRCheckIn() {
   }
 
   const now = new Date();
-  const timeStr = now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  const timeStr = now.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   player.status = "Presente";
   player.checkinTime = timeStr;
   saveData();
 
   const alertBox = document.getElementById("lastCheckinAlert");
-  document.getElementById("lastCheckinText").innerText = `Asistencia de ${player.name} (${timeStr})`;
+  document.getElementById("lastCheckinText").innerText =
+    `Asistencia de ${player.name} (${timeStr})`;
   alertBox.classList.remove("hidden");
   setTimeout(() => alertBox.classList.add("hidden"), 3000);
 
@@ -335,7 +549,7 @@ function simulateQRCheckIn() {
 }
 
 function markManualAttendance(playerId, newStatus) {
-  const player = squadData.find(p => p.id === playerId);
+  const player = squadData.find((p) => p.id === playerId);
   if (!player) return;
   player.status = newStatus;
   player.checkinTime = newStatus === "Presente" ? "Manual DT" : "-";
@@ -350,10 +564,15 @@ function renderAttendanceTable() {
   tbody.innerHTML = "";
   let presentCount = 0;
 
-  squadData.forEach(p => {
+  squadData.forEach((p) => {
     if (p.status === "Presente") presentCount++;
     const tr = document.createElement("tr");
-    let badgeClass = p.status === "Presente" ? "badge-success" : (p.status === "Justificado" ? "badge-warning" : "badge-danger");
+    let badgeClass =
+      p.status === "Presente"
+        ? "badge-success"
+        : p.status === "Justificado"
+          ? "badge-warning"
+          : "badge-danger";
 
     tr.innerHTML = `
       <td><strong>#${p.number}</strong> ${p.name} <br><small class="text-muted">${p.position}</small></td>
@@ -366,13 +585,26 @@ function renderAttendanceTable() {
     `;
     tbody.appendChild(tr);
   });
-  document.getElementById("attendanceCount").innerText = `${presentCount}/${squadData.length} Presentes`;
+  document.getElementById("attendanceCount").innerText =
+    `${presentCount}/${squadData.length} Presentes`;
   applyRolePermissions();
 }
 
 // --- MODULE: ALINEACION & PERFILES ---
 let currentSlotForModal = null;
-const slotAssignments = { GK: 1, LB: 3, CB1: 4, CB2: 5, RB: 2, MCD: 6, MC1: 8, MC2: 10, EI: 11, DC: 9, ED: 7 };
+const slotAssignments = {
+  GK: 1,
+  LB: 3,
+  CB1: 4,
+  CB2: 5,
+  RB: 2,
+  MCD: 6,
+  MC1: 8,
+  MC2: 10,
+  EI: 11,
+  DC: 9,
+  ED: 7,
+};
 
 function changePitchSlot(slotPos) {
   if (currentRole !== "dt") return;
@@ -380,11 +612,13 @@ function changePitchSlot(slotPos) {
   const select = document.getElementById("modalPlayerSelect");
   select.innerHTML = "";
 
-  const groupFilter = document.getElementById("tacticalGroupSelect") ? document.getElementById("tacticalGroupSelect").value : "Todos";
+  const groupFilter = document.getElementById("tacticalGroupSelect")
+    ? document.getElementById("tacticalGroupSelect").value
+    : "Todos";
 
-  squadData.forEach(p => {
-    if(p.injured) return; // Injured players cannot play
-    if(groupFilter !== "Todos" && p.group !== groupFilter) return; // Filtro de categoría
+  squadData.forEach((p) => {
+    if (p.injured) return; // Injured players cannot play
+    if (groupFilter !== "Todos" && p.group !== groupFilter) return; // Filtro de categoría
 
     const opt = document.createElement("option");
     opt.value = p.id;
@@ -392,7 +626,8 @@ function changePitchSlot(slotPos) {
     select.appendChild(opt);
   });
 
-  document.getElementById("modalPositionTitle").innerText = `Asignar Posición [${slotPos}]`;
+  document.getElementById("modalPositionTitle").innerText =
+    `Asignar Posición [${slotPos}]`;
   document.getElementById("playerSelectModal").classList.remove("hidden");
 }
 
@@ -406,16 +641,18 @@ function confirmPlayerSelection() {
   const player = squadData.find((p) => p.id === playerId);
 
   if (player && currentSlotForModal) {
-    if(player.injured) {
+    if (player.injured) {
       showToast("Este jugador está lesionado.", "error");
       return;
     }
-    
-    document.getElementById(`slot-${currentSlotForModal}`).innerText = currentSlotForModal;
-    
+
+    document.getElementById(`slot-${currentSlotForModal}`).innerText =
+      currentSlotForModal;
+
     // Update marker shirt visually
-    const marker = document.getElementById(`slot-${currentSlotForModal}`).previousElementSibling.previousElementSibling;
-    if(marker && marker.classList.contains('marker-shirt')) {
+    const marker = document.getElementById(`slot-${currentSlotForModal}`)
+      .previousElementSibling.previousElementSibling;
+    if (marker && marker.classList.contains("marker-shirt")) {
       marker.innerText = player.number;
     }
 
@@ -446,21 +683,26 @@ function renderSquadCallupList() {
   if (!container) return;
   container.innerHTML = "";
 
-  const groupFilter = document.getElementById("tacticalGroupSelect") ? document.getElementById("tacticalGroupSelect").value : "Todos";
+  const groupFilter = document.getElementById("tacticalGroupSelect")
+    ? document.getElementById("tacticalGroupSelect").value
+    : "Todos";
 
   squadData.forEach((p) => {
-    if(groupFilter !== "Todos" && p.group !== groupFilter) return;
+    if (groupFilter !== "Todos" && p.group !== groupFilter) return;
 
     const item = document.createElement("div");
     item.className = "squad-player-item";
     item.onclick = () => openProfileModal(p.id);
-    
-    let statusHTML = p.starter ? '<span class="badge badge-neon">TITULAR</span>' : '<span class="badge" style="border-color:var(--border-strong);">SUPLENTE</span>';
-    if(p.injured) statusHTML = '<span class="badge badge-danger">LESIONADO</span>';
+
+    let statusHTML = p.starter
+      ? '<span class="badge badge-neon">TITULAR</span>'
+      : '<span class="badge" style="border-color:var(--border-strong);">SUPLENTE</span>';
+    if (p.injured)
+      statusHTML = '<span class="badge badge-danger">LESIONADO</span>';
 
     item.innerHTML = `
       <div>
-        <strong style="color: ${p.injured ? 'var(--accent-danger)' : 'var(--text-main)'}">#${p.number} ${p.name}</strong>
+        <strong style="color: ${p.injured ? "var(--accent-danger)" : "var(--text-main)"}">#${p.number} ${p.name}</strong>
         <br><small class="text-muted">${p.position}</small>
       </div>
       <div>${statusHTML}</div>
@@ -470,65 +712,76 @@ function renderSquadCallupList() {
 }
 
 function openProfileModal(id) {
-  const p = squadData.find(x => x.id === id);
-  if(!p) return;
-  
+  const p = squadData.find((x) => x.id === id);
+  if (!p) return;
+
   document.getElementById("profileNumber").innerText = p.number;
   document.getElementById("profileName").innerText = p.name;
   document.getElementById("profilePosition").innerText = p.position;
-  
+
   const badge = document.getElementById("profileStatusBadge");
-  if(p.injured) {
+  if (p.injured) {
     badge.className = "badge badge-danger mt-2";
     badge.innerText = "Baja Médica";
   } else {
     badge.className = "badge badge-success mt-2";
     badge.innerText = "Activo";
   }
-  
+
   document.getElementById("profileGoals").innerText = p.goals;
   document.getElementById("profileAssists").innerText = p.assists;
   document.getElementById("profileMins").innerText = p.mins + "'";
   document.getElementById("profileCards").innerText = "🟨 " + p.cards;
-  
+
   document.getElementById("playerProfileModal").classList.remove("hidden");
 }
-function closeProfileModal() { document.getElementById("playerProfileModal").classList.add("hidden"); }
+function closeProfileModal() {
+  document.getElementById("playerProfileModal").classList.add("hidden");
+}
 
 // --- MODULE: MEDICAL (NEW) ---
 function reportInjury(e) {
   e.preventDefault();
-  const playerId = parseInt(document.getElementById("injuryPlayerSelect").value);
+  const playerId = parseInt(
+    document.getElementById("injuryPlayerSelect").value,
+  );
   const type = document.getElementById("injuryType").value;
   const time = document.getElementById("injuryTime").value;
-  
-  const p = squadData.find(x => x.id === playerId);
-  if(!p) return;
-  
+
+  const p = squadData.find((x) => x.id === playerId);
+  if (!p) return;
+
   p.injured = true;
   p.starter = false; // Remove from lineup
-  
-  injuredData.push({ id: Date.now(), player: p.name, number: p.number, type, time, playerId: p.id });
+
+  injuredData.push({
+    id: Date.now(),
+    player: p.name,
+    number: p.number,
+    type,
+    time,
+    playerId: p.id,
+  });
   saveData();
-  
+
   showToast(`${p.name} enviado a enfermería.`, "warning");
   document.getElementById("injuryForm").reset();
-  
+
   renderInjuredTable();
   renderSquadCallupList();
   populateQuickPlayerSelect();
 }
 
 function dischargePlayer(injuryId) {
-  const inj = injuredData.find(x => x.id === injuryId);
-  if(!inj) return;
-  
-  const p = squadData.find(x => x.id === inj.playerId);
-  if(p) p.injured = false;
-  
-  injuredData = injuredData.filter(x => x.id !== injuryId);
+  const inj = injuredData.find((x) => x.id === injuryId);
+  if (!inj) return;
+
+  const p = squadData.find((x) => x.id === inj.playerId);
+  if (p) p.injured = false;
+
+  injuredData = injuredData.filter((x) => x.id !== injuryId);
   saveData();
-  
+
   showToast(`${p.name} tiene el alta médica.`, "success");
   renderInjuredTable();
   renderSquadCallupList();
@@ -537,15 +790,15 @@ function dischargePlayer(injuryId) {
 
 function renderInjuredTable() {
   const tbody = document.getElementById("injuredTableBody");
-  if(!tbody) return;
+  if (!tbody) return;
   tbody.innerHTML = "";
-  
-  if(injuredData.length === 0) {
+
+  if (injuredData.length === 0) {
     tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No hay jugadores lesionados.</td></tr>`;
     return;
   }
-  
-  injuredData.forEach(i => {
+
+  injuredData.forEach((i) => {
     tbody.innerHTML += `
       <tr>
         <td><strong>#${i.number}</strong> ${i.player}</td>
@@ -568,51 +821,68 @@ function renderCalendarEvents() {
   if (!grid) return;
   grid.innerHTML = "";
 
-  calendarEvents.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach((ev) => {
-    const card = document.createElement("div");
-    card.className = "event-card";
-    
-    let dFormatted = ev.date;
-    try {
-      dFormatted = new Date(ev.date + 'T00:00:00').toLocaleDateString("es-ES", { weekday: 'short', month: 'short', day: 'numeric' });
-    } catch(e){}
+  calendarEvents
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .forEach((ev) => {
+      const card = document.createElement("div");
+      card.className = "event-card";
 
-    let resultHtml = '';
-    const today = new Date().toISOString().split('T')[0];
-    
-    if (ev.result) {
-      resultHtml = `<div class="event-result text-primary">${ev.result}</div>`;
-    } else if (ev.type === 'partido' && ev.date < today && currentRole === 'dt') {
-      resultHtml = `<div class="margin-top text-center"><button class="btn btn-ghost btn-sm" onclick="openMatchResultModal(${ev.id}, '${ev.title}')">Cargar Resultado</button></div>`;
-    }
+      let dFormatted = ev.date;
+      try {
+        dFormatted = new Date(ev.date + "T00:00:00").toLocaleDateString(
+          "es-ES",
+          { weekday: "short", month: "short", day: "numeric" },
+        );
+      } catch (e) {}
 
-    card.innerHTML = `
+      let resultHtml = "";
+      const today = new Date().toISOString().split("T")[0];
+
+      if (ev.result) {
+        resultHtml = `<div class="event-result text-primary">${ev.result}</div>`;
+      } else if (
+        ev.type === "partido" &&
+        ev.date < today &&
+        currentRole === "dt"
+      ) {
+        resultHtml = `<div class="margin-top text-center"><button class="btn btn-ghost btn-sm" onclick="openMatchResultModal(${ev.id}, '${ev.title}')">Cargar Resultado</button></div>`;
+      }
+
+      card.innerHTML = `
       <div class="event-date">${dFormatted} - ${ev.time}</div>
       <div class="event-title">${ev.title}</div>
       <div class="subtitle-text"><i class="fa-solid fa-location-dot"></i> ${ev.location}</div>
       ${resultHtml}
     `;
-    grid.appendChild(card);
-  });
+      grid.appendChild(card);
+    });
 }
 
-function openAddEventModal() { document.getElementById("addEventModal").classList.remove("hidden"); }
-function closeEventModal() { document.getElementById("addEventModal").classList.add("hidden"); }
+function openAddEventModal() {
+  document.getElementById("addEventModal").classList.remove("hidden");
+}
+function closeEventModal() {
+  document.getElementById("addEventModal").classList.add("hidden");
+}
 
 function saveNewEvent() {
   const title = document.getElementById("newEvent-title").value;
   const date = document.getElementById("newEvent-date").value;
   if (!title || !date) return showToast("Falta título o fecha.", "error");
 
-  const today = new Date().toISOString().split('T')[0];
-  if (date < today) return showToast("No puedes crear eventos en fechas pasadas.", "warning");
+  const today = new Date().toISOString().split("T")[0];
+  if (date < today)
+    return showToast("No puedes crear eventos en fechas pasadas.", "warning");
 
   calendarEvents.push({
     id: Date.now(),
     type: document.getElementById("newEvent-type").value,
-    title, date, time: document.getElementById("newEvent-time").value,
-    location: document.getElementById("newEvent-location").value || "Por definir",
-    result: null
+    title,
+    date,
+    time: document.getElementById("newEvent-time").value,
+    location:
+      document.getElementById("newEvent-location").value || "Por definir",
+    result: null,
   });
 
   saveData();
@@ -625,14 +895,16 @@ function openMatchResultModal(eventId, title) {
   document.getElementById("matchResultTitle").innerText = title;
   document.getElementById("matchResultModal").classList.remove("hidden");
 }
-function closeMatchResultModal() { document.getElementById("matchResultModal").classList.add("hidden"); }
+function closeMatchResultModal() {
+  document.getElementById("matchResultModal").classList.add("hidden");
+}
 
 function saveMatchResult() {
   const l = document.getElementById("scoreLaguna").value;
   const r = document.getElementById("scoreRival").value;
-  const ev = calendarEvents.find(x => x.id === currentEventForResult);
-  
-  if(ev) {
+  const ev = calendarEvents.find((x) => x.id === currentEventForResult);
+
+  if (ev) {
     ev.result = `LA ${l} - ${r} RIV`;
     saveData();
     renderCalendarEvents();
@@ -641,11 +913,12 @@ function saveMatchResult() {
   closeMatchResultModal();
 }
 
-
 // --- MODULE: JUSTIFICATIONS ---
 function submitJustification(e) {
   e.preventDefault();
-  const loggedPlayerName = loggedInUser ? `${loggedInUser.name} (#${loggedInUser.number})` : "Jugador (Web)";
+  const loggedPlayerName = loggedInUser
+    ? `${loggedInUser.name} (#${loggedInUser.number})`
+    : "Jugador (Web)";
 
   justificationsData.push({
     id: Date.now(),
@@ -653,7 +926,7 @@ function submitJustification(e) {
     date: document.getElementById("justDate").value,
     reason: document.getElementById("justReason").value,
     detail: document.getElementById("justDetail").value,
-    status: "Pendiente"
+    status: "Pendiente",
   });
 
   saveData();
@@ -673,15 +946,26 @@ function reviewJustification(id, status) {
 function renderJustifications() {
   const c = document.getElementById("justificationsList");
   if (!c) return;
-  c.innerHTML = justificationsData.length === 0 ? `<p class="text-muted text-center">Buzón vacío.</p>` : "";
+  c.innerHTML =
+    justificationsData.length === 0
+      ? `<p class="text-muted text-center">Buzón vacío.</p>`
+      : "";
 
   justificationsData.forEach((j) => {
-    let bc = j.status === "Aprobada" ? "badge-success" : (j.status === "Rechazada" ? "badge-danger" : "badge-warning");
-    let btnHtml = (j.status === "Pendiente" && currentRole === 'dt') ? `
+    let bc =
+      j.status === "Aprobada"
+        ? "badge-success"
+        : j.status === "Rechazada"
+          ? "badge-danger"
+          : "badge-warning";
+    let btnHtml =
+      j.status === "Pendiente" && currentRole === "dt"
+        ? `
       <div class="margin-top flex-end gap-2">
           <button class="btn btn-ghost" onclick="reviewJustification(${j.id}, 'Rechazada')">Rechazar</button>
           <button class="btn btn-primary" onclick="reviewJustification(${j.id}, 'Aprobada')">Aprobar</button>
-      </div>` : "";
+      </div>`
+        : "";
 
     c.innerHTML += `
       <div class="just-card">
@@ -700,43 +984,62 @@ function renderJustifications() {
 function updateNoticeTemplate() {
   const type = document.getElementById("noticeTypeSelect").value;
   const area = document.getElementById("noticeMessageText");
-  if(!area) return;
-  
-  const today = new Date().toISOString().split('T')[0];
-  const nt = calendarEvents.find(e => e.type === "entrenamiento" && e.date >= today);
-  const nm = calendarEvents.find(e => e.type === "partido" && e.date >= today);
+  const groupSel = document.getElementById("noticeGroupSelect");
+  if (!area) return;
+
+  const groupName =
+    groupSel && groupSel.value !== "Todos"
+      ? groupSel.value.toUpperCase()
+      : "RECORDATORIO";
+
+  const today = new Date().toISOString().split("T")[0];
+  const nt = calendarEvents.find(
+    (e) => e.type === "entrenamiento" && e.date >= today,
+  );
+  const nm = calendarEvents.find(
+    (e) => e.type === "partido" && e.date >= today,
+  );
 
   if (type === "entrenamiento") {
-    area.value = `*LAGUNA ATHLETIC - RECORDATORIO*\n\nHola plantel,\nEl ${nt ? nt.date : 'Mañana'} tenemos *Entrenamiento Táctico* en ${nt ? nt.location : 'Cancha'} a las ${nt ? nt.time : '08:00'}.\n\nFavor de escanear su código QR. ⚽`;
+    area.value = `*LAGUNA ATHLETIC - ${groupName}*\n\nHola plantel,\nEl ${nt ? nt.date : "Mañana"} tenemos *Entrenamiento Táctico* en ${nt ? nt.location : "Cancha"} a las ${nt ? nt.time : "08:00"}.\n\nFavor de escanear su código QR. ⚽`;
   } else if (type === "partido") {
-    area.value = `*LAGUNA ATHLETIC - CONVOCATORIA*\n\nOficial: *${nm ? nm.title : 'Partido Oficial'}*.\n📍 ${nm ? nm.location : 'Estadio Central'}\n\nFavor de revisar la alineación en la app.`;
+    area.value = `*LAGUNA ATHLETIC - CONVOCATORIA ${groupName !== "RECORDATORIO" ? groupName : ""}*\n\nOficial: *${nm ? nm.title : "Partido Oficial"}*.\n📍 ${nm ? nm.location : "Estadio Central"}\n\nFavor de revisar la alineación en la app.`;
   } else if (type === "pago_mes") {
-    area.value = `*LAGUNA ATHLETIC - FINANZAS*\n\nEstimadas familias,\nLes recordamos que ya estamos a inicio de mes. Agradecemos su apoyo cubriendo la colegiatura correspondiente al mes en curso para seguir ofreciendo la mejor experiencia deportiva.\n\n¡Gracias por su puntualidad!`;
+    area.value = `*LAGUNA ATHLETIC - FINANZAS ${groupName !== "RECORDATORIO" ? groupName : ""}*\n\nEstimadas familias,\nLes recordamos que ya estamos a inicio de mes. Agradecemos su apoyo cubriendo la colegiatura correspondiente al mes en curso para seguir ofreciendo la mejor experiencia deportiva.\n\n¡Gracias por su puntualidad!`;
   } else if (type === "pago_vencido") {
-    area.value = `*LAGUNA ATHLETIC - AVISO DE PAGO*\n\nHola,\nEste es un recordatorio automático. Nuestro sistema registra un saldo pendiente o atrasado en su cuenta.\nPor favor, póngase al corriente lo antes posible o comuníquese con la directiva si hay algún inconveniente.\n\nGracias.`;
+    area.value = `*LAGUNA ATHLETIC - AVISO DE PAGO ${groupName !== "RECORDATORIO" ? groupName : ""}*\n\nHola,\nEste es un recordatorio automático. Nuestro sistema registra un saldo pendiente o atrasado en su cuenta.\nPor favor, póngase al corriente lo antes posible o comuníquese con la directiva si hay algún inconveniente.\n\nGracias.`;
   } else {
-    area.value = `*LAGUNA ATHLETIC - AVISO*\n\nRegistramos una falta de asistencia sin justificar. Favor de ingresar a la plataforma y enviar su descargo.`;
+    area.value = `*LAGUNA ATHLETIC - AVISO ${groupName !== "RECORDATORIO" ? groupName : ""}*\n\nRegistramos una falta de asistencia sin justificar. Favor de ingresar a la plataforma y enviar su descargo.`;
   }
 }
 
 function checkAutomatedPaymentReminders() {
   const today = new Date();
   const day = today.getDate();
-  const todayStr = today.toISOString().split('T')[0];
+  const todayStr = today.toISOString().split("T")[0];
   const lastSent = localStorage.getItem("laguna_last_automated_reminder");
 
   if (lastSent === todayStr) return; // Ya se enviaron hoy
 
   if (day === 1) {
-    showToast("Sistema: Recordatorio de pago del mes en curso enviado automáticamente.", "success");
+    showToast(
+      "Sistema: Recordatorio de pago del mes en curso enviado automáticamente.",
+      "success",
+    );
     localStorage.setItem("laguna_last_automated_reminder", todayStr);
   } else if (day === 10 || day === 20 || day === 30) {
-    showToast("Sistema: Avisos de adeudo vencido enviados a contactos con saldo pendiente.", "warning");
+    showToast(
+      "Sistema: Avisos de adeudo vencido enviados a contactos con saldo pendiente.",
+      "warning",
+    );
     localStorage.setItem("laguna_last_automated_reminder", todayStr);
   }
 }
 function simulateSendNotices() {
-  window.open(`https://wa.me/?text=${encodeURIComponent(document.getElementById("noticeMessageText").value)}`, "_blank");
+  window.open(
+    `https://wa.me/?text=${encodeURIComponent(document.getElementById("noticeMessageText").value)}`,
+    "_blank",
+  );
 }
 
 // --- MODULE: CHART & STATS ---
@@ -747,40 +1050,217 @@ function initChart() {
     type: "doughnut",
     data: {
       labels: ["Presentes", "Justificados", "Ausentes"],
-      datasets: [{ data: [0, 0, 0], backgroundColor: ["#10b981", "#f59e0b", "#ef4444"], borderWidth: 0 }]
+      datasets: [
+        {
+          data: [0, 0, 0],
+          backgroundColor: ["#10b981", "#f59e0b", "#ef4444"],
+          borderWidth: 0,
+        },
+      ],
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: "#94a3b8", font: { family: "'JetBrains Mono', monospace" } } } },
-      cutout: '75%'
-    }
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: "#94a3b8",
+            font: { family: "'JetBrains Mono', monospace" },
+          },
+        },
+      },
+      cutout: "75%",
+    },
   });
   updateChartData();
 }
 
 function updateChartData() {
   if (!attendanceChart) return;
-  let p = 0, j = 0, a = 0;
-  squadData.forEach(x => x.status === "Presente" ? p++ : (x.status === "Justificado" ? j++ : a++));
+  const groupSel = document.getElementById("statsGroupSelect");
+  const groupFilter = groupSel ? groupSel.value : "Todos";
+
+  let p = 0,
+    j = 0,
+    a = 0;
+  squadData.forEach((x) => {
+    if (groupFilter !== "Todos" && x.group !== groupFilter) return;
+    x.status === "Presente" ? p++ : x.status === "Justificado" ? j++ : a++;
+  });
   attendanceChart.data.datasets[0].data = [p, j, a];
   attendanceChart.update();
 }
 
 function renderRankingTable() {
   const tb = document.getElementById("rankingTableBody");
-  if(!tb) return;
+  if (!tb) return;
   tb.innerHTML = "";
-  
-  [...squadData].sort((a,b) => b.attendancePct - a.attendancePct).slice(0, 5).forEach((p, i) => {
-    tb.innerHTML += `
+
+  const groupSel = document.getElementById("statsGroupSelect");
+  const groupFilter = groupSel ? groupSel.value : "Todos";
+
+  let filteredData = squadData;
+  if (groupFilter !== "Todos") {
+    filteredData = squadData.filter((p) => p.group === groupFilter);
+  }
+
+  [...filteredData]
+    .sort((a, b) => b.attendancePct - a.attendancePct)
+    .slice(0, 5)
+    .forEach((p, i) => {
+      tb.innerHTML += `
       <tr>
-        <td class="text-muted">#${i+1}</td>
+        <td class="text-muted">#${i + 1}</td>
         <td><strong>${p.name}</strong></td>
         <td class="text-primary" style="font-weight:700;">${p.attendancePct}%</td>
         <td><span class="badge badge-success">${p.streak}</span></td>
       </tr>
     `;
+    });
+}
+
+function populateGameInfoPlayerSelect() {
+  const select = document.getElementById("gameInfoPlayerSelect");
+  if (!select) return;
+  select.innerHTML = squadData
+    .map((p) => `<option value="${p.id}">#${p.number} ${p.name}</option>`)
+    .join("");
+}
+
+function openPlayerGameInfoModal(playerId = null) {
+  const select = document.getElementById("gameInfoPlayerSelect");
+  if (!select) return;
+  populateGameInfoPlayerSelect();
+  if (playerId) select.value = String(playerId);
+  document.getElementById("gameInfoModal").classList.remove("hidden");
+}
+
+function closePlayerGameInfoModal() {
+  const modal = document.getElementById("gameInfoModal");
+  if (modal) modal.classList.add("hidden");
+  document.getElementById("gameInfoForm")?.reset();
+}
+
+function savePlayerGameInfo(e) {
+  if (e) e.preventDefault();
+  const playerId = Number(
+    document.getElementById("gameInfoPlayerSelect").value,
+  );
+  const title = document.getElementById("gameInfoTitle").value.trim();
+  const date = document.getElementById("gameInfoDate").value;
+  const downloadUrl = document
+    .getElementById("gameInfoDownloadUrl")
+    .value.trim();
+  const notes = document.getElementById("gameInfoNotes").value.trim();
+
+  if (!playerId || !title || !date) {
+    showToast("Completa el jugador, título y fecha del partido.", "error");
+    return;
+  }
+
+  const player = squadData.find((p) => p.id === playerId);
+  if (!player) {
+    showToast("No se encontró al jugador seleccionado.", "error");
+    return;
+  }
+
+  if (!Array.isArray(player.gameInfo)) player.gameInfo = [];
+
+  player.gameInfo.unshift({
+    id: Date.now(),
+    title,
+    date,
+    type: "partido",
+    downloadUrl,
+    notes,
   });
+
+  saveData();
+  renderPlayerGameInfo();
+  closePlayerGameInfoModal();
+  showToast(
+    `Se enlazó la información del partido a ${player.name}.`,
+    "success",
+  );
+}
+
+function renderPlayerGameInfo() {
+  const container = document.getElementById("playerGameInfoList");
+  if (!container) return;
+
+  if (!canViewGameInfo()) {
+    container.innerHTML = `
+      <div class="player-game-info-locked">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Esta información solo la pueden ver administrador y entrenadores.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const playersWithGameInfo = squadData.filter(
+    (p) => Array.isArray(p.gameInfo) && p.gameInfo.length > 0,
+  );
+  if (playersWithGameInfo.length === 0) {
+    container.innerHTML = `
+      <div class="text-muted" style="padding:1rem 0;">Todavía no hay información de partidos vinculada a ningún jugador.</div>
+    `;
+    return;
+  }
+
+  container.innerHTML = playersWithGameInfo
+    .map((p) => {
+      const items = p.gameInfo
+        .map((info) => {
+          const formattedDate = info.date
+            ? new Date(info.date + "T00:00:00").toLocaleDateString("es-ES", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "Sin fecha";
+          const linkHtml = info.downloadUrl
+            ? `<a class="btn btn-ghost btn-sm" href="${info.downloadUrl}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-download"></i> Descargar</a>`
+            : `<span class="text-muted">Sin enlace de descarga</span>`;
+          const notesHtml = info.notes
+            ? `<p class="text-muted margin-top-sm">${info.notes}</p>`
+            : "";
+
+          return `
+        <div class="player-game-info-entry">
+          <div class="flex-between gap-2 align-start">
+            <div>
+              <strong>${info.title}</strong>
+              <div class="text-muted mono-text" style="font-size:0.7rem; margin-top:0.2rem;">${formattedDate}</div>
+            </div>
+            <span class="badge badge-neon">Partido</span>
+          </div>
+          ${notesHtml}
+          <div class="margin-top-sm">${linkHtml}</div>
+        </div>
+      `;
+        })
+        .join("");
+
+      return `
+      <div class="player-game-info-card">
+        <div class="flex-between align-center margin-bottom-sm">
+          <div class="player-mini">
+            <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" />
+            <div>
+              <strong>#${p.number} ${p.name}</strong>
+              <small>${p.position}</small>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal(${p.id})">
+            <i class="fa-solid fa-link"></i> Enlazar
+          </button>
+        </div>
+        <div class="player-game-info-items">${items}</div>
+      </div>
+    `;
+    })
+    .join("");
 }
 
 // ==========================================================================
@@ -795,49 +1275,49 @@ let isDragging = false;
 let savedPositions = {};
 
 function initDragAndDrop() {
-  const pitch = document.getElementById('tacticalPitch');
+  const pitch = document.getElementById("tacticalPitch");
   if (!pitch) return;
 
   // Load saved positions from localStorage
   try {
-    const saved = localStorage.getItem('laguna_pitch_positions');
+    const saved = localStorage.getItem("laguna_pitch_positions");
     if (saved) savedPositions = JSON.parse(saved);
-  } catch(e) {}
+  } catch (e) {}
 
-  const markers = pitch.querySelectorAll('.player-marker');
-  markers.forEach(marker => {
-    const slot = marker.getAttribute('data-slot');
+  const markers = pitch.querySelectorAll(".player-marker");
+  markers.forEach((marker) => {
+    const slot = marker.getAttribute("data-slot");
     // Restore saved positions
     if (savedPositions[slot]) {
       marker.style.left = savedPositions[slot].left;
-      marker.style.top  = savedPositions[slot].top;
+      marker.style.top = savedPositions[slot].top;
     }
     // Attach events
-    marker.addEventListener('mousedown',  onDragStart);
-    marker.addEventListener('touchstart', onDragStart, { passive: false });
+    marker.addEventListener("mousedown", onDragStart);
+    marker.addEventListener("touchstart", onDragStart, { passive: false });
   });
 
-  document.addEventListener('mousemove', onDragMove, { passive: false });
-  document.addEventListener('touchmove', onDragMove, { passive: false });
-  document.addEventListener('mouseup',   onDragEnd);
-  document.addEventListener('touchend',  onDragEnd);
+  document.addEventListener("mousemove", onDragMove, { passive: false });
+  document.addEventListener("touchmove", onDragMove, { passive: false });
+  document.addEventListener("mouseup", onDragEnd);
+  document.addEventListener("touchend", onDragEnd);
 }
 
 function onDragStart(e) {
-  const marker = e.currentTarget.closest('.player-marker');
+  const marker = e.currentTarget.closest(".player-marker");
   if (!marker) return;
 
   // Se permite manipular jugadores sin importar el rol
-  draggedMarker  = marker;
-  isDragging     = false;
+  draggedMarker = marker;
+  isDragging = false;
 
-  const client   = e.touches ? e.touches[0] : e;
-  dragStartX     = client.clientX;
-  dragStartY     = client.clientY;
+  const client = e.touches ? e.touches[0] : e;
+  dragStartX = client.clientX;
+  dragStartY = client.clientY;
 
   // offsetLeft/offsetTop are already the centre-point (we use left/top + transform:-50%)
   dragInitialLeft = marker.offsetLeft;
-  dragInitialTop  = marker.offsetTop;
+  dragInitialTop = marker.offsetTop;
 
   if (e.cancelable) e.preventDefault();
 }
@@ -852,21 +1332,21 @@ function onDragMove(e) {
   // Threshold of 4px before we call it a drag
   if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
     isDragging = true;
-    draggedMarker.classList.add('is-dragging');
+    draggedMarker.classList.add("is-dragging");
 
-    const pitch = document.getElementById('tacticalPitch');
+    const pitch = document.getElementById("tacticalPitch");
     const pw = pitch.offsetWidth;
     const ph = pitch.offsetHeight;
 
     let newLeft = dragInitialLeft + dx;
-    let newTop  = dragInitialTop  + dy;
+    let newTop = dragInitialTop + dy;
 
     // Clamp within pitch boundaries
     newLeft = Math.max(0, Math.min(newLeft, pw));
-    newTop  = Math.max(0, Math.min(newTop,  ph));
+    newTop = Math.max(0, Math.min(newTop, ph));
 
-    draggedMarker.style.left = (newLeft / pw * 100).toFixed(2) + '%';
-    draggedMarker.style.top  = (newTop  / ph * 100).toFixed(2) + '%';
+    draggedMarker.style.left = ((newLeft / pw) * 100).toFixed(2) + "%";
+    draggedMarker.style.top = ((newTop / ph) * 100).toFixed(2) + "%";
 
     if (e.cancelable) e.preventDefault();
   }
@@ -874,61 +1354,71 @@ function onDragMove(e) {
 
 function onDragEnd() {
   if (!draggedMarker) return;
-  draggedMarker.classList.remove('is-dragging');
+  draggedMarker.classList.remove("is-dragging");
 
   if (isDragging) {
     // Persist new position
-    const slot = draggedMarker.getAttribute('data-slot');
+    const slot = draggedMarker.getAttribute("data-slot");
     savedPositions[slot] = {
       left: draggedMarker.style.left,
-      top:  draggedMarker.style.top
+      top: draggedMarker.style.top,
     };
     try {
-      localStorage.setItem('laguna_pitch_positions', JSON.stringify(savedPositions));
-    } catch(e) {}
-    showToast('Posición guardada.', 'success');
+      localStorage.setItem(
+        "laguna_pitch_positions",
+        JSON.stringify(savedPositions),
+      );
+    } catch (e) {}
+    showToast("Posición guardada.", "success");
   } else {
     // It was a plain click → open the substitution modal
-    const slot = draggedMarker.getAttribute('data-slot');
+    const slot = draggedMarker.getAttribute("data-slot");
     if (slot) changePitchSlot(slot);
   }
 
   draggedMarker = null;
-  isDragging    = false;
+  isDragging = false;
 }
 
 // ==========================================================================
 // MODULE: REGISTRO DE JUGADORES, FOTOGRAFÍAS Y EXPEDIENTES
 // ==========================================================================
 
-let regFilter = 'todos';    // filtro activo de estatus
-let regEditingId = null;    // id del jugador en edición (null = nuevo)
-let currentSelectedPhoto = 'LAGUNA.jpg'; // photo temp
+let regFilter = "todos"; // filtro activo de estatus
+let regEditingId = null; // id del jugador en edición (null = nuevo)
+let currentSelectedPhoto = "LAGUNA.jpg"; // photo temp
 
 function ensureRegFields(player) {
-  if (!player.regStatus)    player.regStatus    = 'Activo';
-  if (!player.birthdate)    player.birthdate    = '';
+  if (!player.regStatus) player.regStatus = "Activo";
+  if (!player.birthdate) player.birthdate = "";
   // Retrocompatibilidad: si tiene phone/tutorName sueltos, migrar a contacts[]
-  if (!player.contacts || !Array.isArray(player.contacts) || player.contacts.length === 0) {
-    player.contacts = [{
-      name:     player.tutorName || ('Familia ' + (player.name || '').split(' ').pop()),
-      phone:    player.phone     || '+52 844 000 0000',
-      relation: 'Tutor'
-    }];
+  if (
+    !player.contacts ||
+    !Array.isArray(player.contacts) ||
+    player.contacts.length === 0
+  ) {
+    player.contacts = [
+      {
+        name:
+          player.tutorName || "Familia " + (player.name || "").split(" ").pop(),
+        phone: player.phone || "+52 844 000 0000",
+        relation: "Tutor",
+      },
+    ];
   }
   // Alias de compatibilidad para código antiguo que usa tutorName/phone directos
   player.tutorName = player.contacts[0].name;
-  player.phone     = player.contacts[0].phone;
-  if (!player.email)        player.email        = '';
-  if (!player.regNotes)     player.regNotes     = '';
-  if (!player.photo)        player.photo        = 'LAGUNA.jpg';
-  if (!player.group)        player.group        = '';
-  if (!player.positionAlt)  player.positionAlt  = '';
+  player.phone = player.contacts[0].phone;
+  if (!player.email) player.email = "";
+  if (!player.regNotes) player.regNotes = "";
+  if (!player.photo) player.photo = "LAGUNA.jpg";
+  if (!player.group) player.group = "";
+  if (!player.positionAlt) player.positionAlt = "";
   if (!player.linkedSiblingId) player.linkedSiblingId = null;
-  if (player.docActa === undefined)    player.docActa    = true;
-  if (player.docCURP === undefined)    player.docCURP    = true;
-  if (player.docMedico === undefined)  player.docMedico  = true;
-  if (player.docINE === undefined)     player.docINE     = true;
+  if (player.docActa === undefined) player.docActa = true;
+  if (player.docCURP === undefined) player.docCURP = true;
+  if (player.docMedico === undefined) player.docMedico = true;
+  if (player.docINE === undefined) player.docINE = true;
   if (player.docEscolar === undefined) player.docEscolar = false;
   return player;
 }
@@ -938,26 +1428,29 @@ function handlePhotoSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(evt) {
+  reader.onload = function (evt) {
     currentSelectedPhoto = evt.target.result;
-    document.getElementById('regPhotoPreview').src = currentSelectedPhoto;
+    document.getElementById("regPhotoPreview").src = currentSelectedPhoto;
   };
   reader.readAsDataURL(file);
 }
 
 /** Renders the registration table with current filter + search */
 function renderRegTable() {
-  const tbody       = document.getElementById('regTableBody');
-  const countEl     = document.getElementById('regSquadCount');
-  const searchVal   = (document.getElementById('regSearchInput')?.value || '').toLowerCase();
+  const tbody = document.getElementById("regTableBody");
+  const countEl = document.getElementById("regSquadCount");
+  const searchVal = (
+    document.getElementById("regSearchInput")?.value || ""
+  ).toLowerCase();
   if (!tbody) return;
-  tbody.innerHTML   = '';
+  tbody.innerHTML = "";
 
   squadData.forEach(ensureRegFields);
 
-  const filtered = squadData.filter(p => {
-    const matchFilter = regFilter === 'todos' || p.regStatus === regFilter;
-    const matchSearch = !searchVal ||
+  const filtered = squadData.filter((p) => {
+    const matchFilter = regFilter === "todos" || p.regStatus === regFilter;
+    const matchSearch =
+      !searchVal ||
       p.name.toLowerCase().includes(searchVal) ||
       String(p.number).includes(searchVal) ||
       (p.tutorName && p.tutorName.toLowerCase().includes(searchVal)) ||
@@ -965,24 +1458,38 @@ function renderRegTable() {
     return matchFilter && matchSearch;
   });
 
-  if (countEl) countEl.textContent = `${squadData.length} Niño${squadData.length !== 1 ? 's' : ''}`;
+  if (countEl)
+    countEl.textContent = `${squadData.length} Niño${squadData.length !== 1 ? "s" : ""}`;
 
   if (filtered.length === 0) {
     tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:2rem;">Sin niños registrados con ese criterio.</td></tr>`;
     return;
   }
 
-  const isDT = currentRole === 'dt';
+  const isDT = currentRole === "dt";
 
-  filtered.sort((a, b) => a.number - b.number).forEach(p => {
-    const statusKey = (p.regStatus || 'Activo').toLowerCase().replace(/ /g, '');
-    const badgeClass = `badge badge-status-${statusKey}`;
-    
-    // Contar documentos cargados (máx 5)
-    const docCount = (p.docActa ? 1 : 0) + (p.docCURP ? 1 : 0) + (p.docMedico ? 1 : 0) + (p.docINE ? 1 : 0) + (p.docEscolar ? 1 : 0);
-    const docBadge = docCount === 5 ? '<span class="badge badge-neon" style="font-size:0.65rem;">Docs: 5/5 Complete</span>' : `<span class="badge badge-warning" style="font-size:0.65rem;">Docs: ${docCount}/5</span>`;
+  filtered
+    .sort((a, b) => a.number - b.number)
+    .forEach((p) => {
+      const statusKey = (p.regStatus || "Activo")
+        .toLowerCase()
+        .replace(/ /g, "");
+      const badgeClass = `badge badge-status-${statusKey}`;
 
-    const actionsCells = isDT ? `
+      // Contar documentos cargados (máx 5)
+      const docCount =
+        (p.docActa ? 1 : 0) +
+        (p.docCURP ? 1 : 0) +
+        (p.docMedico ? 1 : 0) +
+        (p.docINE ? 1 : 0) +
+        (p.docEscolar ? 1 : 0);
+      const docBadge =
+        docCount === 5
+          ? '<span class="badge badge-neon" style="font-size:0.65rem;">Docs: 5/5 Complete</span>'
+          : `<span class="badge badge-warning" style="font-size:0.65rem;">Docs: ${docCount}/5</span>`;
+
+      const actionsCells = isDT
+        ? `
       <td>
         <button class="reg-action-btn doc" title="Ver Expediente / Descargar" onclick="openDocModal(${p.id})">
           <i class="fa-solid fa-folder-open"></i>
@@ -993,21 +1500,22 @@ function renderRegTable() {
         <button class="reg-action-btn delete" title="Eliminar" onclick="confirmDeletePlayer(${p.id})">
           <i class="fa-solid fa-trash"></i>
         </button>
-      </td>` : `<td>
+      </td>`
+        : `<td>
         <button class="reg-action-btn doc" title="Ver Expediente / Descargar" onclick="openDocModal(${p.id})">
           <i class="fa-solid fa-folder-open"></i> Ver Expediente
         </button>
       </td>`;
 
-    tbody.innerHTML += `
+      tbody.innerHTML += `
       <tr>
         <td class="mono-text text-primary" style="font-weight:700;">#${p.number}</td>
         <td>
           <div style="display:flex; align-items:center; gap:0.8rem;">
-            <img src="${p.photo || 'LAGUNA.jpg'}" alt="${p.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
+            <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
             <div>
               <strong>${p.name}</strong>
-              <br><small class="text-muted">Tutor: ${p.tutorName || 'N/A'}</small>
+              <br><small class="text-muted">Tutor: ${p.tutorName || "N/A"}</small>
             </div>
           </div>
         </td>
@@ -1018,52 +1526,56 @@ function renderRegTable() {
         </td>
         ${actionsCells}
       </tr>`;
-  });
+    });
 
   applyRolePermissions();
 }
 
 function setRegFilter(filter, btn) {
   regFilter = filter;
-  document.querySelectorAll('.reg-filter-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  document
+    .querySelectorAll(".reg-filter-btn")
+    .forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
   renderRegTable();
 }
 
-function filterRegTable() { renderRegTable(); }
+function filterRegTable() {
+  renderRegTable();
+}
 
 /** UI helpers for contact rows */
 function addNextContact() {
-  const row2 = document.getElementById('contactRow2');
-  const row3 = document.getElementById('contactRow3');
-  const btn  = document.getElementById('addContactBtn');
-  if (row2.classList.contains('hidden')) {
-    row2.classList.remove('hidden');
-  } else if (row3.classList.contains('hidden')) {
-    row3.classList.remove('hidden');
-    btn.style.display = 'none'; // ya hay 3
+  const row2 = document.getElementById("contactRow2");
+  const row3 = document.getElementById("contactRow3");
+  const btn = document.getElementById("addContactBtn");
+  if (row2.classList.contains("hidden")) {
+    row2.classList.remove("hidden");
+  } else if (row3.classList.contains("hidden")) {
+    row3.classList.remove("hidden");
+    btn.style.display = "none"; // ya hay 3
   }
 }
 
 function removeContact(num) {
   const row = document.getElementById(`contactRow${num}`);
   if (!row) return;
-  row.classList.add('hidden');
+  row.classList.add("hidden");
   // Limpiar campos
-  const nameEl  = document.getElementById(`contact${num}Name`);
+  const nameEl = document.getElementById(`contact${num}Name`);
   const phoneEl = document.getElementById(`contact${num}Phone`);
-  if (nameEl)  nameEl.value  = '';
-  if (phoneEl) phoneEl.value = '';
+  if (nameEl) nameEl.value = "";
+  if (phoneEl) phoneEl.value = "";
   // Mostrar botón agregar otra vez
-  document.getElementById('addContactBtn').style.display = '';
+  document.getElementById("addContactBtn").style.display = "";
 }
 
 /** Populates the sibling-linking select with current squad members */
 function populateSiblingSelect(excludeId) {
-  const sel = document.getElementById('regLinkedSibling');
+  const sel = document.getElementById("regLinkedSibling");
   if (!sel) return;
   sel.innerHTML = '<option value="">Sin vinculación manual</option>';
-  squadData.forEach(p => {
+  squadData.forEach((p) => {
     if (p.id === excludeId) return;
     sel.innerHTML += `<option value="${p.id}">#${p.number} ${p.name}</option>`;
   });
@@ -1072,97 +1584,134 @@ function populateSiblingSelect(excludeId) {
 function handlePlayerRegSubmit(e) {
   e.preventDefault();
 
-  const name         = document.getElementById('regName').value.trim();
-  const number       = parseInt(document.getElementById('regNumber').value);
-  const group        = document.getElementById('regGroup').value;
-  const linkedId     = document.getElementById('regLinkedSibling').value ? parseInt(document.getElementById('regLinkedSibling').value) : null;
-  const position     = document.getElementById('regPosition').value;
-  const positionAlt  = document.getElementById('regPositionAlt').value;
-  const birthdate    = document.getElementById('regBirthdate').value;
-  const email        = document.getElementById('regEmail').value.trim();
-  const regStatus    = document.getElementById('regStatus').value;
-  const starter      = document.getElementById('regStarter').value === 'true';
-  const regNotes     = document.getElementById('regNotes').value.trim();
+  const name = document.getElementById("regName").value.trim();
+  const number = parseInt(document.getElementById("regNumber").value);
+  const group = document.getElementById("regGroup").value;
+  const linkedId = document.getElementById("regLinkedSibling").value
+    ? parseInt(document.getElementById("regLinkedSibling").value)
+    : null;
+  const position = document.getElementById("regPosition").value;
+  const positionAlt = document.getElementById("regPositionAlt").value;
+  const birthdate = document.getElementById("regBirthdate").value;
+  const email = document.getElementById("regEmail").value.trim();
+  const regStatus = document.getElementById("regStatus").value;
+  const starter = document.getElementById("regStarter").value === "true";
+  const regNotes = document.getElementById("regNotes").value.trim();
 
   // Recopilar contactos
   const contacts = [];
-  const c1Name  = document.getElementById('contact1Name').value.trim();
-  const c1Phone = document.getElementById('contact1Phone').value.trim();
-  const c1Rel   = document.getElementById('contact1Relation').value;
+  const c1Name = document.getElementById("contact1Name").value.trim();
+  const c1Phone = document.getElementById("contact1Phone").value.trim();
+  const c1Rel = document.getElementById("contact1Relation").value;
   if (c1Name) contacts.push({ name: c1Name, phone: c1Phone, relation: c1Rel });
 
-  const c2Name  = document.getElementById('contact2Name').value.trim();
-  const c2Phone = document.getElementById('contact2Phone').value.trim();
-  const c2Rel   = document.getElementById('contact2Relation').value;
-  if (c2Name && !document.getElementById('contactRow2').classList.contains('hidden')) {
+  const c2Name = document.getElementById("contact2Name").value.trim();
+  const c2Phone = document.getElementById("contact2Phone").value.trim();
+  const c2Rel = document.getElementById("contact2Relation").value;
+  if (
+    c2Name &&
+    !document.getElementById("contactRow2").classList.contains("hidden")
+  ) {
     contacts.push({ name: c2Name, phone: c2Phone, relation: c2Rel });
   }
 
-  const c3Name  = document.getElementById('contact3Name').value.trim();
-  const c3Phone = document.getElementById('contact3Phone').value.trim();
-  const c3Rel   = document.getElementById('contact3Relation').value;
-  if (c3Name && !document.getElementById('contactRow3').classList.contains('hidden')) {
+  const c3Name = document.getElementById("contact3Name").value.trim();
+  const c3Phone = document.getElementById("contact3Phone").value.trim();
+  const c3Rel = document.getElementById("contact3Relation").value;
+  if (
+    c3Name &&
+    !document.getElementById("contactRow3").classList.contains("hidden")
+  ) {
     contacts.push({ name: c3Name, phone: c3Phone, relation: c3Rel });
   }
 
   // Documentos
-  const docActa    = document.getElementById('docActa').checked;
-  const docCURP    = document.getElementById('docCURP').checked;
-  const docMedico  = document.getElementById('docMedico').checked;
-  const docINE     = document.getElementById('docINE').checked;
-  const docEscolar = document.getElementById('docEscolar').checked;
+  const docActa = document.getElementById("docActa").checked;
+  const docCURP = document.getElementById("docCURP").checked;
+  const docMedico = document.getElementById("docMedico").checked;
+  const docINE = document.getElementById("docINE").checked;
+  const docEscolar = document.getElementById("docEscolar").checked;
 
-  const dorsalTaken = squadData.find(p => p.number === number && p.id !== regEditingId);
+  const dorsalTaken = squadData.find(
+    (p) => p.number === number && p.id !== regEditingId,
+  );
   if (dorsalTaken) {
-    showToast(`El dorsal #${number} ya pertenece a ${dorsalTaken.name}.`, 'error');
+    showToast(
+      `El dorsal #${number} ya pertenece a ${dorsalTaken.name}.`,
+      "error",
+    );
     return;
   }
 
   // Alias de compatibilidad
-  const tutorName = contacts[0]?.name || '';
-  const phone     = contacts[0]?.phone || '';
+  const tutorName = contacts[0]?.name || "";
+  const phone = contacts[0]?.phone || "";
 
   if (regEditingId !== null) {
-    const p = squadData.find(x => x.id === regEditingId);
+    const p = squadData.find((x) => x.id === regEditingId);
     if (p) {
-      p.name            = name;
-      p.number          = number;
-      p.group           = group;
+      p.name = name;
+      p.number = number;
+      p.group = group;
       p.linkedSiblingId = linkedId;
-      p.contacts        = contacts;
-      p.tutorName       = tutorName;
-      p.phone           = phone;
-      p.position        = position;
-      p.positionAlt     = positionAlt;
-      p.birthdate       = birthdate;
-      p.email           = email;
-      p.regStatus       = regStatus;
-      p.starter         = starter;
-      p.regNotes        = regNotes;
-      p.photo           = currentSelectedPhoto;
-      p.docActa         = docActa;
-      p.docCURP         = docCURP;
-      p.docMedico       = docMedico;
-      p.docINE          = docINE;
-      p.docEscolar      = docEscolar;
+      p.contacts = contacts;
+      p.tutorName = tutorName;
+      p.phone = phone;
+      p.position = position;
+      p.positionAlt = positionAlt;
+      p.birthdate = birthdate;
+      p.email = email;
+      p.regStatus = regStatus;
+      p.starter = starter;
+      p.regNotes = regNotes;
+      p.photo = currentSelectedPhoto;
+      p.docActa = docActa;
+      p.docCURP = docCURP;
+      p.docMedico = docMedico;
+      p.docINE = docINE;
+      p.docEscolar = docEscolar;
       saveData();
-      showToast(`Información y documentos de ${name} actualizados.`, 'success');
+      showToast(`Información y documentos de ${name} actualizados.`, "success");
     }
   } else {
     const newId = Date.now();
     squadData.push({
-      id: newId, number, name, position, positionAlt, group,
+      id: newId,
+      number,
+      name,
+      position,
+      positionAlt,
+      group,
       linkedSiblingId: linkedId,
-      contacts, tutorName, phone,
-      birthdate, email, regStatus, starter, regNotes,
+      contacts,
+      tutorName,
+      phone,
+      birthdate,
+      email,
+      regStatus,
+      starter,
+      regNotes,
       photo: currentSelectedPhoto,
-      docActa, docCURP, docMedico, docINE, docEscolar,
-      attendancePct: 100, streak: '1 A',
-      status: 'Ausente', checkinTime: '-', injured: false,
-      goals: 0, assists: 0, mins: 0, cards: 0
+      docActa,
+      docCURP,
+      docMedico,
+      docINE,
+      docEscolar,
+      attendancePct: 100,
+      streak: "1 A",
+      status: "Ausente",
+      checkinTime: "-",
+      injured: false,
+      goals: 0,
+      assists: 0,
+      mins: 0,
+      cards: 0,
     });
     saveData();
-    showToast(`Niño ${name} registrado correctamente con su expediente.`, 'success');
+    showToast(
+      `Niño ${name} registrado correctamente con su expediente.`,
+      "success",
+    );
   }
 
   resetRegForm();
@@ -1170,94 +1719,114 @@ function handlePlayerRegSubmit(e) {
   renderSquadCallupList();
   populateQuickPlayerSelect();
   populatePaymentPlayerSelect();
+  populateDynamicGroups();
   updatePaymentSummaryStats();
 }
 
-
 function openEditPlayer(id) {
-  const p = squadData.find(x => x.id === id);
+  const p = squadData.find((x) => x.id === id);
   if (!p) return;
   ensureRegFields(p);
 
   regEditingId = id;
-  currentSelectedPhoto = p.photo || 'LAGUNA.jpg';
+  currentSelectedPhoto = p.photo || "LAGUNA.jpg";
 
-  document.getElementById('regEditId').value      = id;
-  document.getElementById('regName').value        = p.name;
-  document.getElementById('regNumber').value      = p.number;
-  document.getElementById('regGroup').value       = p.group || '';
-  document.getElementById('regPosition').value    = p.position;
-  document.getElementById('regPositionAlt').value = p.positionAlt || '';
-  document.getElementById('regBirthdate').value   = p.birthdate || '';
-  document.getElementById('regEmail').value       = p.email || '';
-  document.getElementById('regStatus').value      = p.regStatus || 'Activo';
-  document.getElementById('regStarter').value     = p.starter ? 'true' : 'false';
-  document.getElementById('regNotes').value       = p.regNotes || '';
-  document.getElementById('regPhotoPreview').src  = currentSelectedPhoto;
+  document.getElementById("regEditId").value = id;
+  document.getElementById("regName").value = p.name;
+  document.getElementById("regNumber").value = p.number;
+  document.getElementById("regGroup").value = p.group || "";
+  document.getElementById("regPosition").value = p.position;
+  document.getElementById("regPositionAlt").value = p.positionAlt || "";
+  document.getElementById("regBirthdate").value = p.birthdate || "";
+  document.getElementById("regEmail").value = p.email || "";
+  document.getElementById("regStatus").value = p.regStatus || "Activo";
+  document.getElementById("regStarter").value = p.starter ? "true" : "false";
+  document.getElementById("regNotes").value = p.regNotes || "";
+  document.getElementById("regPhotoPreview").src = currentSelectedPhoto;
 
   // Cargar contactos
   const contacts = p.contacts || [];
   const fillContact = (num, c) => {
     const row = document.getElementById(`contactRow${num}`);
-    document.getElementById(`contact${num}Name`).value  = c ? c.name  : '';
-    document.getElementById(`contact${num}Phone`).value = c ? c.phone : '';
-    document.getElementById(`contact${num}Relation`).value = c ? c.relation : 'Tutor';
+    document.getElementById(`contact${num}Name`).value = c ? c.name : "";
+    document.getElementById(`contact${num}Phone`).value = c ? c.phone : "";
+    document.getElementById(`contact${num}Relation`).value = c
+      ? c.relation
+      : "Tutor";
     if (num > 1) {
-      if (c && c.name) { row.classList.remove('hidden'); } else { row.classList.add('hidden'); }
+      if (c && c.name) {
+        row.classList.remove("hidden");
+      } else {
+        row.classList.add("hidden");
+      }
     }
   };
   fillContact(1, contacts[0]);
   fillContact(2, contacts[1]);
   fillContact(3, contacts[2]);
-  document.getElementById('addContactBtn').style.display = contacts.length >= 3 ? 'none' : '';
+  document.getElementById("addContactBtn").style.display =
+    contacts.length >= 3 ? "none" : "";
 
   // Vinculación de hermano
   populateSiblingSelect(id);
-  document.getElementById('regLinkedSibling').value = p.linkedSiblingId ? String(p.linkedSiblingId) : '';
+  document.getElementById("regLinkedSibling").value = p.linkedSiblingId
+    ? String(p.linkedSiblingId)
+    : "";
 
   // Documentos
-  document.getElementById('docActa').checked    = !!p.docActa;
-  document.getElementById('docCURP').checked    = !!p.docCURP;
-  document.getElementById('docMedico').checked  = !!p.docMedico;
-  document.getElementById('docINE').checked     = !!p.docINE;
-  document.getElementById('docEscolar').checked = !!p.docEscolar;
+  document.getElementById("docActa").checked = !!p.docActa;
+  document.getElementById("docCURP").checked = !!p.docCURP;
+  document.getElementById("docMedico").checked = !!p.docMedico;
+  document.getElementById("docINE").checked = !!p.docINE;
+  document.getElementById("docEscolar").checked = !!p.docEscolar;
 
-  document.getElementById('regFormTitle').innerHTML = `<i class="fa-solid fa-pen text-primary"></i> Editando: ${p.name}`;
-  document.getElementById('regSubmitBtn').innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> GUARDAR CAMBIOS`;
-  document.getElementById('regCancelBtn').style.display = '';
+  document.getElementById("regFormTitle").innerHTML =
+    `<i class="fa-solid fa-pen text-primary"></i> Editando: ${p.name}`;
+  document.getElementById("regSubmitBtn").innerHTML =
+    `<i class="fa-solid fa-cloud-arrow-up"></i> GUARDAR CAMBIOS`;
+  document.getElementById("regCancelBtn").style.display = "";
 
-  document.getElementById('playerRegForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document
+    .getElementById("playerRegForm")
+    .scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function cancelPlayerEdit() { resetRegForm(); }
+function cancelPlayerEdit() {
+  resetRegForm();
+}
 
 function resetRegForm() {
   regEditingId = null;
-  currentSelectedPhoto = 'LAGUNA.jpg';
-  document.getElementById('playerRegForm').reset();
-  document.getElementById('regPhotoPreview').src = 'LAGUNA.jpg';
-  document.getElementById('regEditId').value = '';
+  currentSelectedPhoto = "LAGUNA.jpg";
+  document.getElementById("playerRegForm").reset();
+  document.getElementById("regPhotoPreview").src = "LAGUNA.jpg";
+  document.getElementById("regEditId").value = "";
   // Ocultar contactos 2 y 3
-  document.getElementById('contactRow2').classList.add('hidden');
-  document.getElementById('contactRow3').classList.add('hidden');
-  document.getElementById('addContactBtn').style.display = '';
+  document.getElementById("contactRow2").classList.add("hidden");
+  document.getElementById("contactRow3").classList.add("hidden");
+  document.getElementById("addContactBtn").style.display = "";
   // Repoblar selector de hermano
   populateSiblingSelect(null);
-  document.getElementById('regFormTitle').innerHTML = `<i class="fa-solid fa-user-plus text-primary"></i> Nuevo Jugador`;
-  document.getElementById('regSubmitBtn').innerHTML = `<i class="fa-solid fa-user-plus"></i> REGISTRAR JUGADOR`;
-  document.getElementById('regCancelBtn').style.display = 'none';
+  document.getElementById("regFormTitle").innerHTML =
+    `<i class="fa-solid fa-user-plus text-primary"></i> Nuevo Jugador`;
+  document.getElementById("regSubmitBtn").innerHTML =
+    `<i class="fa-solid fa-user-plus"></i> REGISTRAR JUGADOR`;
+  document.getElementById("regCancelBtn").style.display = "none";
 }
 
 function confirmDeletePlayer(id) {
-  const p = squadData.find(x => x.id === id);
+  const p = squadData.find((x) => x.id === id);
   if (!p) return;
 
-  if (!confirm(`¿Eliminar permanentemente a ${p.name} (#${p.number}) del equipo?`)) return;
+  if (
+    !confirm(`¿Eliminar permanentemente a ${p.name} (#${p.number}) del equipo?`)
+  )
+    return;
 
-  squadData = squadData.filter(x => x.id !== id);
-  injuredData = injuredData.filter(x => x.playerId !== id);
+  squadData = squadData.filter((x) => x.id !== id);
+  injuredData = injuredData.filter((x) => x.playerId !== id);
   saveData();
-  showToast(`${p.name} eliminado de la plantilla.`, 'warning');
+  showToast(`${p.name} eliminado de la plantilla.`, "warning");
   renderRegTable();
   renderSquadCallupList();
   populateQuickPlayerSelect();
@@ -1269,48 +1838,55 @@ function confirmDeletePlayer(id) {
 let currentDocPlayerId = null;
 
 function openDocModal(playerId) {
-  const p = squadData.find(x => x.id === playerId);
+  const p = squadData.find((x) => x.id === playerId);
   if (!p) return;
   ensureRegFields(p);
 
   currentDocPlayerId = playerId;
 
-  document.getElementById('docModalPhoto').src = p.photo || 'LAGUNA.jpg';
-  document.getElementById('docModalName').innerText = p.name;
+  document.getElementById("docModalPhoto").src = p.photo || "LAGUNA.jpg";
+  document.getElementById("docModalName").innerText = p.name;
 
-  const groupLabel = p.group ? ` · ${p.group}` : '';
-  const altPos = p.positionAlt ? ` / ${p.positionAlt}` : '';
-  document.getElementById('docModalSub').innerText = `Dorsal #${p.number} · ${p.position}${altPos}${groupLabel} · ${p.regStatus}`;
+  const groupLabel = p.group ? ` · ${p.group}` : "";
+  const altPos = p.positionAlt ? ` / ${p.positionAlt}` : "";
+  document.getElementById("docModalSub").innerText =
+    `Dorsal #${p.number} · ${p.position}${altPos}${groupLabel} · ${p.regStatus}`;
 
   // Mostrar contactos
-  const contacts = p.contacts || [{ name: p.tutorName, phone: p.phone, relation: 'Tutor' }];
-  const contactsHtml = contacts.map((c, i) =>
-    `<div><i class="fa-solid fa-${i === 0 ? 'user-group' : 'phone'}"></i> ${c.relation}: <strong>${c.name}</strong> — ${c.phone}</div>`
-  ).join('');
-  document.getElementById('docModalTutor').innerHTML = contactsHtml || `<i class="fa-solid fa-user-group"></i> Sin contactos`;
-  document.getElementById('docModalPhone').innerHTML = '';
+  const contacts = p.contacts || [
+    { name: p.tutorName, phone: p.phone, relation: "Tutor" },
+  ];
+  const contactsHtml = contacts
+    .map(
+      (c, i) =>
+        `<div><i class="fa-solid fa-${i === 0 ? "user-group" : "phone"}"></i> ${c.relation}: <strong>${c.name}</strong> — ${c.phone}</div>`,
+    )
+    .join("");
+  document.getElementById("docModalTutor").innerHTML =
+    contactsHtml || `<i class="fa-solid fa-user-group"></i> Sin contactos`;
+  document.getElementById("docModalPhone").innerHTML = "";
 
   // Vinculación de hermano
-  const phoneEl = document.getElementById('docModalPhone');
+  const phoneEl = document.getElementById("docModalPhone");
   if (p.linkedSiblingId) {
-    const sib = squadData.find(x => x.id === p.linkedSiblingId);
+    const sib = squadData.find((x) => x.id === p.linkedSiblingId);
     if (sib) {
       phoneEl.innerHTML = `<i class="fa-solid fa-link text-warning"></i> Precio Hermano vinculado con: <strong>#${sib.number} ${sib.name}</strong>`;
     }
   }
 
-  const container = document.getElementById('docModalItems');
-  container.innerHTML = '';
+  const container = document.getElementById("docModalItems");
+  container.innerHTML = "";
 
   const docs = [
-    { title: 'Acta de Nacimiento',               key: 'docActa' },
-    { title: 'CURP Oficial',                      key: 'docCURP' },
-    { title: 'Certificado Médico',                key: 'docMedico' },
-    { title: 'Identificación del Tutor',          key: 'docINE' },
-    { title: 'Certificado Escolar / Credencial',  key: 'docEscolar' }
+    { title: "Acta de Nacimiento", key: "docActa" },
+    { title: "CURP Oficial", key: "docCURP" },
+    { title: "Certificado Médico", key: "docMedico" },
+    { title: "Identificación del Tutor", key: "docINE" },
+    { title: "Certificado Escolar / Credencial", key: "docEscolar" },
   ];
 
-  docs.forEach(d => {
+  docs.forEach((d) => {
     const isReady = p[d.key];
     const badge = isReady
       ? '<span class="badge badge-success"><i class="fa-solid fa-check"></i> ENTREGADO Y VERIFICADO</span>'
@@ -1327,15 +1903,15 @@ function openDocModal(playerId) {
     `;
   });
 
-  document.getElementById('playerDocModal').classList.remove('hidden');
+  document.getElementById("playerDocModal").classList.remove("hidden");
 }
 
 function closeDocModal() {
-  document.getElementById('playerDocModal').classList.add('hidden');
+  document.getElementById("playerDocModal").classList.add("hidden");
 }
 
 function printOrDownloadDoc() {
-  showToast('Generando Ficha Oficial en PDF para impresión...', 'info');
+  showToast("Generando Ficha Oficial en PDF para impresión...", "info");
   window.print();
 }
 
@@ -1344,94 +1920,114 @@ function printOrDownloadDoc() {
 // ==========================================================================
 
 function populatePaymentPlayerSelect() {
-  const select = document.getElementById('payPlayerSelect');
-  const familySelect = document.getElementById('payFamilySelect');
+  const select = document.getElementById("payPlayerSelect");
+  const familySelect = document.getElementById("payFamilySelect");
   if (!select) return;
 
-  select.innerHTML = '<option value="" disabled selected>Selecciona un alumno...</option>';
-  if (familySelect) familySelect.innerHTML = '<option value="" disabled selected>Selecciona una familia...</option>';
+  select.innerHTML =
+    '<option value="" disabled selected>Selecciona un alumno...</option>';
+  if (familySelect)
+    familySelect.innerHTML =
+      '<option value="" disabled selected>Selecciona una familia...</option>';
 
   const familiesMap = {};
 
-  squadData.forEach(p => {
+  squadData.forEach((p) => {
     ensureRegFields(p);
     const siblings = detectSiblings(p.id);
-    const sibLabel = siblings.length > 0 ? ` (Hermano: ${siblings.map(s => '#' + s.number + ' ' + s.name).join(', ')})` : '';
+    const sibLabel =
+      siblings.length > 0
+        ? ` (Hermano: ${siblings.map((s) => "#" + s.number + " " + s.name).join(", ")})`
+        : "";
     select.innerHTML += `<option value="${p.id}">#${p.number} ${p.name} - Tutor: ${p.tutorName}${sibLabel}</option>`;
 
     // Agrupar por tutor/familia
-    const tName = p.tutorName || 'Sin Tutor';
+    const tName = p.tutorName || "Sin Tutor";
     if (!familiesMap[tName]) familiesMap[tName] = [];
     familiesMap[tName].push(p);
   });
 
   if (familySelect) {
-    Object.keys(familiesMap).forEach(famName => {
+    Object.keys(familiesMap).forEach((famName) => {
       const children = familiesMap[famName];
-      const tag = children.length > 1 ? ` (${children.length} Hermanos - PLAN FAMILIA)` : ` (1 Hijo)`;
+      const tag =
+        children.length > 1
+          ? ` (${children.length} Hermanos - PLAN FAMILIA)`
+          : ` (1 Hijo)`;
       familySelect.innerHTML += `<option value="${famName}">${famName}${tag}</option>`;
     });
   }
 
-  document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById("payDate").value = new Date()
+    .toISOString()
+    .split("T")[0];
 }
 
 function togglePaymentScope(mode) {
-  const btnInd = document.getElementById('btnModeIndividual');
-  const btnFam = document.getElementById('btnModeFamily');
-  const groupInd = document.getElementById('groupPlayerSelect');
-  const groupFam = document.getElementById('groupFamilySelect');
-  const scopeInput = document.getElementById('payScopeMode');
-  const bundleCard = document.getElementById('familyBundleCard');
-  const siblingAlert = document.getElementById('siblingAlertBox');
+  const btnInd = document.getElementById("btnModeIndividual");
+  const btnFam = document.getElementById("btnModeFamily");
+  const groupInd = document.getElementById("groupPlayerSelect");
+  const groupFam = document.getElementById("groupFamilySelect");
+  const scopeInput = document.getElementById("payScopeMode");
+  const bundleCard = document.getElementById("familyBundleCard");
+  const siblingAlert = document.getElementById("siblingAlertBox");
 
   scopeInput.value = mode;
 
-  if (mode === 'family') {
-    btnFam.classList.add('active');
-    btnInd.classList.remove('active');
-    groupFam.classList.remove('hidden');
-    groupInd.classList.add('hidden');
-    siblingAlert.classList.add('hidden');
+  if (mode === "family") {
+    btnFam.classList.add("active");
+    btnInd.classList.remove("active");
+    groupFam.classList.remove("hidden");
+    groupInd.classList.add("hidden");
+    siblingAlert.classList.add("hidden");
     populatePaymentFamilySelect();
   } else {
-    btnInd.classList.add('active');
-    btnFam.classList.remove('active');
-    groupInd.classList.remove('hidden');
-    groupFam.classList.add('hidden');
-    bundleCard.classList.add('hidden');
+    btnInd.classList.add("active");
+    btnFam.classList.remove("active");
+    groupInd.classList.remove("hidden");
+    groupFam.classList.add("hidden");
+    bundleCard.classList.add("hidden");
   }
 }
 
 function onPaymentFamilyChange() {
-  const familyName = document.getElementById('payFamilySelect').value;
-  const children = squadData.filter(p => p.tutorName && p.tutorName.trim().toLowerCase() === familyName.trim().toLowerCase());
+  const familyName = document.getElementById("payFamilySelect").value;
+  const children = squadData.filter(
+    (p) =>
+      p.tutorName &&
+      p.tutorName.trim().toLowerCase() === familyName.trim().toLowerCase(),
+  );
 
-  const bundleCard = document.getElementById('familyBundleCard');
-  const cardTitle = document.getElementById('famCardTitle');
-  const cardBadge = document.getElementById('famCardBadge');
-  const childrenList = document.getElementById('famChildrenList');
-  const grandTotalEl = document.getElementById('famGrandTotalDisplay');
+  const bundleCard = document.getElementById("familyBundleCard");
+  const cardTitle = document.getElementById("famCardTitle");
+  const cardBadge = document.getElementById("famCardBadge");
+  const childrenList = document.getElementById("famChildrenList");
+  const grandTotalEl = document.getElementById("famGrandTotalDisplay");
 
   if (children.length === 0) return;
 
   cardTitle.innerHTML = `<i class="fa-solid fa-people-roof text-warning"></i> PAQUETE: ${familyName.toUpperCase()}`;
-  cardBadge.innerText = `${children.length} HERMANO${children.length > 1 ? 'S' : ''}`;
-  childrenList.innerHTML = '';
+  cardBadge.innerText = `${children.length} HERMANO${children.length > 1 ? "S" : ""}`;
+  childrenList.innerHTML = "";
 
-  const conceptSelect = document.getElementById('payConcept');
-  const basePrice = parseFloat(conceptSelect.options[conceptSelect.selectedIndex].getAttribute('data-amount')) || 1200;
+  const conceptSelect = document.getElementById("payConcept");
+  const basePrice =
+    parseFloat(
+      conceptSelect.options[conceptSelect.selectedIndex].getAttribute(
+        "data-amount",
+      ),
+    ) || 1200;
 
   let grandTotal = 0;
   let totalDiscounts = 0;
 
   children.forEach((child, index) => {
     let childPrice = basePrice;
-    let discTag = '';
+    let discTag = "";
 
     if (index > 0) {
       // 2º Hermano en adelante tiene 20% de descuento
-      const disc = basePrice * 0.20;
+      const disc = basePrice * 0.2;
       childPrice = basePrice - disc;
       totalDiscounts += disc;
       discTag = `<span class="badge badge-warning"><i class="fa-solid fa-tag"></i> 2º Hermano (-20%)</span>`;
@@ -1444,7 +2040,7 @@ function onPaymentFamilyChange() {
     childrenList.innerHTML += `
       <div class="fam-child-row">
         <div class="fam-child-info">
-          <img src="${child.photo || 'LAGUNA.jpg'}" alt="${child.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
+          <img src="${child.photo || "LAGUNA.jpg"}" alt="${child.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
           <div>
             <strong>#${child.number} ${child.name}</strong>
             <br><small class="text-muted">${child.position}</small>
@@ -1452,32 +2048,39 @@ function onPaymentFamilyChange() {
         </div>
         <div class="fam-child-price-col">
           ${discTag}
-          <div class="mono-text font-bold text-success mt-1">$${childPrice.toLocaleString('es-MX', {minimumFractionDigits:2})} MXN</div>
+          <div class="mono-text font-bold text-success mt-1">$${childPrice.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN</div>
         </div>
       </div>
     `;
   });
 
-  grandTotalEl.innerText = `$${grandTotal.toLocaleString('es-MX', {minimumFractionDigits:2})} MXN`;
-  document.getElementById('payBaseAmount').value = (basePrice * children.length);
-  document.getElementById('payDiscountPct').value = ((totalDiscounts / (basePrice * children.length)) * 100).toFixed(0);
-  document.getElementById('payFinalAmount').value = grandTotal.toFixed(2);
+  grandTotalEl.innerText = `$${grandTotal.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN`;
+  document.getElementById("payBaseAmount").value = basePrice * children.length;
+  document.getElementById("payDiscountPct").value = (
+    (totalDiscounts / (basePrice * children.length)) *
+    100
+  ).toFixed(0);
+  document.getElementById("payFinalAmount").value = grandTotal.toFixed(2);
 
-  bundleCard.classList.remove('hidden');
+  bundleCard.classList.remove("hidden");
 }
 
 /** Detecta si un niño tiene hermanos registrados compartiendo el mismo tutorName */
 function detectSiblings(playerId) {
-  const player = squadData.find(p => p.id === playerId);
+  const player = squadData.find((p) => p.id === playerId);
   if (!player) return [];
 
   const results = new Map();
 
   // 1. Por nombre de tutor compartido
-  const tutorClean = (player.tutorName || '').trim().toLowerCase();
+  const tutorClean = (player.tutorName || "").trim().toLowerCase();
   if (tutorClean) {
-    squadData.forEach(p => {
-      if (p.id !== playerId && p.tutorName && p.tutorName.trim().toLowerCase() === tutorClean) {
+    squadData.forEach((p) => {
+      if (
+        p.id !== playerId &&
+        p.tutorName &&
+        p.tutorName.trim().toLowerCase() === tutorClean
+      ) {
         results.set(p.id, p);
       }
     });
@@ -1485,11 +2088,11 @@ function detectSiblings(playerId) {
 
   // 2. Por vinculación manual bidireccional
   if (player.linkedSiblingId) {
-    const linked = squadData.find(p => p.id === player.linkedSiblingId);
+    const linked = squadData.find((p) => p.id === player.linkedSiblingId);
     if (linked) results.set(linked.id, linked);
   }
   // Buscar si algún otro jugador lo vincula a él
-  squadData.forEach(p => {
+  squadData.forEach((p) => {
     if (p.id !== playerId && p.linkedSiblingId === playerId) {
       results.set(p.id, p);
     }
@@ -1499,24 +2102,24 @@ function detectSiblings(playerId) {
 }
 
 function onPaymentPlayerChange() {
-  const select = document.getElementById('payPlayerSelect');
+  const select = document.getElementById("payPlayerSelect");
   const playerId = parseInt(select.value);
   const siblings = detectSiblings(playerId);
 
-  const alertBox = document.getElementById('siblingAlertBox');
-  const alertTitle = document.getElementById('siblingAlertTitle');
-  const alertDesc = document.getElementById('siblingAlertDesc');
-  const discountInput = document.getElementById('payDiscountPct');
+  const alertBox = document.getElementById("siblingAlertBox");
+  const alertTitle = document.getElementById("siblingAlertTitle");
+  const alertDesc = document.getElementById("siblingAlertDesc");
+  const discountInput = document.getElementById("payDiscountPct");
 
   if (siblings.length > 0) {
-    const sibNames = siblings.map(s => s.name).join(', ');
+    const sibNames = siblings.map((s) => s.name).join(", ");
     alertTitle.innerHTML = `<i class="fa-solid fa-people-roof"></i> ¡Hermanos en el club! (${siblings.length + 1} inscritos)`;
     alertDesc.innerText = `Hermano(s): ${sibNames}. Se aplicará automáticamente 20% de descuento.`;
-    alertBox.classList.remove('hidden');
+    alertBox.classList.remove("hidden");
 
     discountInput.value = 20; // 20% descuento por hermano
   } else {
-    alertBox.classList.add('hidden');
+    alertBox.classList.add("hidden");
     discountInput.value = 0;
   }
 
@@ -1524,67 +2127,77 @@ function onPaymentPlayerChange() {
 }
 
 function onPaymentConceptChange() {
-  const select = document.getElementById('payConcept');
+  const select = document.getElementById("payConcept");
   const selectedOption = select.options[select.selectedIndex];
-  const defaultAmount = parseFloat(selectedOption.getAttribute('data-amount')) || 0;
-  document.getElementById('payBaseAmount').value = defaultAmount;
+  const defaultAmount =
+    parseFloat(selectedOption.getAttribute("data-amount")) || 0;
+  document.getElementById("payBaseAmount").value = defaultAmount;
   recalculatePaymentTotals();
 }
 
 function recalculatePaymentTotals() {
-  const base = parseFloat(document.getElementById('payBaseAmount').value) || 0;
-  const pct = parseFloat(document.getElementById('payDiscountPct').value) || 0;
+  const base = parseFloat(document.getElementById("payBaseAmount").value) || 0;
+  const pct = parseFloat(document.getElementById("payDiscountPct").value) || 0;
 
-  const discountVal = (base * (pct / 100));
+  const discountVal = base * (pct / 100);
   const finalVal = Math.max(0, base - discountVal);
 
-  document.getElementById('payFinalAmount').value = finalVal.toFixed(2);
+  document.getElementById("payFinalAmount").value = finalVal.toFixed(2);
 }
 
 function setPaymentType(type) {
-  const cardTransfer = document.getElementById('payCardTransfer');
-  const cardManual = document.getElementById('payCardManual');
-  const inputMethod = document.getElementById('payMethodSelected');
-  const labelNotes = document.getElementById('payNotesLabel');
-  const inputNotes = document.getElementById('payNotes');
+  const cardTransfer = document.getElementById("payCardTransfer");
+  const cardManual = document.getElementById("payCardManual");
+  const inputMethod = document.getElementById("payMethodSelected");
+  const labelNotes = document.getElementById("payNotesLabel");
+  const inputNotes = document.getElementById("payNotes");
 
-  if (type === 'Transferencia SPEI') {
-    cardTransfer.classList.add('active');
-    cardManual.classList.remove('active');
-    inputMethod.value = 'Transferencia SPEI';
-    labelNotes.innerText = 'Folio / Clave de Rastrèo SPEI *';
-    inputNotes.placeholder = 'Ej. SPEI 94827110293';
+  if (type === "Transferencia SPEI") {
+    cardTransfer.classList.add("active");
+    cardManual.classList.remove("active");
+    inputMethod.value = "Transferencia SPEI";
+    labelNotes.innerText = "Folio / Clave de Rastrèo SPEI *";
+    inputNotes.placeholder = "Ej. SPEI 94827110293";
   } else {
-    cardManual.classList.add('active');
-    cardTransfer.classList.remove('active');
-    inputMethod.value = 'Manual Efectivo';
-    labelNotes.innerText = 'Cajero / Entregado En Caja *';
-    inputNotes.placeholder = 'Ej. Recibido por Admin / Caja Central';
+    cardManual.classList.add("active");
+    cardTransfer.classList.remove("active");
+    inputMethod.value = "Manual Efectivo";
+    labelNotes.innerText = "Cajero / Entregado En Caja *";
+    inputNotes.placeholder = "Ej. Recibido por Admin / Caja Central";
   }
 }
 
 function renderMonthlyMatrix() {
-  const tbody = document.getElementById('monthlyMatrixBody');
+  const tbody = document.getElementById("monthlyMatrixBody");
   if (!tbody) return;
-  tbody.innerHTML = '';
+  tbody.innerHTML = "";
 
-  squadData.forEach(p => {
+  squadData.forEach((p) => {
     ensureRegFields(p);
 
     // Buscar mensualidad pagada para Agosto 2026
-    const hasAugustPaid = paymentsData.some(pay => pay.playerId === p.id && pay.concept.includes('Colegiatura') && (pay.notes.includes('Agosto') || pay.month === 'Agosto 2026') && pay.status === 'Pagado');
+    const hasAugustPaid = paymentsData.some(
+      (pay) =>
+        pay.playerId === p.id &&
+        pay.concept.includes("Colegiatura") &&
+        (pay.notes.includes("Agosto") || pay.month === "Agosto 2026") &&
+        pay.status === "Pagado",
+    );
     const statusBadge = hasAugustPaid
       ? '<span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> AGOSTO PAGADO</span>'
       : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> AGOSTO PENDIENTE</span>';
 
     const siblings = detectSiblings(p.id);
-    const sibTag = siblings.length > 0 ? `<br><small class="text-warning"><i class="fa-solid fa-users"></i> Descuento Hermano Active (-20%)</small>` : '';
+    const sibTag =
+      siblings.length > 0
+        ? `<br><small class="text-warning"><i class="fa-solid fa-users"></i> Descuento Hermano Active (-20%)</small>`
+        : "";
 
     tbody.innerHTML += `
       <tr>
         <td>
           <div style="display:flex; align-items:center; gap:0.6rem;">
-            <img src="${p.photo || 'LAGUNA.jpg'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" />
+            <img src="${p.photo || "LAGUNA.jpg"}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" />
             <div>
               <strong>#${p.number} ${p.name}</strong>
               <br><small class="text-muted">${p.tutorName}</small>
@@ -1604,47 +2217,60 @@ function renderMonthlyMatrix() {
 }
 
 function quickChargeMonth(playerId, monthName) {
-  const select = document.getElementById('payPlayerSelect');
+  const select = document.getElementById("payPlayerSelect");
   select.value = playerId;
   onPaymentPlayerChange();
 
-  document.getElementById('payConcept').value = 'Colegiatura Mensual';
+  document.getElementById("payConcept").value = "Colegiatura Mensual";
   onPaymentConceptChange();
 
-  const monthSelect = document.getElementById('payMonthSelect');
+  const monthSelect = document.getElementById("payMonthSelect");
   if (monthSelect) monthSelect.value = monthName;
 
-  document.getElementById('paymentForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  showToast(`Registrando cobro de ${monthName}...`, 'info');
+  document
+    .getElementById("paymentForm")
+    .scrollIntoView({ behavior: "smooth", block: "start" });
+  showToast(`Registrando cobro de ${monthName}...`, "info");
 }
 
 function handlePaymentSubmit(e) {
   e.preventDefault();
 
-  const scopeMode = document.getElementById('payScopeMode').value;
-  const conceptSelect = document.getElementById('payConcept').value;
-  const monthSelect = document.getElementById('payMonthSelect')?.value || '';
-  const concept = conceptSelect === 'Colegiatura Mensual' ? `Colegiatura Mensual (${monthSelect})` : conceptSelect;
-  const method = document.getElementById('payMethodSelected').value;
-  const date = document.getElementById('payDate').value;
-  const status = document.getElementById('payStatus').value;
-  const notes = document.getElementById('payNotes').value.trim();
+  const scopeMode = document.getElementById("payScopeMode").value;
+  const conceptSelect = document.getElementById("payConcept").value;
+  const monthSelect = document.getElementById("payMonthSelect")?.value || "";
+  const concept =
+    conceptSelect === "Colegiatura Mensual"
+      ? `Colegiatura Mensual (${monthSelect})`
+      : conceptSelect;
+  const method = document.getElementById("payMethodSelected").value;
+  const date = document.getElementById("payDate").value;
+  const status = document.getElementById("payStatus").value;
+  const notes = document.getElementById("payNotes").value.trim();
 
-  const baseAmount = parseFloat(document.getElementById('payBaseAmount').value) || 0;
-  const discountPct = parseFloat(document.getElementById('payDiscountPct').value) || 0;
+  const baseAmount =
+    parseFloat(document.getElementById("payBaseAmount").value) || 0;
+  const discountPct =
+    parseFloat(document.getElementById("payDiscountPct").value) || 0;
   const discountAmount = baseAmount * (discountPct / 100);
-  const finalAmount = parseFloat(document.getElementById('payFinalAmount').value) || 0;
+  const finalAmount =
+    parseFloat(document.getElementById("payFinalAmount").value) || 0;
 
   const newId = Date.now();
   const folio = `LA-PAGO-${Math.floor(1000 + Math.random() * 9000)}`;
 
-  if (scopeMode === 'family') {
-    const familyName = document.getElementById('payFamilySelect').value;
-    const children = squadData.filter(p => p.tutorName && p.tutorName.trim().toLowerCase() === familyName.trim().toLowerCase());
+  if (scopeMode === "family") {
+    const familyName = document.getElementById("payFamilySelect").value;
+    const children = squadData.filter(
+      (p) =>
+        p.tutorName &&
+        p.tutorName.trim().toLowerCase() === familyName.trim().toLowerCase(),
+    );
 
-    if (children.length === 0) return showToast('Selecciona una familia válida.', 'error');
+    if (children.length === 0)
+      return showToast("Selecciona una familia válida.", "error");
 
-    const namesStr = children.map(c => `#${c.number} ${c.name}`).join(', ');
+    const namesStr = children.map((c) => `#${c.number} ${c.name}`).join(", ");
 
     const newPayment = {
       id: newId,
@@ -1663,17 +2289,24 @@ function handlePaymentSubmit(e) {
       status,
       isFamilyBundle: true,
       childrenNames: namesStr,
-      notes: notes || (method === 'Transferencia SPEI' ? 'Pago Único SPEI Familia' : 'Pago Efectivo Caja Familia')
+      notes:
+        notes ||
+        (method === "Transferencia SPEI"
+          ? "Pago Único SPEI Familia"
+          : "Pago Efectivo Caja Familia"),
     };
 
     paymentsData.unshift(newPayment);
     saveData();
 
-    showToast(`Cobro Unificado ${folio} por $${finalAmount.toFixed(2)} registrado para ${familyName}.`, 'success');
+    showToast(
+      `Cobro Unificado ${folio} por $${finalAmount.toFixed(2)} registrado para ${familyName}.`,
+      "success",
+    );
   } else {
-    const playerId = parseInt(document.getElementById('payPlayerSelect').value);
-    const player = squadData.find(p => p.id === playerId);
-    if (!player) return showToast('Selecciona un niño válido.', 'error');
+    const playerId = parseInt(document.getElementById("payPlayerSelect").value);
+    const player = squadData.find((p) => p.id === playerId);
+    if (!player) return showToast("Selecciona un niño válido.", "error");
 
     const newPayment = {
       id: newId,
@@ -1691,13 +2324,17 @@ function handlePaymentSubmit(e) {
       date,
       status,
       isFamilyBundle: false,
-      notes: notes || (method === 'Transferencia SPEI' ? 'Comprobante SPEI' : 'Pago Efectivo Caja')
+      notes:
+        notes ||
+        (method === "Transferencia SPEI"
+          ? "Comprobante SPEI"
+          : "Pago Efectivo Caja"),
     };
 
     paymentsData.unshift(newPayment);
     saveData();
 
-    showToast(`Pago ${folio} por ${method} registrado con éxito.`, 'success');
+    showToast(`Pago ${folio} por ${method} registrado con éxito.`, "success");
   }
 
   renderPaymentsTable();
@@ -1708,18 +2345,22 @@ function handlePaymentSubmit(e) {
 }
 
 function renderPaymentsTable() {
-  const tbody = document.getElementById('paymentsTableBody');
-  const searchVal = (document.getElementById('paySearchInput')?.value || '').toLowerCase();
+  const tbody = document.getElementById("paymentsTableBody");
+  const searchVal = (
+    document.getElementById("paySearchInput")?.value || ""
+  ).toLowerCase();
   if (!tbody) return;
-  tbody.innerHTML = '';
+  tbody.innerHTML = "";
 
-  const filtered = paymentsData.filter(p => {
-    return !searchVal ||
+  const filtered = paymentsData.filter((p) => {
+    return (
+      !searchVal ||
       p.folio.toLowerCase().includes(searchVal) ||
       p.playerName.toLowerCase().includes(searchVal) ||
       p.tutorName.toLowerCase().includes(searchVal) ||
       p.concept.toLowerCase().includes(searchVal) ||
-      (p.method && p.method.toLowerCase().includes(searchVal));
+      (p.method && p.method.toLowerCase().includes(searchVal))
+    );
   });
 
   if (filtered.length === 0) {
@@ -1727,11 +2368,17 @@ function renderPaymentsTable() {
     return;
   }
 
-  filtered.forEach(p => {
-    const badgeStatus = p.status === 'Pagado' ? 'badge-success' : 'badge-warning';
+  filtered.forEach((p) => {
+    const badgeStatus =
+      p.status === "Pagado" ? "badge-success" : "badge-warning";
     const hasDiscount = p.discountPct > 0;
-    const discountBadge = hasDiscount ? `<span class="badge badge-warning" style="font-size:0.65rem;"><i class="fa-solid fa-tag"></i> -${p.discountPct}% Hermano</span>` : '';
-    const methodBadge = p.method === 'Transferencia SPEI' ? '<span class="badge badge-neon" style="font-size:0.65rem;"><i class="fa-solid fa-building-columns"></i> SPEI</span>' : '<span class="badge" style="font-size:0.65rem; border-color:var(--border-strong);"><i class="fa-solid fa-money-bill"></i> Efectivo</span>';
+    const discountBadge = hasDiscount
+      ? `<span class="badge badge-warning" style="font-size:0.65rem;"><i class="fa-solid fa-tag"></i> -${p.discountPct}% Hermano</span>`
+      : "";
+    const methodBadge =
+      p.method === "Transferencia SPEI"
+        ? '<span class="badge badge-neon" style="font-size:0.65rem;"><i class="fa-solid fa-building-columns"></i> SPEI</span>'
+        : '<span class="badge" style="font-size:0.65rem; border-color:var(--border-strong);"><i class="fa-solid fa-money-bill"></i> Efectivo</span>';
 
     tbody.innerHTML += `
       <tr>
@@ -1766,83 +2413,93 @@ function updatePaymentSummaryStats() {
   let totalDiscounts = 0;
   const siblingFamiliesSet = new Set();
 
-  paymentsData.forEach(p => {
-    if (p.status === 'Pagado') {
+  paymentsData.forEach((p) => {
+    if (p.status === "Pagado") {
       paidTotal += p.finalAmount;
     } else {
       pendingTotal += p.finalAmount;
     }
-    totalDiscounts += (p.discountAmount || 0);
+    totalDiscounts += p.discountAmount || 0;
 
     if (p.discountPct > 0) {
       siblingFamiliesSet.add(p.tutorName);
     }
   });
 
-  const totalCollectedEl = document.getElementById('payTotalCollected');
-  const paidEl = document.getElementById('statTotalPaid');
-  const pendingEl = document.getElementById('statTotalPending');
-  const sibEl = document.getElementById('statSiblingsCount');
-  const discEl = document.getElementById('statTotalDiscounts');
+  const totalCollectedEl = document.getElementById("payTotalCollected");
+  const paidEl = document.getElementById("statTotalPaid");
+  const pendingEl = document.getElementById("statTotalPending");
+  const sibEl = document.getElementById("statSiblingsCount");
+  const discEl = document.getElementById("statTotalDiscounts");
 
-  if (totalCollectedEl) totalCollectedEl.innerText = `$${paidTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-  if (paidEl) paidEl.innerText = `$${paidTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
-  if (pendingEl) pendingEl.innerText = `$${pendingTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+  if (totalCollectedEl)
+    totalCollectedEl.innerText = `$${paidTotal.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`;
+  if (paidEl)
+    paidEl.innerText = `$${paidTotal.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`;
+  if (pendingEl)
+    pendingEl.innerText = `$${pendingTotal.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`;
   if (sibEl) sibEl.innerText = `${siblingFamiliesSet.size} Familias`;
-  if (discEl) discEl.innerText = `$${totalDiscounts.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
+  if (discEl)
+    discEl.innerText = `$${totalDiscounts.toLocaleString("es-MX", { minimumFractionDigits: 2 })}`;
 }
 
 // --- MODAL RECIBO DE PAGO ---
 let currentReceiptPaymentId = null;
 
 function openReceiptModal(paymentId) {
-  const p = paymentsData.find(x => x.id === paymentId);
+  const p = paymentsData.find((x) => x.id === paymentId);
   if (!p) return;
 
   currentReceiptPaymentId = paymentId;
 
-  document.getElementById('receiptFolio').innerText = `FOLIO: #${p.folio}`;
-  document.getElementById('receiptDate').innerText = p.date;
-  document.getElementById('receiptStudent').innerText = p.playerName;
-  document.getElementById('receiptTutor').innerText = p.tutorName;
-  document.getElementById('receiptConcept').innerText = p.concept;
-  document.getElementById('receiptMethod').innerText = p.method;
+  document.getElementById("receiptFolio").innerText = `FOLIO: #${p.folio}`;
+  document.getElementById("receiptDate").innerText = p.date;
+  document.getElementById("receiptStudent").innerText = p.playerName;
+  document.getElementById("receiptTutor").innerText = p.tutorName;
+  document.getElementById("receiptConcept").innerText = p.concept;
+  document.getElementById("receiptMethod").innerText = p.method;
 
-  document.getElementById('receiptBase').innerText = `$${p.baseAmount.toFixed(2)}`;
+  document.getElementById("receiptBase").innerText =
+    `$${p.baseAmount.toFixed(2)}`;
 
-  const discountRow = document.getElementById('receiptDiscountRow');
+  const discountRow = document.getElementById("receiptDiscountRow");
   if (p.discountPct > 0) {
-    discountRow.style.display = 'flex';
-    document.getElementById('receiptDiscount').innerText = `-$${p.discountAmount.toFixed(2)} (${p.discountPct}% Hermanos)`;
+    discountRow.style.display = "flex";
+    document.getElementById("receiptDiscount").innerText =
+      `-$${p.discountAmount.toFixed(2)} (${p.discountPct}% Hermanos)`;
   } else {
-    discountRow.style.display = 'none';
+    discountRow.style.display = "none";
   }
 
-  document.getElementById('receiptTotal').innerText = `$${p.finalAmount.toFixed(2)} MXN`;
+  document.getElementById("receiptTotal").innerText =
+    `$${p.finalAmount.toFixed(2)} MXN`;
 
-  document.getElementById('paymentReceiptModal').classList.remove('hidden');
+  document.getElementById("paymentReceiptModal").classList.remove("hidden");
 }
 
 function closeReceiptModal() {
-  document.getElementById('paymentReceiptModal').classList.add('hidden');
+  document.getElementById("paymentReceiptModal").classList.add("hidden");
 }
 
 function printReceipt() {
   window.print();
 }
 // --- TACTICAL PITCH FULLSCREEN LOGIC ---
-document.addEventListener('DOMContentLoaded', () => {
-  const btnFullscreen = document.getElementById('btnFullscreenPitch');
-  const tacticalBoardCard = document.getElementById('tacticalBoardCard');
-  const tacticalPitch = document.getElementById('tacticalPitch');
+document.addEventListener("DOMContentLoaded", () => {
+  const btnFullscreen = document.getElementById("btnFullscreenPitch");
+  const tacticalBoardCard = document.getElementById("tacticalBoardCard");
+  const tacticalPitch = document.getElementById("tacticalPitch");
 
   if (btnFullscreen && tacticalBoardCard && tacticalPitch) {
     let isPseudoFullscreen = false;
 
-    btnFullscreen.addEventListener('click', () => {
+    btnFullscreen.addEventListener("click", () => {
       // iOS Safari and some tablets do not support requestFullscreen on standard Divs.
-      const hasNativeAPI = tacticalBoardCard.requestFullscreen || tacticalBoardCard.webkitRequestFullscreen || tacticalBoardCard.msRequestFullscreen;
-      
+      const hasNativeAPI =
+        tacticalBoardCard.requestFullscreen ||
+        tacticalBoardCard.webkitRequestFullscreen ||
+        tacticalBoardCard.msRequestFullscreen;
+
       if (hasNativeAPI) {
         // Use Native Fullscreen API
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -1873,56 +2530,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function togglePseudoFullscreen() {
       isPseudoFullscreen = !isPseudoFullscreen;
-      const icon = btnFullscreen.querySelector('i');
-      
+      const icon = btnFullscreen.querySelector("i");
+
       if (isPseudoFullscreen) {
-        tacticalBoardCard.classList.add('tactical-fullscreen-mode');
-        icon.classList.remove('fa-expand');
-        icon.classList.add('fa-compress');
+        tacticalBoardCard.classList.add("tactical-fullscreen-mode");
+        icon.classList.remove("fa-expand");
+        icon.classList.add("fa-compress");
         btnFullscreen.title = "Salir de pantalla completa";
       } else {
-        tacticalBoardCard.classList.remove('tactical-fullscreen-mode');
-        icon.classList.remove('fa-compress');
-        icon.classList.add('fa-expand');
+        tacticalBoardCard.classList.remove("tactical-fullscreen-mode");
+        icon.classList.remove("fa-compress");
+        icon.classList.add("fa-expand");
         btnFullscreen.title = "Ver en pantalla completa";
       }
     }
 
     // Listener para la API Nativa
-    document.addEventListener('fullscreenchange', handleNativeFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleNativeFullscreenChange);
-    document.addEventListener('msfullscreenchange', handleNativeFullscreenChange);
+    document.addEventListener("fullscreenchange", handleNativeFullscreenChange);
+    document.addEventListener(
+      "webkitfullscreenchange",
+      handleNativeFullscreenChange,
+    );
+    document.addEventListener(
+      "msfullscreenchange",
+      handleNativeFullscreenChange,
+    );
 
     function handleNativeFullscreenChange() {
-      const icon = btnFullscreen.querySelector('i');
+      const icon = btnFullscreen.querySelector("i");
       if (document.fullscreenElement || document.webkitFullscreenElement) {
-        icon.classList.remove('fa-expand');
-        icon.classList.add('fa-compress');
+        icon.classList.remove("fa-expand");
+        icon.classList.add("fa-compress");
         btnFullscreen.title = "Salir de pantalla completa";
-        
-        tacticalBoardCard.style.backgroundColor = 'var(--bg-dark)';
-        tacticalBoardCard.style.overflow = 'auto';
-        tacticalBoardCard.style.display = 'flex';
-        tacticalBoardCard.style.flexDirection = 'column';
-        
-        tacticalPitch.style.flex = '1';
-        tacticalPitch.style.height = 'auto'; 
-        tacticalPitch.style.minHeight = '600px'; 
+
+        tacticalBoardCard.style.backgroundColor = "var(--bg-dark)";
+        tacticalBoardCard.style.overflow = "auto";
+        tacticalBoardCard.style.display = "flex";
+        tacticalBoardCard.style.flexDirection = "column";
+
+        tacticalPitch.style.flex = "1";
+        tacticalPitch.style.height = "auto";
+        tacticalPitch.style.minHeight = "600px";
       } else {
-        icon.classList.remove('fa-compress');
-        icon.classList.add('fa-expand');
+        icon.classList.remove("fa-compress");
+        icon.classList.add("fa-expand");
         btnFullscreen.title = "Ver en pantalla completa";
-        
-        tacticalBoardCard.style.backgroundColor = '';
-        tacticalBoardCard.style.overflow = '';
-        tacticalBoardCard.style.display = '';
-        tacticalBoardCard.style.flexDirection = '';
-        
-        tacticalPitch.style.flex = '';
-        tacticalPitch.style.height = '500px'; 
-        tacticalPitch.style.minHeight = '';
+
+        tacticalBoardCard.style.backgroundColor = "";
+        tacticalBoardCard.style.overflow = "";
+        tacticalBoardCard.style.display = "";
+        tacticalBoardCard.style.flexDirection = "";
+
+        tacticalPitch.style.flex = "";
+        tacticalPitch.style.height = "500px";
+        tacticalPitch.style.minHeight = "";
       }
     }
   }
 });
-

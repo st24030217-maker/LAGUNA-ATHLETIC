@@ -23,7 +23,7 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="styles.css?v=6.0" />
+    <link rel="stylesheet" href="styles.css?v=7.0" />
   </head>
   <body class="dark-theme">
     
@@ -525,6 +525,12 @@
               
               <div class="modern-form">
                 <div class="form-group">
+                  <label>Destinatario / Grupo:</label>
+                  <select id="noticeGroupSelect" class="form-control" onchange="updateNoticeTemplate()">
+                    <option value="Todos">Todos (Global)</option>
+                  </select>
+                </div>
+                <div class="form-group">
                   <label>Plantilla de Aviso:</label>
                   <select id="noticeTypeSelect" class="form-control" onchange="updateNoticeTemplate()">
                     <option value="entrenamiento">Próximo Entrenamiento</option>
@@ -549,7 +555,12 @@
           <div id="mod-estadisticas" class="module-panel">
             <div class="grid-2-cols">
               <div class="glass-card fade-in-up">
-                <h3 class="card-title">Balance de Asistencia</h3>
+                <div class="flex-between margin-bottom">
+                  <h3 class="card-title" style="margin-bottom: 0;">Balance de Asistencia</h3>
+                  <select id="statsGroupSelect" class="form-control" style="width: auto; padding: 0.2rem 0.5rem; font-size: 0.85rem;" onchange="updateChartData(); renderRankingTable();">
+                    <option value="Todos">Todas las Categorías</option>
+                  </select>
+                </div>
                 <div class="chart-container">
                   <canvas id="attendanceChart"></canvas>
                 </div>
@@ -570,6 +581,55 @@
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            <div class="glass-card fade-in-up margin-top" style="animation-delay: 0.15s;">
+              <div class="flex-between align-center margin-bottom">
+                <h3 class="card-title" style="margin-bottom: 0;">Información de partidos por jugador</h3>
+                <button class="btn btn-primary btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal()">
+                  <i class="fa-solid fa-link"></i> Enlazar información
+                </button>
+              </div>
+              <div id="playerGameInfoList" class="player-game-info-list"></div>
+            </div>
+          </div>
+
+          <div id="gameInfoModal" class="modal-overlay hidden">
+            <div class="glass-card modal-content" style="max-width: 600px;">
+              <div class="profile-header flex-between mb-2">
+                <h3 class="card-title" style="margin-bottom: 0;">Enlazar información del partido</h3>
+                <button class="btn btn-ghost" style="padding: 0.5rem;" onclick="closePlayerGameInfoModal()"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+
+              <form id="gameInfoForm" class="modern-form" onsubmit="savePlayerGameInfo(event)">
+                <div class="form-group">
+                  <label>Jugador</label>
+                  <select id="gameInfoPlayerSelect" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                  <label>Título del archivo / resumen</label>
+                  <input id="gameInfoTitle" type="text" class="form-control" placeholder="Ej. Resumen vs. Santos Laguna" required />
+                </div>
+                <div class="grid-2-cols gap-2">
+                  <div class="form-group">
+                    <label>Fecha</label>
+                    <input id="gameInfoDate" type="date" class="form-control" required />
+                  </div>
+                  <div class="form-group">
+                    <label>URL de descarga</label>
+                    <input id="gameInfoDownloadUrl" type="url" class="form-control" placeholder="https://..." />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Notas del partido</label>
+                  <textarea id="gameInfoNotes" rows="4" class="form-control" placeholder="Detalles clave del encuentro, observaciones o análisis..."></textarea>
+                </div>
+
+                <div class="flex-end gap-2 mt-4">
+                  <button type="button" class="btn btn-ghost" onclick="closePlayerGameInfoModal()">Cancelar</button>
+                  <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar enlace</button>
+                </div>
+              </form>
             </div>
           </div>
 
@@ -639,15 +699,10 @@
                   <div class="reg-form-grid">
                     <div class="form-group">
                       <label><i class="fa-solid fa-layer-group text-primary"></i> Grupo / Categoría</label>
-                      <select id="regGroup" class="form-control">
-                        <option value="">Sin categoría asignada</option>
-                        <option value="Sub-8">Sub-8</option>
-                        <option value="Sub-10">Sub-10</option>
-                        <option value="Sub-12">Sub-12</option>
-                        <option value="Sub-14">Sub-14</option>
-                        <option value="Sub-16">Sub-16</option>
-                        <option value="Sub-18">Sub-18</option>
-                      </select>
+                      <input type="text" id="regGroup" class="form-control" list="groupOptions" placeholder="Ej. Sub-10, Premiere, 2015..." />
+                      <datalist id="groupOptions">
+                        <!-- Llenado dinámicamente -->
+                      </datalist>
                     </div>
                     <!-- Vinculación manual hermano -->
                     <div class="form-group">
