@@ -1586,6 +1586,202 @@ body {
 /* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
+/* ==========================================================================
+   LOGIN — RESPONSIVE MÓVIL
+   ========================================================================== */
+
+/* ── Tablet / pantallas medianas ≤ 600px ───────── */
+@media (max-width: 600px) {
+  .login-box {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100dvh;           /* ocupa toda la pantalla */
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: none;
+  }
+
+  .login-top-bar {
+    height: 3px;
+  }
+
+  .login-header {
+    padding: 1.4rem 1.4rem 0.6rem;
+    gap: 1rem;
+  }
+
+  .login-logo-wrapper {
+    width: 70px;
+    height: 70px;
+  }
+
+  .login-logo-img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .login-club-name {
+    font-size: 1.3rem;
+    letter-spacing: 1.5px;
+  }
+
+  .login-club-slogan {
+    font-size: 0.62rem;
+    letter-spacing: 1.8px;
+  }
+
+  .login-divider {
+    padding: 0.3rem 1.4rem 0.5rem;
+  }
+
+  .login-form {
+    padding: 0 1.4rem 1.2rem;
+  }
+
+  /* Inputs más grandes y táctiles */
+  .login-select,
+  .login-pin-input {
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    min-height: 48px;             /* mínimo táctil recomendado */
+    border-radius: 12px;
+  }
+
+  .login-pin-input {
+    font-size: 1.4rem;
+    letter-spacing: 8px;
+    padding: 0.85rem 3rem 0.85rem 1rem;
+  }
+
+  .login-select {
+    background-position: right 0.9rem center;
+  }
+
+  /* Botón más grande para dedos */
+  .btn-login-primary {
+    padding: 1.1rem;
+    font-size: 1rem;
+    border-radius: 14px;
+    min-height: 54px;
+    margin-top: 1.4rem;
+  }
+
+  .login-options {
+    margin-top: 1.1rem;
+    font-size: 0.82rem;
+  }
+
+  .login-remember,
+  .login-forgot {
+    min-height: 44px;             /* área táctil mínima */
+    display: flex;
+    align-items: center;
+  }
+
+  .login-footer-security {
+    padding: 0.8rem 1.4rem;
+    font-size: 0.65rem;
+  }
+}
+
+/* ── Teléfonos muy pequeños ≤ 380px ────────────── */
+@media (max-width: 380px) {
+  .login-header {
+    flex-direction: column;       /* logo arriba, texto abajo */
+    align-items: center;
+    text-align: center;
+    padding: 1.2rem 1.2rem 0.4rem;
+    gap: 0.8rem;
+  }
+
+  .login-logo-wrapper {
+    width: 78px;
+    height: 78px;
+  }
+
+  .login-logo-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .login-club-name {
+    font-size: 1.4rem;
+  }
+
+  .login-portal-badge {
+    justify-content: center;
+  }
+
+  .login-divider {
+    padding: 0.2rem 1.2rem 0.4rem;
+  }
+
+  .login-form {
+    padding: 0 1.2rem 1rem;
+  }
+}
+
+/* ── Soporte para notch / safe areas (iPhone X+) ─ */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .login-box {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .login-footer-security {
+    padding-bottom: calc(0.8rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Evitar zoom iOS al hacer focus en inputs ──── */
+@media (max-width: 600px) {
+  .login-select,
+  .login-pin-input {
+    font-size: 16px !important;   /* iOS no hace zoom si font-size >= 16px */
+  }
+}
+
+/* ── Modo landscape en móvil ───────────────────── */
+@media (max-width: 600px) and (orientation: landscape) {
+  .login-box {
+    min-height: 100dvh;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  .login-header {
+    padding-top: 1rem;
+  }
+
+  .login-logo-wrapper {
+    width: 56px;
+    height: 56px;
+  }
+
+  .login-logo-img {
+    width: 46px;
+    height: 46px;
+  }
+
+  .login-club-name {
+    font-size: 1.1rem;
+  }
+
+  .login-club-slogan {
+    display: none;              /* ahorra espacio en landscape */
+  }
+
+  .login-divider {
+    padding: 0.2rem 1.4rem 0.3rem;
+  }
+
+  .btn-login-primary {
+    padding: 0.9rem;
+    margin-top: 0.9rem;
+  }
+}
+
 @media (max-width: 900px) {
   .app-layout {
     grid-template-columns: 1fr;
