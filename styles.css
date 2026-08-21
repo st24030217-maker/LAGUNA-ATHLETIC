@@ -93,7 +93,7 @@ body {
 }
 
 /* ==========================================================================
-   LOGIN SCREEN OVERLAY
+   LOGIN SCREEN — PROFESSIONAL SPORT DESIGN
    ========================================================================== */
 .login-overlay {
   position: fixed;
@@ -120,68 +120,364 @@ body {
   z-index: 0;
 }
 
-/* Capa oscura semitransparente para legibilidad */
+/* Capa oscura semitransparente */
 .login-overlay-dim {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(6,14,30,0.75) 100%);
   z-index: 1;
 }
 
-/* Elevar la tarjeta de login por encima del video */
-.login-overlay .login-box {
+/* ── TARJETA PRINCIPAL ─────────────────────────── */
+.login-box {
   position: relative;
   z-index: 2;
+  width: 92%;
+  max-width: 460px;
+  background: rgba(10, 14, 26, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 24px 64px rgba(0, 0, 0, 0.65),
+    0 0 50px rgba(37, 99, 235, 0.18);
 }
 
-.login-box {
-  width: 90%;
-  max-width: 440px;
-  padding: 2.8rem 2.2rem;
-  background: rgba(15, 20, 30, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  border-radius: 20px;
-  box-shadow:
-    0 0 45px rgba(59, 130, 246, 0.3),
-    0 0 15px rgba(245, 158, 11, 0.15);
-  position: relative;
-  overflow: hidden;
+/* Barra dorada superior */
+.login-top-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 40%, #2563eb 100%);
+}
+
+/* ── ENCABEZADO (logo + texto) ─────────────────── */
+.login-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.8rem 2rem 0.8rem;
 }
 
 .login-logo-wrapper {
   position: relative;
-  width: 90px;
-  height: 90px;
-  margin: 0 auto;
+  width: 82px;
+  height: 82px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .login-logo-img {
-  width: 76px;
-  height: 76px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--accent-warning);
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
-  z-index: 2;
+  border: 2.5px solid var(--accent-gold);
+  box-shadow: 0 0 22px rgba(245, 158, 11, 0.55);
   position: relative;
+  z-index: 2;
 }
 
 .login-orbit-ring {
   position: absolute;
-  inset: -6px;
+  inset: -4px;
   border-radius: 50%;
-  border: 2px dashed rgba(59, 130, 246, 0.6);
+  border: 1.5px dashed rgba(37, 99, 235, 0.55);
   border-top-color: var(--accent-neon);
-  animation: spinGlow 3s infinite linear;
+  animation: spinGlow 3.5s infinite linear;
   z-index: 1;
 }
 
-/* BOTÓN LOGIN CON EFECTO SHIMMER NEÓN */
+.login-club-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.login-club-name {
+  font-family: var(--font-heading);
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.login-club-slogan {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 2.5px;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.login-portal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--accent-neon);
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  padding: 0.22rem 0.6rem;
+  border-radius: 20px;
+  margin-top: 0.15rem;
+}
+
+/* ── DIVIDER DEPORTIVO ─────────────────────────── */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.4rem 2rem 0.6rem;
+  color: rgba(255,255,255,0.15);
+  font-size: 0.8rem;
+}
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245,158,11,0.35), transparent);
+}
+.login-divider span {
+  color: rgba(245,158,11,0.5);
+  font-size: 0.9rem;
+}
+
+/* ── FORMULARIO ────────────────────────────────── */
+.login-form {
+  padding: 0 2rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login-field.mt-3 {
+  margin-top: 1.1rem;
+}
+
+.login-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-transform: uppercase;
+}
+
+.login-label i {
+  color: var(--accent-gold);
+  font-size: 0.8rem;
+}
+
+.login-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(8, 11, 20, 0.9);
+  border: 1.5px solid rgba(245, 158, 11, 0.2);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f59e0b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.login-select:focus {
+  outline: none;
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.login-select option {
+  background: #0d1220;
+  color: var(--text-main);
+}
+
+/* PIN input */
+.login-pin-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-pin-input {
+  width: 100%;
+  padding: 0.75rem 2.8rem 0.75rem 1rem;
+  background: rgba(8, 11, 20, 0.9);
+  border: 1.5px solid rgba(37, 99, 235, 0.25);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  letter-spacing: 4px;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-pin-input::placeholder {
+  color: rgba(255,255,255,0.15);
+  letter-spacing: 6px;
+  font-size: 1rem;
+}
+
+.login-pin-input:focus {
+  outline: none;
+  border-color: rgba(37, 99, 235, 0.6);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.pin-toggle-btn {
+  position: absolute;
+  right: 0.85rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color 0.2s ease;
+}
+.pin-toggle-btn:hover {
+  color: var(--accent-primary);
+}
+
+/* Banner de permisos */
+.login-perm-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  color: var(--accent-neon);
+  margin-top: 0.6rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Recordar / Olvidé */
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.login-remember input[type="checkbox"] {
+  accent-color: var(--accent-gold);
+}
+
+.login-forgot {
+  color: var(--accent-primary-light);
+  text-decoration: none;
+  font-size: 0.76rem;
+  transition: color 0.2s;
+}
+.login-forgot:hover {
+  color: var(--accent-gold);
+}
+
+/* ── BOTÓN PRINCIPAL ───────────────────────────── */
+.btn-login-primary {
+  margin-top: 1.2rem;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+  color: #0d0a00;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 1.5px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  box-shadow:
+    0 0 28px rgba(245, 158, 11, 0.45),
+    0 4px 16px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-login-primary::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: rotate(30deg);
+  animation: shimmerSweep 3s infinite ease-in-out;
+}
+
+.btn-login-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 40px rgba(245, 158, 11, 0.65),
+    0 8px 24px rgba(0,0,0,0.5);
+}
+
+.btn-login-primary:active {
+  transform: translateY(0);
+}
+
+/* ── FOOTER ────────────────────────────────────── */
+.login-footer-security {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 2rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.3);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  background: rgba(0,0,0,0.2);
+}
+
+.login-footer-security i {
+  color: var(--accent-neon);
+  margin-right: 0.3rem;
+}
+
+/* Legacy — mantiene compatibilidad con btn-login-glow si se usa en otro lado */
 .btn-login-glow {
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #10b981 100%);
   color: #fff;
@@ -191,9 +487,7 @@ body {
   padding: 1.1rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 0 25px rgba(37, 99, 235, 0.6),
-    0 0 10px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.6), 0 0 10px rgba(16, 185, 129, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,30 +496,6 @@ body {
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-}
-
-.btn-login-glow:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 35px rgba(37, 99, 235, 0.8),
-    0 0 15px rgba(16, 185, 129, 0.5);
-}
-
-.btn-login-glow::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    60deg,
-    transparent,
-    rgba(255, 255, 255, 0.25),
-    transparent
-  );
-  transform: rotate(30deg);
-  animation: shimmerSweep 3s infinite ease-in-out;
 }
 
 .login-badge-header {
@@ -241,44 +511,8 @@ body {
 .input-with-action .form-control {
   padding-right: 2.8rem;
 }
-.pin-toggle-btn {
-  position: absolute;
-  right: 0.8rem;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 0.3rem;
-  transition: color 0.2s ease;
-}
-.pin-toggle-btn:hover {
-  color: var(--accent-primary);
-}
 
-.login-perm-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(59, 130, 246, 0.12);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.78rem;
-  color: var(--accent-primary);
-  margin-top: 0.6rem;
-  animation: fadeIn 0.3s ease;
-}
 
-.login-footer-security {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-glass);
-  color: var(--text-muted);
-  font-size: 0.7rem;
-}
 
 .player-game-info-list {
   display: flex;

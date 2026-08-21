@@ -45,70 +45,87 @@
       </div>
     </div>
 
-    <!-- PANTALLA DE LOGIN ULTRA PROFESIONAL -->
+    <!-- PANTALLA DE LOGIN PROFESIONAL DEPORTIVO -->
     <div id="loginScreen" class="login-overlay">
       <!-- Video de fondo -->
       <video class="login-bg-video" autoplay muted loop playsinline>
         <source src="Gold_logo_zooms_in_202608121245.mp4" type="video/mp4">
       </video>
       <div class="login-overlay-dim"></div>
-      <div class="glass-card login-box fade-in-up">
-        <div class="login-badge-header">
-          <span class="badge badge-neon" style="font-size:0.65rem; letter-spacing:1px;"><i class="fa-solid fa-shield-halved"></i> PORTAL OFICIAL DE GESTIÓN DEPORTIVA</span>
-        </div>
-        
-        <div class="text-center margin-bottom mt-2">
+
+      <div class="login-box fade-in-up">
+        <!-- Barra superior dorada -->
+        <div class="login-top-bar"></div>
+
+        <!-- Encabezado: Logo + Club -->
+        <div class="login-header">
           <div class="login-logo-wrapper">
             <img src="LAGUNA.jpg" alt="Laguna Athletic" class="login-logo-img" />
             <div class="login-orbit-ring"></div>
           </div>
-          <h2 class="card-title mt-3" style="justify-content: center; font-family:var(--font-heading); font-size:1.6rem; letter-spacing:1px;">LAGUNA ATHLETIC</h2>
-          <p class="subtitle-text" style="color:var(--accent-warning); font-family:var(--font-mono); font-size:0.75rem; letter-spacing:1.5px;">UNIDOS POR LA MISMA PASIÓN</p>
+          <div class="login-club-info">
+            <h1 class="login-club-name">LAGUNA ATHLETIC</h1>
+            <p class="login-club-slogan">UNIDOS POR LA MISMA PASIÓN</p>
+            <span class="login-portal-badge"><i class="fa-solid fa-shield-halved"></i> Portal Oficial de Gestión</span>
+          </div>
         </div>
-        
-        <form id="loginForm" onsubmit="handleLogin(event)" class="modern-form">
-          <div class="form-group">
-            <label><i class="fa-solid fa-user-shield text-primary"></i> Perfil de Usuario / Rol *</label>
-            <select id="loginRole" class="form-control" onchange="onLoginRoleChange()" required>
-              <option value="" disabled selected>Selecciona tu perfil de acceso...</option>
-              <option value="dt">Director Técnico (DT) / Administrador</option>
-              <option value="auxiliar">Auxiliar Técnico / Cuerpo Médico</option>
-              <option value="preparador">Preparador Físico / Cancha</option>
-              <option value="jugador">Jugador / Padre de Familia</option>
+
+        <!-- Divider -->
+        <div class="login-divider">
+          <span><i class="fa-solid fa-futbol"></i></span>
+        </div>
+
+        <!-- Formulario -->
+        <form id="loginForm" onsubmit="handleLogin(event)" class="login-form">
+
+          <div class="login-field">
+            <label class="login-label">
+              <i class="fa-solid fa-users-rectangle"></i> Rol de Acceso
+            </label>
+            <select id="loginRole" class="login-select" onchange="onLoginRoleChange()" required>
+              <option value="" disabled selected>— Selecciona tu perfil —</option>
+              <option value="dt">🏆 Director Técnico / Administrador</option>
+              <option value="auxiliar">🩺 Auxiliar Técnico / Cuerpo Médico</option>
+              <option value="preparador">⚡ Preparador Físico / Cancha</option>
+              <option value="jugador">⚽ Jugador / Padre de Familia</option>
             </select>
           </div>
-          
-          <!-- Banner dinámico de permisos del rol seleccionado -->
+
+          <!-- Banner dinámico de permisos -->
           <div id="rolePermissionBadge" class="login-perm-badge hidden">
-            <i class="fa-solid fa-circle-info"></i>
+            <i class="fa-solid fa-circle-check"></i>
             <span id="rolePermissionText">Acceso total al sistema y finanzas.</span>
           </div>
-          
-          <div class="form-group relative-input-group mt-3">
-            <label><i class="fa-solid fa-key text-warning"></i> PIN de Acceso Institucional</label>
-            <div class="input-with-action">
-              <input type="password" id="loginPinInput" class="form-control mono-text" placeholder="••••" value="1234" required />
+
+          <div class="login-field mt-3">
+            <label class="login-label">
+              <i class="fa-solid fa-lock"></i> PIN de Acceso
+            </label>
+            <div class="login-pin-wrap">
+              <input type="password" id="loginPinInput" class="login-pin-input" placeholder="• • • •" value="1234" required />
               <button type="button" class="pin-toggle-btn" title="Mostrar/Ocultar PIN" onclick="togglePinVisibility()">
                 <i class="fa-solid fa-eye" id="togglePinIcon"></i>
               </button>
             </div>
           </div>
 
-          <div class="flex-between mt-3 mb-2" style="font-size:0.8rem; color:var(--text-muted);">
-            <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
-              <input type="checkbox" checked style="accent-color:var(--accent-primary);" /> Recordar sesión
+          <div class="login-options">
+            <label class="login-remember">
+              <input type="checkbox" checked /> Recordar sesión
             </label>
-            <a href="#" style="color:var(--accent-primary); text-decoration:none; font-size:0.75rem;" onclick="showToast('Consulta a la directiva para restablecer tu PIN.', 'info'); return false;">¿Olvidaste tu PIN?</a>
+            <a href="#" class="login-forgot" onclick="showToast('Consulta a la directiva para restablecer tu PIN.', 'info'); return false;">¿Olvidaste tu PIN?</a>
           </div>
-          
-          <button type="submit" id="btnLoginSubmit" class="btn btn-login-glow btn-block btn-lg mt-3">
-            <span>INGRESAR AL SISTEMA</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
+
+          <button type="submit" id="btnLoginSubmit" class="btn-login-primary">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            <span>INGRESAR AL SISTEMA</span>
           </button>
         </form>
 
-        <div class="login-footer-security mt-4">
-          <small class="mono-text"><i class="fa-solid fa-lock text-neon"></i> Encriptación SSL 256-bit</small>
-          <small class="mono-text">v2.6 Enterprise</small>
+        <!-- Footer seguridad -->
+        <div class="login-footer-security">
+          <span><i class="fa-solid fa-shield-halved"></i> SSL 256-bit</span>
+          <span>v2.6 Enterprise · Laguna Athletic 2026</span>
         </div>
       </div>
     </div>
