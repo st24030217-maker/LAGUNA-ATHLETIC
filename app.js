@@ -432,8 +432,10 @@ function showModuleTab(tabId) {
     }
   }
 
-  if (tabId === "mod-estadisticas" && attendanceChart) {
-    setTimeout(() => attendanceChart.resize(), 100);
+  if (tabId === "mod-estadisticas") {
+    if (attendanceChart) setTimeout(() => attendanceChart.resize(), 100);
+    if (typeof populateGameInfoPlayerSelect === "function") populateGameInfoPlayerSelect();
+    if (typeof renderPlayerGameInfo === "function") renderPlayerGameInfo();
   }
   if (tabId === "mod-avisos" && typeof populateNoticeControls === "function") {
     populateNoticeControls();
@@ -450,7 +452,7 @@ function toggleSidebar() {
 
 // --- ROLE SYSTEM ---
 function canViewGameInfo() {
-  return ["dt", "auxiliar", "preparador"].includes(currentRole);
+  return ["dt", "auxiliar", "preparador", "directiva"].includes(currentRole);
 }
 
 function applyRolePermissions() {
@@ -506,6 +508,9 @@ function populateDynamicGroups() {
 
   if (typeof populateNoticeControls === "function") {
     populateNoticeControls();
+  }
+  if (typeof populateGameInfoPlayerSelect === "function") {
+    populateGameInfoPlayerSelect();
   }
 }
 
@@ -1686,17 +1691,99 @@ function renderRankingTable() {
 
 function populateGameInfoPlayerSelect() {
   const select = document.getElementById("gameInfoPlayerSelect");
-  if (!select) return;
-  select.innerHTML = squadData
-    .map((p) => `<option value="${p.id}">#${p.number} ${p.name}</option>`)
-    .join("");
+  const filterPlayer = document.getElementById("gameInfoFilterPlayer");
+  const filterGroup = document.getElementById("gameInfoFilterGroup");
+  const eventSelect = document.getElementById("gameInfoEventSelect");
+
+  if (select) {
+    select.innerHTML = squadData
+      .map((p) => `<option value="${p.id}">#${p.number} ${p.name} (${p.group || "Sin Cat."})</option>`)
+      .join("");
+  }
+
+  if (filterPlayer) {
+    const curVal = filterPlayer.value;
+    filterPlayer.innerHTML = '<option value="Todos">Todos los Jugadores</option>' +
+      squadData.map((p) => `<option value="${p.id}">#${p.number} ${p.name}</option>`).join("");
+    if (curVal && (curVal === "Todos" || squadData.some((p) => p.id == curVal))) {
+      filterPlayer.value = curVal;
+    }
+  }
+
+  if (filterGroup) {
+    const curGroup = filterGroup.value;
+    const groups = new Set(
+      squadData.map((p) => p.group).filter((g) => g && g.trim() !== "")
+    );
+    const uniqueGroups = Array.from(groups).sort();
+    filterGroup.innerHTML = '<option value="Todos">Todas las Categorías</option>' +
+      uniqueGroups.map((g) => `<option value="${g}">${g}</option>`).join("");
+    if (curGroup && (curGroup === "Todos" || uniqueGroups.includes(curGroup))) {
+      filterGroup.value = curGroup;
+    }
+  }
+
+  if (eventSelect) {
+    const matchEvents = calendarEvents.filter((e) => e.type === "partido");
+    eventSelect.innerHTML = '<option value="">— Seleccionar partido del calendario o escribir manual —</option>' +
+      matchEvents.map((e) => `<option value="${e.id}">${e.title} (${e.date})</option>`).join("");
+  }
 }
 
-function openPlayerGameInfoModal(playerId = null) {
-  const select = document.getElementById("gameInfoPlayerSelect");
-  if (!select) return;
+function onGameInfoEventSelect() {
+  const eventSelect = document.getElementById("gameInfoEventSelect");
+  if (!eventSelect || !eventSelect.value) return;
+
+  const eventId = Number(eventSelect.value);
+  const ev = calendarEvents.find((e) => e.id === eventId);
+  if (ev) {
+    const titleInp = document.getElementById("gameInfoTitle");
+    const dateInp = document.getElementById("gameInfoDate");
+    if (titleInp && !titleInp.value.trim()) {
+      titleInp.value = `Resumen: ${ev.title}`;
+    }
+    if (dateInp) {
+      dateInp.value = ev.date;
+    }
+  }
+}
+
+function openPlayerGameInfoModal(playerId = null, editInfoId = null) {
+  if (!canViewGameInfo()) {
+    showToast("Acceso restringido a entrenadores y administradores.", "error");
+    return;
+  }
+
   populateGameInfoPlayerSelect();
-  if (playerId) select.value = String(playerId);
+  const select = document.getElementById("gameInfoPlayerSelect");
+  const editIdInp = document.getElementById("gameInfoEditId");
+  const titleInp = document.getElementById("gameInfoTitle");
+  const typeSelect = document.getElementById("gameInfoTypeSelect");
+  const dateInp = document.getElementById("gameInfoDate");
+  const urlInp = document.getElementById("gameInfoDownloadUrl");
+  const notesInp = document.getElementById("gameInfoNotes");
+  const eventSelect = document.getElementById("gameInfoEventSelect");
+
+  if (editInfoId && playerId) {
+    const player = squadData.find((p) => p.id === playerId);
+    const info = player && Array.isArray(player.gameInfo) ? player.gameInfo.find((i) => i.id === editInfoId) : null;
+    if (info) {
+      if (editIdInp) editIdInp.value = String(info.id);
+      if (select) select.value = String(playerId);
+      if (titleInp) titleInp.value = info.title || "";
+      if (typeSelect) typeSelect.value = info.type || "Análisis Táctico";
+      if (dateInp) dateInp.value = info.date || "";
+      if (urlInp) urlInp.value = info.downloadUrl || "";
+      if (notesInp) notesInp.value = info.notes || "";
+      if (eventSelect) eventSelect.value = "";
+    }
+  } else {
+    if (editIdInp) editIdInp.value = "";
+    document.getElementById("gameInfoForm")?.reset();
+    if (playerId && select) select.value = String(playerId);
+    if (dateInp) dateInp.value = new Date().toISOString().split("T")[0];
+  }
+
   document.getElementById("gameInfoModal").classList.remove("hidden");
 }
 
@@ -1704,18 +1791,23 @@ function closePlayerGameInfoModal() {
   const modal = document.getElementById("gameInfoModal");
   if (modal) modal.classList.add("hidden");
   document.getElementById("gameInfoForm")?.reset();
+  const editIdInp = document.getElementById("gameInfoEditId");
+  if (editIdInp) editIdInp.value = "";
 }
 
 function savePlayerGameInfo(e) {
   if (e) e.preventDefault();
-  const playerId = Number(
-    document.getElementById("gameInfoPlayerSelect").value,
-  );
+  if (!canViewGameInfo()) {
+    showToast("Acceso denegado: solo directiva y cuerpo técnico.", "error");
+    return;
+  }
+
+  const playerId = Number(document.getElementById("gameInfoPlayerSelect").value);
+  const editId = document.getElementById("gameInfoEditId")?.value;
   const title = document.getElementById("gameInfoTitle").value.trim();
+  const type = document.getElementById("gameInfoTypeSelect")?.value || "Análisis Táctico";
   const date = document.getElementById("gameInfoDate").value;
-  const downloadUrl = document
-    .getElementById("gameInfoDownloadUrl")
-    .value.trim();
+  const downloadUrl = document.getElementById("gameInfoDownloadUrl").value.trim();
   const notes = document.getElementById("gameInfoNotes").value.trim();
 
   if (!playerId || !title || !date) {
@@ -1731,22 +1823,56 @@ function savePlayerGameInfo(e) {
 
   if (!Array.isArray(player.gameInfo)) player.gameInfo = [];
 
-  player.gameInfo.unshift({
-    id: Date.now(),
-    title,
-    date,
-    type: "partido",
-    downloadUrl,
-    notes,
-  });
+  if (editId) {
+    const existingIndex = player.gameInfo.findIndex((i) => String(i.id) === String(editId));
+    if (existingIndex !== -1) {
+      player.gameInfo[existingIndex] = {
+        id: Number(editId),
+        title,
+        type,
+        date,
+        downloadUrl,
+        notes,
+      };
+      showToast(`Reporte actualizado para ${player.name}.`, "success");
+    }
+  } else {
+    player.gameInfo.unshift({
+      id: Date.now(),
+      title,
+      type,
+      date,
+      downloadUrl,
+      notes,
+    });
+    showToast(`Se enlazó la información del partido a ${player.name}.`, "success");
+  }
 
   saveData();
   renderPlayerGameInfo();
   closePlayerGameInfoModal();
-  showToast(
-    `Se enlazó la información del partido a ${player.name}.`,
-    "success",
-  );
+}
+
+function deletePlayerGameInfo(playerId, infoId) {
+  if (!canViewGameInfo()) {
+    showToast("Solo entrenadores y administradores pueden eliminar reportes.", "error");
+    return;
+  }
+
+  const player = squadData.find((p) => p.id === playerId);
+  if (!player || !Array.isArray(player.gameInfo)) return;
+
+  player.gameInfo = player.gameInfo.filter((i) => i.id !== infoId);
+  saveData();
+  renderPlayerGameInfo();
+  showToast("Enlace de información eliminado.", "info");
+}
+
+function copyGameInfoUrl(url) {
+  if (!url) return;
+  navigator.clipboard.writeText(url)
+    .then(() => showToast("Enlace de descarga copiado al portapapeles.", "success"))
+    .catch(() => showToast("URL: " + url, "info"));
 }
 
 function renderPlayerGameInfo() {
@@ -1756,19 +1882,40 @@ function renderPlayerGameInfo() {
   if (!canViewGameInfo()) {
     container.innerHTML = `
       <div class="player-game-info-locked">
-        <i class="fa-solid fa-shield-halved"></i>
-        <span>Esta información solo la pueden ver administrador y entrenadores.</span>
+        <i class="fa-solid fa-lock" style="font-size: 1.3rem;"></i>
+        <div>
+          <strong>Acceso Confidencial Restringido</strong>
+          <div style="font-size: 0.82rem; opacity: 0.85;">Esta información y descarga de partidos solo la pueden ver el administrador y entrenadores.</div>
+        </div>
       </div>
     `;
     return;
   }
 
-  const playersWithGameInfo = squadData.filter(
+  const groupFilter = document.getElementById("gameInfoFilterGroup")?.value || "Todos";
+  const playerFilter = document.getElementById("gameInfoFilterPlayer")?.value || "Todos";
+
+  let filteredSquad = squadData;
+  if (groupFilter !== "Todos") {
+    filteredSquad = filteredSquad.filter((p) => p.group === groupFilter);
+  }
+  if (playerFilter !== "Todos") {
+    filteredSquad = filteredSquad.filter((p) => p.id == playerFilter);
+  }
+
+  const playersWithGameInfo = filteredSquad.filter(
     (p) => Array.isArray(p.gameInfo) && p.gameInfo.length > 0,
   );
+
   if (playersWithGameInfo.length === 0) {
     container.innerHTML = `
-      <div class="text-muted" style="padding:1rem 0;">Todavía no hay información de partidos vinculada a ningún jugador.</div>
+      <div class="glass-panel text-center" style="padding: 2rem 1rem; border-radius: var(--radius-md); color: var(--text-muted);">
+        <i class="fa-solid fa-folder-open" style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--accent-gold); opacity: 0.6;"></i>
+        <p style="margin-bottom: 0.5rem; font-weight: 600;">No hay información ni descargas de partidos vinculadas.</p>
+        <button class="btn btn-outline btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal()">
+          <i class="fa-solid fa-plus"></i> Enlazar primer reporte
+        </button>
+      </div>
     `;
     return;
   }
@@ -1784,46 +1931,68 @@ function renderPlayerGameInfo() {
                 year: "numeric",
               })
             : "Sin fecha";
+
+          const safeUrl = info.downloadUrl ? encodeURI(info.downloadUrl) : "";
           const linkHtml = info.downloadUrl
-            ? `<a class="btn btn-ghost btn-sm" href="${info.downloadUrl}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-download"></i> Descargar</a>`
-            : `<span class="text-muted">Sin enlace de descarga</span>`;
+            ? `
+              <a class="btn btn-whatsapp-sm" href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="background: var(--accent-primary);" title="Abrir archivo o enlace de descarga">
+                <i class="fa-solid fa-download"></i> Descargar / Abrir
+              </a>
+              <button class="reg-action-btn" onclick="copyGameInfoUrl('${info.downloadUrl.replace(/'/g, "\\'")}')" title="Copiar enlace">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            `
+            : `<span class="badge badge-outline" style="font-size:0.72rem;">Sin enlace web</span>`;
+
           const notesHtml = info.notes
-            ? `<p class="text-muted margin-top-sm">${info.notes}</p>`
+            ? `<p class="text-muted margin-top-sm" style="font-size:0.83rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem;">${info.notes}</p>`
             : "";
 
           return `
-        <div class="player-game-info-entry">
-          <div class="flex-between gap-2 align-start">
-            <div>
-              <strong>${info.title}</strong>
-              <div class="text-muted mono-text" style="font-size:0.7rem; margin-top:0.2rem;">${formattedDate}</div>
+            <div class="player-game-info-entry">
+              <div class="flex-between gap-2 align-start">
+                <div>
+                  <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">${info.title}</div>
+                  <div class="text-muted mono-text" style="font-size:0.75rem; margin-top:0.15rem;">
+                    <i class="fa-regular fa-calendar"></i> ${formattedDate}
+                  </div>
+                </div>
+                <div class="flex-center gap-1">
+                  <span class="badge badge-outline" style="font-size:0.7rem;">${info.type || "Partido"}</span>
+                  <button class="reg-action-btn edit" onclick="openPlayerGameInfoModal(${p.id}, ${info.id})" title="Editar reporte">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="reg-action-btn delete" onclick="deletePlayerGameInfo(${p.id}, ${info.id})" title="Eliminar reporte">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+              ${notesHtml}
+              <div class="margin-top-sm flex-between align-center" style="flex-wrap: wrap; gap: 0.5rem;">
+                <div style="display: flex; gap: 0.4rem; align-items: center;">${linkHtml}</div>
+              </div>
             </div>
-            <span class="badge badge-neon">Partido</span>
-          </div>
-          ${notesHtml}
-          <div class="margin-top-sm">${linkHtml}</div>
-        </div>
-      `;
+          `;
         })
         .join("");
 
       return `
-      <div class="player-game-info-card">
-        <div class="flex-between align-center margin-bottom-sm">
-          <div class="player-mini">
-            <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" />
-            <div>
-              <strong>#${p.number} ${p.name}</strong>
-              <small>${p.position}</small>
+        <div class="player-game-info-card">
+          <div class="flex-between align-center margin-bottom-sm">
+            <div class="player-mini">
+              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" />
+              <div>
+                <strong>#${p.number} ${p.name}</strong>
+                <small>${p.position} · ${p.group || "Sin Cat."}</small>
+              </div>
             </div>
+            <button class="btn btn-outline btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal(${p.id})">
+              <i class="fa-solid fa-plus"></i> Enlazar Reporte
+            </button>
           </div>
-          <button class="btn btn-ghost btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal(${p.id})">
-            <i class="fa-solid fa-link"></i> Enlazar
-          </button>
+          <div class="player-game-info-items">${items}</div>
         </div>
-        <div class="player-game-info-items">${items}</div>
-      </div>
-    `;
+      `;
     })
     .join("");
 }

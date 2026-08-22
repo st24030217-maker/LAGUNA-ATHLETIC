@@ -810,50 +810,105 @@
             </div>
 
             <div class="glass-card fade-in-up margin-top" style="animation-delay: 0.15s;">
-              <div class="flex-between align-center margin-bottom">
-                <h3 class="card-title" style="margin-bottom: 0;">Información de partidos por jugador</h3>
-                <button class="btn btn-primary btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal()">
-                  <i class="fa-solid fa-link"></i> Enlazar información
-                </button>
+              <div class="flex-between align-center margin-bottom" style="flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <h3 class="card-title" style="margin-bottom: 0.2rem;">
+                    <i class="fa-solid fa-file-waveform text-primary"></i> Información y Reportes de Partidos por Jugador
+                  </h3>
+                  <p class="subtitle-text" style="margin-bottom: 0;">Enlaza y gestiona resúmenes técnicos, videoanálisis y descargas individuales.</p>
+                </div>
+                <div class="flex-center gap-2">
+                  <span class="badge badge-warning role-admin-trainer-only" style="font-size: 0.72rem;">
+                    <i class="fa-solid fa-lock"></i> Exclusivo Cuerpo Técnico
+                  </span>
+                  <button class="btn btn-primary btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal()">
+                    <i class="fa-solid fa-plus"></i> Enlazar Información
+                  </button>
+                </div>
               </div>
+
+              <!-- Filtro de jugadores en Rendimiento -->
+              <div class="flex-between margin-bottom role-admin-trainer-only" style="gap: 1rem; align-items: center; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                <div style="font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem;">
+                  <i class="fa-solid fa-filter text-primary"></i> <strong>Filtrar Reportes:</strong>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <select id="gameInfoFilterGroup" class="form-control" style="width: auto; font-size: 0.8rem; padding: 0.25rem 0.6rem;" onchange="renderPlayerGameInfo()">
+                    <option value="Todos">Todas las Categorías</option>
+                  </select>
+                  <select id="gameInfoFilterPlayer" class="form-control" style="width: auto; font-size: 0.8rem; padding: 0.25rem 0.6rem;" onchange="renderPlayerGameInfo()">
+                    <option value="Todos">Todos los Jugadores</option>
+                  </select>
+                </div>
+              </div>
+
               <div id="playerGameInfoList" class="player-game-info-list"></div>
             </div>
           </div>
 
           <div id="gameInfoModal" class="modal-overlay hidden">
-            <div class="glass-card modal-content" style="max-width: 600px;">
+            <div class="glass-card modal-content" style="max-width: 620px;">
               <div class="profile-header flex-between mb-2">
-                <h3 class="card-title" style="margin-bottom: 0;">Enlazar información del partido</h3>
-                <button class="btn btn-ghost" style="padding: 0.5rem;" onclick="closePlayerGameInfoModal()"><i class="fa-solid fa-xmark"></i></button>
+                <div>
+                  <h3 class="card-title" style="margin-bottom: 0.2rem;">
+                    <i class="fa-solid fa-link text-primary"></i> Enlazar Información de Partido
+                  </h3>
+                  <p class="subtitle-text" style="margin-bottom: 0;">Vincula reportes, descargas o análisis de juego al expediente del jugador.</p>
+                </div>
+                <button class="btn btn-ghost" style="padding: 0.4rem 0.8rem;" onclick="closePlayerGameInfoModal()"><i class="fa-solid fa-xmark"></i></button>
               </div>
 
               <form id="gameInfoForm" class="modern-form" onsubmit="savePlayerGameInfo(event)">
+                <input type="hidden" id="gameInfoEditId" value="" />
+
                 <div class="form-group">
-                  <label>Jugador</label>
-                  <select id="gameInfoPlayerSelect" class="form-control"></select>
+                  <label><i class="fa-solid fa-user text-primary"></i> Jugador Destino:</label>
+                  <select id="gameInfoPlayerSelect" class="form-control" required></select>
                 </div>
+
                 <div class="form-group">
-                  <label>Título del archivo / resumen</label>
-                  <input id="gameInfoTitle" type="text" class="form-control" placeholder="Ej. Resumen vs. Santos Laguna" required />
+                  <label><i class="fa-solid fa-calendar-check text-primary"></i> Vincular con Partido del Calendario (Opcional):</label>
+                  <select id="gameInfoEventSelect" class="form-control" onchange="onGameInfoEventSelect()">
+                    <option value="">— Seleccionar partido del calendario o escribir manual —</option>
+                  </select>
                 </div>
+
                 <div class="grid-2-cols gap-2">
                   <div class="form-group">
-                    <label>Fecha</label>
+                    <label><i class="fa-solid fa-heading"></i> Título del Archivo / Reporte:</label>
+                    <input id="gameInfoTitle" type="text" class="form-control" placeholder="Ej. Resumen vs Santos Laguna" required />
+                  </div>
+                  <div class="form-group">
+                    <label><i class="fa-solid fa-tags"></i> Tipo de Documento:</label>
+                    <select id="gameInfoTypeSelect" class="form-control">
+                      <option value="Análisis Táctico">Análisis Táctico</option>
+                      <option value="Resumen de Partido">Resumen de Partido</option>
+                      <option value="Estadísticas GPS">Estadísticas GPS / Físicas</option>
+                      <option value="Videoanálisis">Videoanálisis de Jugadas</option>
+                      <option value="Informe de Rendimiento">Informe de Rendimiento</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid-2-cols gap-2">
+                  <div class="form-group">
+                    <label><i class="fa-solid fa-calendar-day"></i> Fecha del Partido:</label>
                     <input id="gameInfoDate" type="date" class="form-control" required />
                   </div>
                   <div class="form-group">
-                    <label>URL de descarga</label>
-                    <input id="gameInfoDownloadUrl" type="url" class="form-control" placeholder="https://..." />
+                    <label><i class="fa-solid fa-download"></i> URL / Enlace de Descarga:</label>
+                    <input id="gameInfoDownloadUrl" type="url" class="form-control" placeholder="https://drive.google.com/..." />
                   </div>
                 </div>
+
                 <div class="form-group">
-                  <label>Notas del partido</label>
-                  <textarea id="gameInfoNotes" rows="4" class="form-control" placeholder="Detalles clave del encuentro, observaciones o análisis..."></textarea>
+                  <label><i class="fa-solid fa-comment-dots"></i> Observaciones y Notas Técnicas:</label>
+                  <textarea id="gameInfoNotes" rows="3" class="form-control" placeholder="Detalles clave del desempeño, recuperaciones, aspectos tácticos a reforzar..."></textarea>
                 </div>
 
                 <div class="flex-end gap-2 mt-4">
                   <button type="button" class="btn btn-ghost" onclick="closePlayerGameInfoModal()">Cancelar</button>
-                  <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar enlace</button>
+                  <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Información</button>
                 </div>
               </form>
             </div>
