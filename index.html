@@ -31,21 +31,24 @@
   </head>
   <body class="dark-theme">
     
-    <!-- PANTALLA DE CARGA (PRELOADER FUTURISTA) -->
+    <!-- PANTALLA DE CARGA (PRELOADER PROFESIONAL) -->
     <div id="appLoadingScreen" class="loading-overlay hidden">
       <div class="loading-box text-center fade-in-up">
         <div class="loading-logo-wrapper">
           <img src="LAGUNA.jpg" alt="Laguna Athletic" class="loading-logo" />
-          <div class="loading-spinner-glow"></div>
-          <div class="loading-spinner-glow-inner"></div>
+          <div class="loading-spinner-ring"></div>
         </div>
-        <h3 class="loading-title mt-3">LAGUNA ATHLETIC 2026</h3>
-        <p id="loadingStatusText" class="mono-text text-muted mt-1" style="font-size: 0.82rem; min-height: 24px;">[SYSTEM] Inicializando entorno seguro...</p>
+        <h3 class="loading-title">Laguna Athletic Club</h3>
+        <p class="loading-subtitle">Gestión Integral del Plantel 2026</p>
+        <p id="loadingStatusText" class="loading-status text-muted mt-2">Iniciando sesión segura...</p>
         
         <div class="loading-bar-container mt-3">
           <div id="loadingBarFill" class="loading-bar-fill"></div>
         </div>
-        <span id="loadingPercent" class="mono-text text-neon mt-2 block" style="font-weight: 700; font-size: 1.1rem; text-shadow:0 0 10px rgba(16,185,129,0.5);">0%</span>
+        <div class="flex-between align-center mt-2">
+          <span class="text-muted" style="font-size: 0.75rem;">Cargando módulos...</span>
+          <span id="loadingPercent" class="loading-percent">0%</span>
+        </div>
       </div>
     </div>
 

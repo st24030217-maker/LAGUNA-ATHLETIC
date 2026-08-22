@@ -253,10 +253,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// --- LOADING SYSTEM FUTURISTA ---
+// --- LOADING SYSTEM PROFESIONAL ---
 function triggerAppLoading(
-  message = "Cargando sistema...",
-  durationMs = 1800,
+  message = "Cargando plataforma...",
+  durationMs = 1100,
   callback = null,
 ) {
   const loadingOverlay = document.getElementById("appLoadingScreen");
@@ -271,7 +271,7 @@ function triggerAppLoading(
 
   barFill.style.width = "0%";
   percentText.innerText = "0%";
-  statusText.innerText = "[SYSTEM] Autenticando credenciales oficiales...";
+  statusText.innerText = "Iniciando sesión segura...";
 
   loadingOverlay.classList.remove("hidden");
   loadingOverlay.style.opacity = "1";
@@ -284,17 +284,15 @@ function triggerAppLoading(
     barFill.style.width = `${progress}%`;
     percentText.innerText = `${progress}%`;
 
-    // Mensajes dinámicos según el progreso
-    if (progress < 25) {
-      statusText.innerText = "[AUTH] Validando perfil Laguna 2026...";
-    } else if (progress < 55) {
-      statusText.innerText =
-        "[DATABASE] Cargando plantillas, expedientes y fotos...";
-    } else if (progress < 85) {
-      statusText.innerText =
-        "[FINANCES] Sincronizando matriz de cobros y paquetes...";
+    // Mensajes profesionales según el progreso
+    if (progress < 30) {
+      statusText.innerText = "Verificando credenciales oficiales...";
+    } else if (progress < 65) {
+      statusText.innerText = "Cargando expedientes del plantel y calendario...";
+    } else if (progress < 90) {
+      statusText.innerText = "Sincronizando registros y estadísticas...";
     } else {
-      statusText.innerText = "[ACCESO CONCEDIDO] Entorno listo. Bienvenido.";
+      statusText.innerText = "Panel listo. Bienvenido al sistema.";
     }
 
     if (progress >= 100) {
@@ -304,10 +302,10 @@ function triggerAppLoading(
         setTimeout(() => {
           loadingOverlay.classList.add("hidden");
           if (callback) callback();
-        }, 300);
-      }, 250);
+        }, 250);
+      }, 200);
     }
-  }, 35);
+  }, 30);
 }
 
 // --- LOGIN MODULE ---
