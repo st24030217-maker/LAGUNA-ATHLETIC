@@ -88,10 +88,10 @@
             </label>
             <select id="loginRole" class="login-select" onchange="onLoginRoleChange()" required>
               <option value="" disabled selected>— Selecciona tu perfil —</option>
-              <option value="dt">🏆 Director Técnico / Administrador</option>
-              <option value="auxiliar">🩺 Auxiliar Técnico / Cuerpo Médico</option>
-              <option value="preparador">⚡ Preparador Físico / Cancha</option>
-              <option value="jugador">⚽ Jugador / Padre de Familia</option>
+              <option value="dt">Director Técnico / Administrador</option>
+              <option value="auxiliar">Auxiliar Técnico / Cuerpo Médico</option>
+              <option value="preparador">Preparador Físico / Cancha</option>
+              <option value="jugador">Jugador / Padre de Familia</option>
             </select>
           </div>
 
@@ -540,37 +540,242 @@
 
           <!-- 05. AVISOS WHATSAPP -->
           <div id="mod-avisos" class="module-panel">
-            <div class="glass-card fade-in-up max-w-md">
-              <h3 class="card-title"><i class="fa-brands fa-whatsapp text-whatsapp"></i> Difusión Inteligente</h3>
-              <p class="subtitle-text margin-bottom">Generador automático de comunicados para el grupo.</p>
-              
-              <div class="modern-form">
-                <div class="form-group">
-                  <label>Destinatario / Grupo:</label>
-                  <select id="noticeGroupSelect" class="form-control" onchange="updateNoticeTemplate()">
-                    <option value="Todos">Todos (Global)</option>
-                  </select>
+            <div class="glass-card fade-in-up" style="max-width: 1050px; margin: 0 auto;">
+              <div class="flex-between margin-bottom" style="flex-wrap: wrap; gap: 1rem; align-items: center;">
+                <div>
+                  <h3 class="card-title" style="margin-bottom: 0.25rem;">
+                    <i class="fa-brands fa-whatsapp text-whatsapp"></i> Centro de Avisos & Difusión
+                  </h3>
+                  <p class="subtitle-text" style="margin-bottom: 0;">Envía comunicados generales, por categoría o mensajes personalizados directos a WhatsApp.</p>
                 </div>
-                <div class="form-group">
-                  <label>Plantilla de Aviso:</label>
-                  <select id="noticeTypeSelect" class="form-control" onchange="updateNoticeTemplate()">
-                    <option value="entrenamiento">Próximo Entrenamiento</option>
-                    <option value="partido">Próximo Partido Oficial</option>
-                    <option value="falta">Aviso de Falta Injustificada</option>
-                    <option value="pago_mes">Recordatorio de Pago Mensual</option>
-                    <option value="pago_vencido">Aviso de Adeudo Vencido</option>
-                  </select>
+                <div class="notice-quick-stats flex-center" style="gap: 0.75rem;">
+                  <span class="badge badge-neon" id="noticeTotalContactsBadge"><i class="fa-solid fa-address-book"></i> 0 Contactos</span>
+                  <span class="badge badge-primary" id="noticeTotalPlayersBadge"><i class="fa-solid fa-users"></i> 0 Jugadores</span>
                 </div>
-                <div class="form-group">
-                  <label>Vista Previa del Mensaje:</label>
-                  <textarea id="noticeMessageText" rows="7" class="form-control mono-text"></textarea>
-                </div>
-                <button class="btn btn-whatsapp btn-block role-dt-only" onclick="simulateSendNotices()">
-                  <i class="fa-regular fa-paper-plane"></i> ENVIAR AL GRUPO
+              </div>
+
+              <!-- PESTAÑAS DE MODALIDAD -->
+              <div class="reg-filter-tabs margin-bottom" id="noticeModeTabs" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 0.75rem;">
+                <button class="reg-filter-btn active" data-notice-mode="general" onclick="switchNoticeMode('general')">
+                  <i class="fa-solid fa-globe"></i> 1. Aviso General (Todos)
                 </button>
+                <button class="reg-filter-btn" data-notice-mode="grupo" onclick="switchNoticeMode('grupo')">
+                  <i class="fa-solid fa-users-rectangle"></i> 2. Por Grupo / Categoría
+                </button>
+                <button class="reg-filter-btn" data-notice-mode="personalizado" onclick="switchNoticeMode('personalizado')">
+                  <i class="fa-solid fa-user-tag"></i> 3. Aviso Personalizado
+                </button>
+              </div>
+
+              <!-- 1. PANEL: AVISO GENERAL -->
+              <div id="noticePanelGeneral" class="notice-subpanel">
+                <div class="grid-2-cols" style="gap: 1.25rem;">
+                  <div class="modern-form">
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-file-lines text-primary"></i> Plantilla General:</label>
+                      <select id="noticeGenTemplateSelect" class="form-control" onchange="updateNoticeTemplate()">
+                        <option value="entrenamiento">Próximo Entrenamiento General</option>
+                        <option value="partido">Próximo Partido / Jornada</option>
+                        <option value="pago_mes">Recordatorio de Pago Mensual</option>
+                        <option value="comunicado">Comunicado Institucional</option>
+                        <option value="libre">Mensaje Libre</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-pen-to-square"></i> Mensaje General:</label>
+                      <textarea id="noticeGenMessageText" rows="9" class="form-control mono-text" placeholder="Escribe el mensaje general aquí..."></textarea>
+                    </div>
+
+                    <div class="flex-center" style="gap: 0.5rem; flex-wrap: wrap;">
+                      <button class="btn btn-whatsapp flex-1" onclick="sendGeneralBroadcast()" style="min-width: 200px;">
+                        <i class="fa-brands fa-whatsapp"></i> ABRIR DIFUSIÓN WHATSAPP
+                      </button>
+                      <button class="btn btn-ghost" onclick="copyNoticeText('noticeGenMessageText')" title="Copiar mensaje">
+                        <i class="fa-regular fa-copy"></i> Copiar
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="glass-panel" style="background: rgba(8,11,18,0.6); padding: 1.25rem; border-radius: var(--radius-md); display: flex; flex-direction: column;">
+                    <div class="flex-between margin-bottom">
+                      <h4 style="font-size: 0.95rem; color: var(--accent-gold); margin: 0;">
+                        <i class="fa-solid fa-list-check"></i> Directorio de Envío Individual
+                      </h4>
+                      <span class="badge badge-outline" id="noticeGenCountLabel">0 contactos</span>
+                    </div>
+                    <p class="subtitle-text" style="font-size: 0.8rem; margin-bottom: 0.75rem;">
+                      Envía este comunicado personalizado con un solo clic al WhatsApp de cada tutor registrado:
+                    </p>
+                    <div class="table-responsive" style="max-height: 290px; overflow-y: auto;">
+                      <table class="modern-table" style="font-size: 0.82rem;">
+                        <thead>
+                          <tr>
+                            <th>Jugador / Cat.</th>
+                            <th>Tutor / Contacto</th>
+                            <th style="text-align: right;">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody id="noticeGenContactsTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. PANEL: AVISO POR GRUPO -->
+              <div id="noticePanelGrupo" class="notice-subpanel hidden">
+                <div class="grid-2-cols" style="gap: 1.25rem;">
+                  <div class="modern-form">
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-users-viewfinder text-primary"></i> Categoría / Grupo Destino:</label>
+                      <select id="noticeGroupFilterSelect" class="form-control" onchange="onNoticeGroupChange()">
+                        <!-- Dinámico con categorías -->
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-file-lines text-primary"></i> Plantilla del Grupo:</label>
+                      <select id="noticeGroupTemplateSelect" class="form-control" onchange="updateNoticeTemplate()">
+                        <option value="entrenamiento_grupo">Entrenamiento de Categoría</option>
+                        <option value="partido_grupo">Convocatoria Partido Oficial</option>
+                        <option value="asistencia_grupo">Aviso de Puntualidad y Faltas</option>
+                        <option value="pago_grupo">Recordatorio de Cuota de Grupo</option>
+                        <option value="comunicado_grupo">Aviso Especial para el Grupo</option>
+                        <option value="libre_grupo">Mensaje Libre</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-pen-to-square"></i> Mensaje para el Grupo:</label>
+                      <textarea id="noticeGroupMessageText" rows="8" class="form-control mono-text" placeholder="Escribe el mensaje del grupo..."></textarea>
+                    </div>
+
+                    <div class="flex-center" style="gap: 0.5rem; flex-wrap: wrap;">
+                      <button class="btn btn-whatsapp flex-1" onclick="sendGroupBroadcast()" style="min-width: 200px;">
+                        <i class="fa-brands fa-whatsapp"></i> ENVIAR AL CHAT DEL GRUPO
+                      </button>
+                      <button class="btn btn-ghost" onclick="copyNoticeText('noticeGroupMessageText')" title="Copiar mensaje">
+                        <i class="fa-regular fa-copy"></i> Copiar
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="glass-panel" style="background: rgba(8,11,18,0.6); padding: 1.25rem; border-radius: var(--radius-md); display: flex; flex-direction: column;">
+                    <div class="flex-between margin-bottom">
+                      <h4 style="font-size: 0.95rem; color: var(--accent-gold); margin: 0;">
+                        <i class="fa-solid fa-user-group"></i> Contactos del Grupo
+                      </h4>
+                      <span class="badge badge-neon" id="noticeGroupCountLabel">0 jugadores</span>
+                    </div>
+                    <p class="subtitle-text" style="font-size: 0.8rem; margin-bottom: 0.75rem;">
+                      Envía mensaje directo de WhatsApp a los padres o tutores de esta categoría:
+                    </p>
+                    <div class="table-responsive" style="max-height: 290px; overflow-y: auto;">
+                      <table class="modern-table" style="font-size: 0.82rem;">
+                        <thead>
+                          <tr>
+                            <th>Jugador</th>
+                            <th>Tutor / Contacto</th>
+                            <th style="text-align: right;">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody id="noticeGroupContactsTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. PANEL: AVISO PERSONALIZADO -->
+              <div id="noticePanelPersonalizado" class="notice-subpanel hidden">
+                <div class="grid-2-cols" style="gap: 1.25rem;">
+                  <div class="modern-form">
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-user text-primary"></i> Seleccionar Jugador:</label>
+                      <select id="noticePersonalPlayerSelect" class="form-control" onchange="onNoticePlayerChange()">
+                        <!-- Dinámico con jugadores -->
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-address-card text-primary"></i> Contacto / Tutor Destino:</label>
+                      <select id="noticePersonalContactSelect" class="form-control" onchange="onNoticeContactChange()">
+                        <!-- Dinámico con contactos del jugador -->
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-file-lines text-primary"></i> Plantilla Personalizada:</label>
+                      <select id="noticePersonalTemplateSelect" class="form-control" onchange="updateNoticeTemplate()">
+                        <option value="adeudo_personal">Saldo Pendiente / Adeudo Detallado</option>
+                        <option value="falta_personal">Reporte de Inasistencia / Faltas</option>
+                        <option value="convocatoria_personal">Convocatoria & Citatorio Individual</option>
+                        <option value="medico_personal">Estado Médico & Rehabilitación</option>
+                        <option value="desempeno_personal">Reconocimiento y Desempeño</option>
+                        <option value="libre_personal">Mensaje Personalizado Libre</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label><i class="fa-solid fa-pen-to-square"></i> Mensaje Personalizado:</label>
+                      <textarea id="noticePersonalMessageText" rows="8" class="form-control mono-text" placeholder="Escribe el mensaje personalizado..."></textarea>
+                    </div>
+
+                    <div class="flex-center" style="gap: 0.5rem; flex-wrap: wrap;">
+                      <button class="btn btn-whatsapp flex-1" id="btnSendPersonalWhatsApp" onclick="sendPersonalWhatsApp()" style="min-width: 200px;">
+                        <i class="fa-brands fa-whatsapp"></i> ENVIAR A TUTOR POR WHATSAPP
+                      </button>
+                      <button class="btn btn-ghost" onclick="copyNoticeText('noticePersonalMessageText')" title="Copiar mensaje">
+                        <i class="fa-regular fa-copy"></i> Copiar
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- FICHA RESUMEN DEL JUGADOR SELECCIONADO -->
+                  <div class="glass-panel" id="noticePlayerCardSummary" style="background: rgba(8,11,18,0.6); padding: 1.25rem; border-radius: var(--radius-md);">
+                    <div class="flex-between margin-bottom">
+                      <h4 style="font-size: 0.95rem; color: var(--accent-gold); margin: 0;">
+                        <i class="fa-solid fa-id-badge"></i> Ficha del Jugador
+                      </h4>
+                      <span class="badge badge-status-activo" id="noticePlayerStatusBadge">Activo</span>
+                    </div>
+
+                    <div class="player-notice-profile margin-bottom" style="display: flex; gap: 1rem; align-items: center;">
+                      <img id="noticePlayerPhoto" src="LAGUNA.jpg" alt="Foto" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold);" />
+                      <div>
+                        <h4 id="noticePlayerName" style="margin: 0; font-size: 1.05rem; color: var(--text-main);">Emilio Suárez</h4>
+                        <div id="noticePlayerSub" style="font-size: 0.8rem; color: var(--text-muted);">#10 · Medio Ofensivo</div>
+                      </div>
+                    </div>
+
+                    <div class="grid-2-cols margin-bottom" style="gap: 0.75rem;">
+                      <div class="stat-mini-card" style="background: rgba(255,255,255,0.03); padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-chart-pie"></i> Asistencia</div>
+                        <div id="noticePlayerAttendance" style="font-weight: 700; color: var(--accent-neon); font-size: 1rem;">95%</div>
+                      </div>
+                      <div class="stat-mini-card" style="background: rgba(255,255,255,0.03); padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-coins"></i> Saldo / Pagos</div>
+                        <div id="noticePlayerBalance" style="font-weight: 700; color: var(--accent-gold); font-size: 0.95rem;">Al corriente</div>
+                      </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.02); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass); font-size: 0.82rem;">
+                      <div style="color: var(--text-muted); margin-bottom: 0.35rem;"><i class="fa-solid fa-user-group text-primary"></i> <strong>Contactos Registrados:</strong></div>
+                      <div id="noticePlayerContactsList" style="display: flex; flex-direction: column; gap: 0.35rem;">
+                        <!-- Dinámico -->
+                      </div>
+                    </div>
+
+                    <div class="margin-top" style="font-size: 0.78rem; color: var(--text-muted);">
+                      <i class="fa-solid fa-circle-info text-primary"></i> <em>Las plantillas insertan automáticamente montos, asistencia y detalles de este jugador.</em>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
 
           <!-- 06. ESTADÍSTICAS -->
           <div id="mod-estadisticas" class="module-panel">
@@ -1319,35 +1524,68 @@
             </div>
             <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
               <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Tarjetas</p>
-              <h3 style="font-family: var(--font-mono); font-size: 1.4rem;" class="text-warning" id="profileCards">🟨 2</h3>
+              <h3 style="font-family: var(--font-mono); font-size: 1.4rem;" class="text-warning" id="profileCards">2</h3>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal Reportar Resultado -->
+    <!-- Modal Reportar Resultado & Estadísticas -->
     <div id="matchResultModal" class="modal-overlay hidden">
-      <div class="glass-card modal-content">
-        <h3 class="card-title">Registrar Resultado</h3>
-        <p class="subtitle-text margin-bottom" id="matchResultTitle">Partido vs Rival</p>
-        <div class="modern-form mt-3">
-          <div class="grid-2-cols gap-2 text-center" style="grid-template-columns: 1fr auto 1fr; align-items: center;">
-            <div class="form-group">
-              <label>Laguna Athletic</label>
-              <input type="number" id="scoreLaguna" class="form-control" style="font-size: 2rem; text-align: center;" min="0" value="0" />
+      <div class="glass-card modal-content" style="max-width: 620px;">
+        <div class="flex-between margin-bottom">
+          <div>
+            <h3 class="card-title" style="margin-bottom: 0.2rem;"><i class="fa-solid fa-trophy text-primary"></i> Registrar Resultado</h3>
+            <p class="subtitle-text" id="matchResultTitle" style="margin-bottom: 0;">Partido vs Rival</p>
+          </div>
+          <button class="btn btn-ghost" style="padding: 0.4rem 0.8rem;" onclick="closeMatchResultModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="modern-form mt-2">
+          <!-- MARCADOR DEL PARTIDO -->
+          <div class="grid-2-cols gap-2 text-center" style="grid-template-columns: 1fr auto 1fr; align-items: center; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-weight: 700; color: var(--accent-gold);">Laguna Athletic</label>
+              <input type="number" id="scoreLaguna" class="form-control" style="font-size: 2.2rem; text-align: center; font-weight: 700; color: var(--accent-neon); padding: 0.4rem;" min="0" value="0" oninput="updateScorerGoalCount()" />
             </div>
-            <div style="font-weight: bold; font-size: 1.5rem; color: var(--text-muted);">-</div>
-            <div class="form-group">
-              <label>Rival</label>
-              <input type="number" id="scoreRival" class="form-control" style="font-size: 2rem; text-align: center;" min="0" value="0" />
+            <div style="font-weight: bold; font-size: 1.8rem; color: var(--text-muted); padding-top: 1rem;">vs</div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-weight: 700; color: var(--text-main);">Equipo Rival</label>
+              <input type="number" id="scoreRival" class="form-control" style="font-size: 2.2rem; text-align: center; font-weight: 700; color: var(--accent-danger); padding: 0.4rem;" min="0" value="0" />
+            </div>
+          </div>
+
+          <!-- GOLEO Y ASISTENCIAS DE JUGADORES -->
+          <div class="margin-top" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+            <div class="flex-between margin-bottom" style="align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div>
+                <h4 style="font-size: 0.95rem; color: var(--accent-gold); margin: 0;">
+                  <i class="fa-solid fa-futbol"></i> Goles y Asistencias del Partido
+                </h4>
+                <p class="subtitle-text" style="font-size: 0.78rem; margin: 0;">Asigna las anotaciones y pases para gol de los jugadores.</p>
+              </div>
+              <span class="badge badge-outline" id="matchGoalBalanceBadge" style="font-size: 0.75rem;">0 goles asignados</span>
+            </div>
+
+            <div id="matchScorersContainer" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto; padding-right: 0.25rem;">
+              <!-- Filas dinámicas de jugadores -->
+            </div>
+
+            <div class="margin-top">
+              <button type="button" class="btn btn-outline btn-sm btn-block" onclick="addScorerRow()">
+                <i class="fa-solid fa-plus"></i> + Agregar Goleador / Asistente
+              </button>
             </div>
           </div>
         </div>
-        <div class="flex-end gap-2 mt-4">
+
+        <div class="flex-end gap-2 mt-4" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
           <button class="btn btn-ghost" onclick="closeMatchResultModal()">Cancelar</button>
-          <button class="btn btn-primary" onclick="saveMatchResult()">Guardar Resultado</button>
+          <button class="btn btn-primary" onclick="saveMatchResult()"><i class="fa-solid fa-floppy-disk"></i> Guardar Resultado</button>
         </div>
+      </div>
+    </div>
     <!-- Modal Expediente y Documentación Completa del Niño -->
     <div id="playerDocModal" class="modal-overlay hidden">
       <div class="glass-card modal-content" style="max-width: 650px;">

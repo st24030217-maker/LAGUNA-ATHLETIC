@@ -2326,3 +2326,119 @@ body {
   text-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   MODULE: AVISOS & DIFUSIÓN INTELIGENTE (EXPANDED PRO)
+   ========================================================================== */
+.notice-subpanel {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notice-subpanel.hidden {
+  display: none !important;
+}
+
+.btn-whatsapp-sm {
+  background: #25d366;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-whatsapp-sm:hover {
+  background: #1da851;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
+}
+
+.badge-whatsapp {
+  background: rgba(37, 211, 102, 0.15);
+  color: #25d366;
+  border: 1px solid rgba(37, 211, 102, 0.35);
+}
+
+.stat-mini-card {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-mini-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+/* Match Scorer Rows & Chips */
+.match-scorer-row {
+  display: grid;
+  grid-template-columns: 1fr 105px 105px 36px;
+  gap: 0.5rem;
+  align-items: center;
+  background: var(--bg-input);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-glass);
+}
+@media (max-width: 550px) {
+  .match-scorer-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+}
+.stat-stepper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.stat-stepper-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 26px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+.stat-stepper-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+.stat-stepper input {
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 0;
+}
+.event-scorers-chip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+}
+.event-scorers-chip .chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  color: var(--text-main);
+}
