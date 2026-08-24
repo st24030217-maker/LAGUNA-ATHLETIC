@@ -3100,3 +3100,41 @@ body {
   border-radius: var(--radius-sm);
   object-fit: cover;
 }
+
+/* Grid de Archivo de Credenciales Interactivas */
+.all-cred-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.cred-archive-item {
+  background: linear-gradient(135deg, #0b132b 0%, #161f38 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.cred-archive-item:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-gold);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.cred-archive-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 600px) {
+  .all-cred-grid { grid-template-columns: 1fr; }
+}

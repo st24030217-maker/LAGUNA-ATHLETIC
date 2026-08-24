@@ -403,8 +403,8 @@
               <div class="glass-card text-center fade-in-up" style="animation-delay: 0.1s;">
                 <div class="flex-between align-center margin-bottom">
                   <h3 class="card-title" style="margin-bottom:0;"><i class="fa-solid fa-qrcode text-primary"></i> Lector QR</h3>
-                  <button class="btn btn-ghost btn-sm" onclick="printAllPlayerCredentials()" title="Imprimir Credenciales con Código QR para todo el plantel">
-                    <i class="fa-solid fa-id-card text-gold"></i> Credenciales
+                  <button class="btn btn-ghost btn-sm" onclick="openAllCredentialsModal()" title="Abrir Archivo y Visor de Credenciales Oficiales">
+                    <i class="fa-solid fa-id-card text-gold"></i> Archivo Credenciales
                   </button>
                 </div>
 
@@ -2133,11 +2133,57 @@
           <button class="btn btn-primary" onclick="printCredential()">
             <i class="fa-solid fa-print"></i> IMPRIMIR / DESCARGAR CREDENCIAL
           </button>
+    <!-- Modal Archivo General de Credenciales del Plantel (Interactivo con Salida/Entrada) -->
+    <div id="allCredentialsModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 900px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="profile-header flex-between mb-2">
+          <div>
+            <h3 class="card-title" style="margin-bottom: 0.2rem;">
+              <i class="fa-solid fa-id-card text-gold"></i> Archivo de Credenciales Oficiales 2026
+            </h3>
+            <p class="subtitle-text text-muted" style="margin: 0; font-size: 0.8rem;">Consulta, genera e imprime los carnets con código QR de todo el plantel.</p>
+          </div>
+          <button class="btn btn-ghost" style="padding: 0.5rem;" onclick="closeAllCredentialsModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Barra de herramientas del archivo -->
+        <div class="flex-between margin-top margin-bottom" style="flex-wrap: wrap; gap: 0.6rem; align-items: center;">
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex: 1;">
+            <div class="reg-search-box" style="flex: 1; min-width: 200px;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="allCredSearchInput" class="form-control" placeholder="Buscar por nombre, dorsal o tutor..." oninput="renderAllCredentialsGrid()" style="padding: 0.45rem 0.8rem; font-size: 0.82rem;" />
+            </div>
+            <select id="allCredGroupFilter" class="form-control" onchange="renderAllCredentialsGrid()" style="width: auto; padding: 0.45rem 0.8rem; font-size: 0.82rem;">
+              <option value="Todos">Todas las Categorías</option>
+              <option value="Sub-8">Sub-8</option>
+              <option value="Sub-10">Sub-10</option>
+              <option value="Sub-12">Sub-12</option>
+              <option value="Sub-14">Sub-14</option>
+              <option value="Sub-16">Sub-16</option>
+              <option value="Sub-18">Sub-18</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-primary btn-sm" onclick="printAllPlayerCredentials()">
+              <i class="fa-solid fa-print"></i> IMPRIMIR TODOS (PDF)
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="closeAllCredentialsModal()">
+              <i class="fa-solid fa-arrow-left"></i> Volver
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid de Credenciales Interactivas -->
+        <div id="allCredentialsGrid" class="all-cred-grid" style="flex: 1; overflow-y: auto; max-height: 60vh; padding-right: 0.3rem;">
+          <!-- Dinámico -->
+        </div>
+
+        <div class="flex-between border-top pt-3 mt-3 text-muted" style="font-size: 0.75rem;">
+          <span id="allCredCountText">Mostrando 0 credenciales</span>
+          <button class="btn btn-ghost btn-sm" onclick="closeAllCredentialsModal()">Cerrar Archivo</button>
         </div>
       </div>
     </div>
-
-    <!-- Modal de Confirmación Personalizado -->
     <div id="customConfirmModal" class="modal-overlay hidden">
       <div class="glass-card modal-content" style="max-width: 460px;">
         <div class="text-center" style="padding: 0.5rem 0 1rem;">

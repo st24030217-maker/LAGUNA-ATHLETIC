@@ -2808,6 +2808,9 @@ function renderRegTable() {
       const actionsCells = isDT
         ? `
       <td>
+        <button class="reg-action-btn doc" title="Ver Credencial Oficial con QR" onclick="openCredentialModal(${p.id})" style="color: var(--accent-gold); border-color: rgba(245, 158, 11, 0.4);">
+          <i class="fa-solid fa-id-card"></i>
+        </button>
         <button class="reg-action-btn doc" title="Ver Expediente / Descargar" onclick="openDocModal(${p.id})">
           <i class="fa-solid fa-folder-open"></i>
         </button>
@@ -2819,8 +2822,11 @@ function renderRegTable() {
         </button>
       </td>`
         : `<td>
+        <button class="reg-action-btn doc" title="Ver Credencial Oficial con QR" onclick="openCredentialModal(${p.id})" style="color: var(--accent-gold); border-color: rgba(245, 158, 11, 0.4);">
+          <i class="fa-solid fa-id-card"></i> Credencial
+        </button>
         <button class="reg-action-btn doc" title="Ver Expediente / Descargar" onclick="openDocModal(${p.id})">
-          <i class="fa-solid fa-folder-open"></i> Ver Expediente
+          <i class="fa-solid fa-folder-open"></i> Expediente
         </button>
       </td>`;
 
@@ -4387,6 +4393,98 @@ function openCredentialFromProfile() {
 function closeCredentialModal() {
   document.getElementById("playerCredentialModal")?.classList.add("hidden");
 }
+
+function openAllCredentialsModal() {
+  renderAllCredentialsGrid();
+  document.getElementById("allCredentialsModal")?.classList.remove("hidden");
+}
+
+function closeAllCredentialsModal() {
+  document.getElementById("allCredentialsModal")?.classList.add("hidden");
+}
+
+function renderAllCredentialsGrid() {
+  const container = document.getElementById("allCredentialsGrid");
+  const countText = document.getElementById("allCredCountText");
+  const searchVal = (document.getElementById("allCredSearchInput")?.value || "").toLowerCase().trim();
+  const groupFilter = document.getElementById("allCredGroupFilter")?.value || "Todos";
+
+  if (!container) return;
+  container.innerHTML = "";
+
+  const filtered = squadData.filter((p) => {
+    ensureRegFields(p);
+    const matchesGroup = groupFilter === "Todos" || p.group === groupFilter;
+    const matchesSearch = !searchVal || 
+      p.name.toLowerCase().includes(searchVal) || 
+      String(p.number).includes(searchVal) || 
+      (p.tutorName && p.tutorName.toLowerCase().includes(searchVal)) ||
+      p.position.toLowerCase().includes(searchVal);
+    return matchesGroup && matchesSearch;
+  });
+
+  if (countText) {
+    countText.textContent = `Mostrando ${filtered.length} de ${squadData.length} credenciales`;
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="text-center text-muted" style="padding: 3rem 1rem; grid-column: 1 / -1;">
+        <i class="fa-solid fa-id-card-clip" style="font-size: 2.2rem; opacity: 0.4; margin-bottom: 0.5rem; display: block;"></i>
+        <p style="font-size: 0.9rem;">No se encontraron credenciales con los filtros seleccionados.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach((p) => {
+    const item = document.createElement("div");
+    item.className = "cred-archive-item";
+    
+    item.innerHTML = `
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <div style="position: relative; flex-shrink: 0;">
+          <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" style="width: 58px; height: 70px; border-radius: 6px; object-fit: cover; border: 1.5px solid #fff;" />
+          <div style="position: absolute; bottom: -4px; right: -4px; background: var(--accent-gold); color: #000; font-weight: 800; font-size: 0.68rem; padding: 1px 4px; border-radius: 6px;">#${p.number}</div>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: 700; font-size: 0.92rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+          <div style="font-size: 0.74rem; color: var(--text-muted);">${p.position} · <strong style="color: var(--accent-gold);">${p.group || "Sin Cat."}</strong></div>
+          <div class="mono-text" style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px;">ID: LA-2026-${String(p.id).padStart(3, "0")}</div>
+          <div style="font-size: 0.7rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tutor: ${p.tutorName || "N/A"}</div>
+        </div>
+        <div style="flex-shrink: 0; text-align: center;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=LAGUNA-${p.id}" width="54" height="54" style="background: #fff; border-radius: 4px; padding: 2px; display: block;" alt="QR" />
+          <span style="font-size: 0.55rem; color: var(--accent-gold); font-family: var(--font-mono); font-weight: 700;">QR OFICIAL</span>
+        </div>
+      </div>
+      <div class="cred-archive-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openCredentialModal(${p.id})" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+          <i class="fa-solid fa-eye text-primary"></i> Ver Ampliada
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="openProfileModal(${p.id})" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+          <i class="fa-solid fa-user"></i> Ver Ficha
+        </button>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+// Cierre global e intuitivo de cualquier modal al hacer clic en el fondo o presionar ESC
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    document.querySelectorAll(".modal-overlay:not(.hidden)").forEach((m) => {
+      m.classList.add("hidden");
+    });
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("modal-overlay")) {
+    e.target.classList.add("hidden");
+  }
+});
 
 function printCredential() {
   const p = currentCredentialPlayer;
