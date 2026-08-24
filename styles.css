@@ -3091,15 +3091,18 @@ body {
   font-family: var(--font-mono);
 }
 
-/* QR Camera Scanner Pro Viewport */
+/* QR Camera Scanner Pro Viewport (Perfect Centering for iPad/Tablets/Mobile) */
 .qr-camera-wrap {
   position: relative;
   margin-top: 0.5rem;
+  width: 100%;
 }
 .qr-live-viewport {
   position: relative;
   width: 100%;
-  height: 250px;
+  aspect-ratio: 4 / 3;
+  min-height: 280px;
+  max-height: 380px;
   background: #000;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -3113,6 +3116,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .qr-scanner-overlay {
@@ -3124,28 +3128,30 @@ body {
   justify-content: center;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.15);
+  z-index: 10;
 }
 
 .qr-target-box {
   position: relative;
-  width: 170px;
-  height: 170px;
+  width: min(210px, 70%);
+  height: min(210px, 70%);
+  aspect-ratio: 1;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+  border-radius: 14px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.38);
   overflow: hidden;
 }
 
 .target-corner {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border: 3.5px solid var(--accent-neon);
 }
-.target-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 10px; }
-.target-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 10px; }
-.target-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 10px; }
-.target-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 10px; }
+.target-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 12px; }
+.target-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 12px; }
+.target-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 12px; }
+.target-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 12px; }
 
 .qr-laser-line {
   position: absolute;
@@ -3165,17 +3171,17 @@ body {
 
 .qr-status-pill {
   margin-top: 1rem;
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(15, 23, 42, 0.88);
   backdrop-filter: blur(8px);
   color: #f8fafc;
   font-size: 0.76rem;
   font-family: var(--font-mono);
-  padding: 0.25rem 0.75rem;
+  padding: 0.3rem 0.85rem;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .pulse-dot {
@@ -3192,19 +3198,26 @@ body {
 }
 
 .qr-placeholder-state {
-  padding: 2rem 1.5rem;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  box-sizing: border-box;
 }
 .cam-icon-ring {
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   background: rgba(37, 99, 235, 0.15);
   border: 2px solid var(--accent-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: var(--accent-primary);
   margin: 0 auto;
   box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
@@ -3242,6 +3255,56 @@ body {
   margin-top: 0.75rem;
   padding-top: 0.6rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   ESTILOS DE IMPRESIÓN OFICIAL IN-APP (SIN SALIR DEL SISTEMA EN IPAD/MOBILE)
+   ========================================================================== */
+@media print {
+  /* Ocultar fondo, sidebar y pantallas externas */
+  body, html {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  .app-sidebar, .app-header, .nav-group, .loading-overlay, .login-overlay, .tactical-pitch {
+    display: none !important;
+  }
+  /* Ocultar botones de navegación y filtros dentro del modal que se imprime */
+  .profile-header button, .reg-search-box, select, .flex-between button, .modal-content > .flex-between:last-child {
+    display: none !important;
+  }
+  .modal-overlay {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  .modal-overlay.hidden {
+    display: none !important;
+  }
+  .modal-content {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    max-height: none !important;
+  }
+  .modern-table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  .modern-table th, .modern-table td {
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    padding: 8px 10px !important;
+  }
+  .modern-table th {
+    background: #f1f5f9 !important;
+    font-weight: bold !important;
+  }
 }
 
 @media (max-width: 600px) {

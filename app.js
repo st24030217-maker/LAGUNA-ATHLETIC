@@ -4171,85 +4171,10 @@ function renderAttendanceReportTable() {
 }
 
 function printAttendanceReportArea() {
-  const today = new Date().toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-  const presentCount = squadData.filter(p => p.status === "Presente").length;
-  const justCount = squadData.filter(p => p.status === "Justificado").length;
-  const absentCount = squadData.filter(p => p.status !== "Presente" && p.status !== "Justificado").length;
-  const pct = Math.round((presentCount / squadData.length) * 100);
-
-  const rows = squadData.map(p => `
-    <tr>
-      <td style="font-family: monospace; font-weight: bold; text-align: center;">#${p.number}</td>
-      <td style="font-weight: 600;">${p.name}</td>
-      <td>${p.position || "Jugador"}</td>
-      <td>${p.group || "Sin Cat."}</td>
-      <td style="color:${p.status === "Presente" ? "#16a34a" : p.status === "Justificado" ? "#d97706" : "#dc2626"}; font-weight:bold;">${p.status}</td>
-      <td style="font-family: monospace; text-align: center;">${p.checkinTime || "—"}</td>
-    </tr>
-  `).join("");
-
-  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Oficial de Asistencia - Laguna Athletic</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; margin: 0; }
-    .header-box { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 15px; }
-    .header-left { display: flex; align-items: center; gap: 15px; }
-    .club-logo { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #f59e0b; object-fit: cover; }
-    .club-title h1 { margin: 0; font-size: 1.4rem; color: #1e3a8a; letter-spacing: 0.5px; }
-    .club-title p { margin: 2px 0 0; color: #64748b; font-size: 0.85rem; font-weight: 500; }
-    .header-right { text-align: right; }
-    .report-badge { background: #1e3a8a; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-bottom: 4px; }
-    .date-label { font-size: 0.82rem; color: #475569; margin: 0; }
-    
-    .stats-kpi-bar { display: flex; gap: 12px; margin-bottom: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 15px; }
-    .kpi-item { flex: 1; text-align: center; border-right: 1px solid #e2e8f0; }
-    .kpi-item:last-child { border-right: none; }
-    .kpi-lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; }
-    .kpi-val { font-size: 1.15rem; font-weight: 800; color: #1e293b; }
-    .kpi-val.green { color: #16a34a; }
-    
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; font-size: 0.82rem; }
-    th { background: #f1f5f9; font-weight: 700; color: #334155; text-transform: uppercase; font-size: 0.75rem; }
-    tr:nth-child(even) { background: #f8fafc; }
-    .footer { margin-top: 2rem; font-size: 0.72rem; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; }
-    @media print { body { padding: 10px; } }
-  </style></head><body>
-  <div class="header-box">
-    <div class="header-left">
-      <img src="LAGUNA.jpg" alt="Logo Laguna Athletic" class="club-logo" />
-      <div class="club-title">
-        <h1>LAGUNA ATHLETIC CLUB</h1>
-        <p>CONTROL INSTITUCIONAL DE ASISTENCIA DIARIA · TEMPORADA 2026</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="report-badge">DOCUMENTO OFICIAL</div>
-      <p class="date-label">${today}</p>
-    </div>
-  </div>
-
-  <div class="stats-kpi-bar">
-    <div class="kpi-item"><div class="kpi-lbl">Total Plantel</div><div class="kpi-val">${squadData.length}</div></div>
-    <div class="kpi-item"><div class="kpi-lbl">Presentes</div><div class="kpi-val green">${presentCount}</div></div>
-    <div class="kpi-item"><div class="kpi-lbl">Justificados</div><div class="kpi-val">${justCount}</div></div>
-    <div class="kpi-item"><div class="kpi-lbl">Ausentes</div><div class="kpi-val">${absentCount}</div></div>
-    <div class="kpi-item"><div class="kpi-lbl">% Asistencia</div><div class="kpi-val green">${pct}%</div></div>
-  </div>
-
-  <table>
-    <thead><tr><th style="text-align:center;">#</th><th>Jugador</th><th>Posición</th><th>Categoría</th><th>Estado</th><th style="text-align:center;">Check-in</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-
-  <div class="footer">Laguna Athletic Club 2026 · Sistema de Gestión Deportiva · Generado el ${new Date().toLocaleString("es-ES")}</div>
-  </body></html>`;
-
-  const w = window.open("", "_blank");
-  if (w) {
-    w.document.write(html);
-    w.document.close();
-    setTimeout(() => w.print(), 400);
-  }
+  showToast("Generando vista de impresión oficial...", "info");
+  setTimeout(() => {
+    window.print();
+  }, 250);
 }
 
 function exportAttendancePrint() {
