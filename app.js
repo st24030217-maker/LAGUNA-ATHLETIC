@@ -4328,6 +4328,8 @@ async function startCameraScanner() {
     cameraScanLoopActive = true;
     if (placeholder) placeholder.classList.add("hidden");
     if (overlay) overlay.classList.remove("hidden");
+    const offBar = document.getElementById("qrCameraOffBar");
+    if (offBar) offBar.classList.add("hidden");
     if (activeBar) activeBar.classList.remove("hidden");
     if (statusPill) statusPill.innerHTML = `<span class="pulse-dot"></span> Buscando credencial en el visor...`;
 
@@ -4344,6 +4346,8 @@ async function startCameraScanner() {
       cameraScanLoopActive = true;
       if (placeholder) placeholder.classList.add("hidden");
       if (overlay) overlay.classList.remove("hidden");
+      const offBar = document.getElementById("qrCameraOffBar");
+      if (offBar) offBar.classList.add("hidden");
       if (activeBar) activeBar.classList.remove("hidden");
       if (statusPill) statusPill.innerHTML = `<span class="pulse-dot"></span> Buscando credencial...`;
 
@@ -4376,10 +4380,12 @@ function stopCameraScanner() {
 
   const placeholder = document.getElementById("qrCameraPlaceholder");
   const overlay = document.getElementById("qrScannerOverlay");
+  const offBar = document.getElementById("qrCameraOffBar");
   const activeBar = document.getElementById("qrCameraActiveBar");
 
   if (placeholder) placeholder.classList.remove("hidden");
   if (overlay) overlay.classList.add("hidden");
+  if (offBar) offBar.classList.remove("hidden");
   if (activeBar) activeBar.classList.add("hidden");
 }
 

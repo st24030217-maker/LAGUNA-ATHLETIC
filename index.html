@@ -31,7 +31,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
-    <link rel="stylesheet" href="styles.css?v=2026.8.24.2" />
+    <link rel="stylesheet" href="styles.css?v=2026.8.24.3" />
   </head>
   <body class="dark-theme">
     
@@ -404,19 +404,14 @@
               <div class="glass-card text-center fade-in-up" style="animation-delay: 0.1s;">
                 <div class="flex-between align-center margin-bottom">
                   <h3 class="card-title" style="margin-bottom:0;"><i class="fa-solid fa-qrcode text-primary"></i> Lector QR</h3>
-                  <button class="btn btn-ghost btn-sm" onclick="openAllCredentialsModal()" title="Abrir Archivo y Visor de Credenciales Oficiales">
-                    <i class="fa-solid fa-id-card text-gold"></i> Archivo Credenciales
-                  </button>
-                </div>
-
-                <!-- Toggle Modo Cámara vs Simulación -->
-                <div class="cal-view-toggle margin-bottom" style="margin-top: 0.25rem;">
-                  <button class="cal-view-btn active" id="qrModeCamBtn" onclick="toggleQRScannerMode('cam')">
-                    <i class="fa-solid fa-camera"></i> Cámara en Vivo
-                  </button>
-                  <button class="cal-view-btn" id="qrModeSimBtn" onclick="toggleQRScannerMode('sim')">
-                    <i class="fa-solid fa-bolt"></i> Simulación
-                  </button>
+                  <div class="cal-view-toggle">
+                    <button class="cal-view-btn active" id="qrModeCamBtn" onclick="toggleQRScannerMode('cam')">
+                      <i class="fa-solid fa-camera"></i> Cámara
+                    </button>
+                    <button class="cal-view-btn" id="qrModeSimBtn" onclick="toggleQRScannerMode('sim')">
+                      <i class="fa-solid fa-bolt"></i> Simular
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Visor Cámara en Vivo Real Pro -->
@@ -440,30 +435,31 @@
                       </div>
                     </div>
 
-                    <!-- Placeholder cuando la cámara está apagada -->
+                    <!-- Placeholder limpio cuando la cámara está apagada -->
                     <div id="qrCameraPlaceholder" class="qr-placeholder-state">
-                      <div class="cam-icon-ring">
-                        <i class="fa-solid fa-camera-viewfinder"></i>
+                      <div class="cam-icon-ring" style="opacity: 0.7;">
+                        <i class="fa-solid fa-camera"></i>
                       </div>
-                      <p style="font-size: 0.88rem; margin: 0.6rem 0; color: #fff; font-weight: 600;">Lector Óptico de Credenciales</p>
-                      <p class="text-muted" style="font-size: 0.76rem; margin-bottom: 1rem;">Escanea el código QR del carnet para check-in automático</p>
-                      <button class="btn btn-primary" onclick="startCameraScanner()">
-                        <i class="fa-solid fa-play"></i> ACTIVAR CÁMARA
-                      </button>
+                      <p class="text-muted" style="font-size: 0.8rem; margin-top: 0.6rem;">Cámara desactivada</p>
                     </div>
                   </div>
 
-                  <!-- Barra de controles cuando la cámara está activa -->
-                  <div id="qrCameraActiveBar" class="flex-between align-center mt-2 hidden" style="background: rgba(15, 23, 42, 0.7); padding: 0.45rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-glass);">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                      <span class="badge badge-neon" style="font-size: 0.72rem;"><i class="fa-solid fa-circle text-success pulse"></i> EN VIVO</span>
-                      <button class="btn btn-ghost btn-sm" onclick="flipCamera()" title="Cambiar cámara frontal / trasera" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
-                        <i class="fa-solid fa-camera-rotate text-gold"></i> Voltear
+                  <!-- Botones de Control Abajo de la Cámara -->
+                  <div class="margin-top" id="qrCameraControlsBox">
+                    <div id="qrCameraOffBar">
+                      <button class="btn btn-primary btn-block" onclick="startCameraScanner()" style="padding: 0.75rem 1.25rem; font-size: 0.95rem; font-weight: 700;">
+                        <i class="fa-solid fa-camera"></i> ACTIVAR CÁMARA
                       </button>
                     </div>
-                    <button class="btn btn-ghost btn-sm" onclick="stopCameraScanner()" style="color: var(--accent-danger); padding: 0.2rem 0.6rem; font-size: 0.75rem;">
-                      <i class="fa-solid fa-stop"></i> Detener
-                    </button>
+
+                    <div id="qrCameraActiveBar" class="flex-between align-center gap-2 hidden">
+                      <button class="btn btn-ghost" onclick="flipCamera()" title="Cambiar cámara frontal / trasera" style="flex: 1; padding: 0.65rem 0.5rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-camera-rotate text-gold"></i> Voltear Cámara
+                      </button>
+                      <button class="btn btn-primary" onclick="stopCameraScanner()" style="flex: 1; background: var(--accent-danger); border-color: var(--accent-danger); padding: 0.65rem 0.5rem; font-size: 0.85rem; font-weight: 700;">
+                        <i class="fa-solid fa-stop"></i> DETENER CÁMARA
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -504,13 +500,10 @@
                 </div>
               </div>
 
-              <!-- Lado Derecho: Tabla -->
+              <!-- Lado Derecho: Tabla de Asistencia en Vivo (Limpia) -->
               <div class="glass-card fade-in-up" style="animation-delay: 0.2s;">
-                <div class="flex-between align-center margin-bottom">
+                <div class="margin-bottom">
                   <h3 class="card-title" style="margin-bottom:0;">Registro en Vivo</h3>
-                  <button class="btn btn-ghost btn-sm role-dt-only" onclick="openAttendanceReportModal()" title="Abrir y Exportar Reporte Oficial de Asistencia con Logo">
-                    <i class="fa-solid fa-file-export text-gold"></i> Exportar Reporte
-                  </button>
                 </div>
                 <div class="table-responsive">
                   <table class="modern-table">
@@ -2308,6 +2301,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=2026.8.24.2"></script>
+    <script src="app.js?v=2026.8.24.3"></script>
   </body>
 </html>
