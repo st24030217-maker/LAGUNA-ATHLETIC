@@ -203,6 +203,7 @@ function loadData() {
     const savedEvents = localStorage.getItem("laguna_events_v3");
     const savedJust = localStorage.getItem("laguna_justifications_v3");
     const savedPayments = localStorage.getItem("laguna_payments_v3");
+    const savedInjured = localStorage.getItem("laguna_injured_v3");
 
     squadData = savedSquad ? JSON.parse(savedSquad) : [...defaultSquadData];
     calendarEvents = savedEvents
@@ -211,7 +212,7 @@ function loadData() {
     justificationsData = savedJust
       ? JSON.parse(savedJust)
       : [...defaultJustifications];
-    injuredData = [];
+    injuredData = savedInjured ? JSON.parse(savedInjured) : [];
     paymentsData = savedPayments
       ? JSON.parse(savedPayments)
       : [...defaultPayments];
@@ -234,6 +235,7 @@ function saveData() {
       JSON.stringify(justificationsData),
     );
     localStorage.setItem("laguna_payments_v3", JSON.stringify(paymentsData));
+    localStorage.setItem("laguna_injured_v3", JSON.stringify(injuredData));
   } catch (error) {
     showToast("Error guardando datos localmente.", "error");
   }
@@ -308,11 +310,31 @@ function triggerAppLoading(
   }, 30);
 }
 
-// --- LOGIN MODULE ---
+// --- LOGIN MODULE & ROLES ---
+const ROLE_PINS = {
+  dt: "1234",
+  auxiliar: "1111",
+  preparador: "2222",
+  jugador: "0000"
+};
+
 function handleLogin(e) {
   e.preventDefault();
   const role = document.getElementById("loginRole").value;
-  if (!role) return;
+  const pinInput = document.getElementById("loginPinInput") ? document.getElementById("loginPinInput").value.trim() : "";
+
+  if (!role) {
+    showToast("Selecciona tu rol de acceso.", "warning");
+    return;
+  }
+
+  const expectedPin = ROLE_PINS[role] || "1234";
+  if (pinInput && pinInput !== expectedPin) {
+    showToast("PIN incorrecto para este perfil.", "error");
+    const pinEl = document.getElementById("loginPinInput");
+    if (pinEl) pinEl.value = "";
+    return;
+  }
 
   currentRole = role;
   sessionStorage.setItem("laguna_active_role", role);
@@ -399,6 +421,9 @@ function postLoginInit() {
   if (subEl) {
     subEl.innerText = displayRole + " · Temporada 2026";
   }
+
+  renderDashboard();
+  showModuleTab("mod-home");
 }
 
 // --- UI NAVIGATION ---
@@ -423,13 +448,15 @@ function showModuleTab(tabId) {
   const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
   if (tabBtn) {
     tabBtn.classList.add("active");
-    // Asegurar que el grupo padre esté abierto
     const parentGroup = tabBtn.closest(".nav-group");
     if (parentGroup && !parentGroup.classList.contains("open")) {
       parentGroup.classList.add("open");
     }
   }
 
+  if (tabId === "mod-home" && typeof renderDashboard === "function") {
+    renderDashboard();
+  }
   if (tabId === "mod-estadisticas") {
     if (attendanceChart) setTimeout(() => attendanceChart.resize(), 100);
     if (typeof populateGameInfoPlayerSelect === "function") populateGameInfoPlayerSelect();
@@ -526,6 +553,16 @@ function populateQuickPlayerSelect() {
   });
 }
 
+function recalculateAttendancePct() {
+  squadData.forEach(p => {
+    if (p.status === "Presente") {
+      if ((p.attendancePct || 0) < 100) {
+        p.attendancePct = Math.min(100, (p.attendancePct || 90) + 1);
+      }
+    }
+  });
+}
+
 function simulateQRCheckIn() {
   const select = document.getElementById("quickPlayerSelect");
   const playerId = parseInt(select.value);
@@ -545,17 +582,21 @@ function simulateQRCheckIn() {
 
   player.status = "Presente";
   player.checkinTime = timeStr;
+  recalculateAttendancePct();
   saveData();
 
   const alertBox = document.getElementById("lastCheckinAlert");
-  document.getElementById("lastCheckinText").innerText =
-    `Asistencia de ${player.name} (${timeStr})`;
-  alertBox.classList.remove("hidden");
-  setTimeout(() => alertBox.classList.add("hidden"), 3000);
+  if (alertBox) {
+    document.getElementById("lastCheckinText").innerText =
+      `Asistencia de ${player.name} (${timeStr})`;
+    alertBox.classList.remove("hidden");
+    setTimeout(() => alertBox.classList.add("hidden"), 3000);
+  }
 
   renderAttendanceTable();
   renderRankingTable();
   updateChartData();
+  if (typeof renderDashboard === "function") renderDashboard();
 }
 
 function markManualAttendance(playerId, newStatus) {
@@ -563,9 +604,11 @@ function markManualAttendance(playerId, newStatus) {
   if (!player) return;
   player.status = newStatus;
   player.checkinTime = newStatus === "Presente" ? "Manual DT" : "-";
+  if (newStatus === "Presente") recalculateAttendancePct();
   saveData();
   renderAttendanceTable();
   updateChartData();
+  if (typeof renderDashboard === "function") renderDashboard();
 }
 
 function renderAttendanceTable() {
@@ -574,7 +617,10 @@ function renderAttendanceTable() {
   tbody.innerHTML = "";
   let presentCount = 0;
 
-  squadData.forEach((p) => {
+  // Ordenar por número de dorsal
+  const sortedSquad = [...squadData].sort((a, b) => (a.number || 0) - (b.number || 0));
+
+  sortedSquad.forEach((p) => {
     if (p.status === "Presente") presentCount++;
     const tr = document.createElement("tr");
     let badgeClass =
@@ -585,7 +631,10 @@ function renderAttendanceTable() {
           : "badge-danger";
 
     tr.innerHTML = `
-      <td><strong>#${p.number}</strong> ${p.name} <br><small class="text-muted">${p.position}</small></td>
+      <td>
+        <strong>#${p.number}</strong> ${p.name}
+        <br><small class="text-muted">${p.position} ${p.group ? '· ' + p.group : ''}</small>
+      </td>
       <td><span class="badge ${badgeClass}">${p.status}</span></td>
       <td class="mono-text text-muted">${p.checkinTime}</td>
       <td class="role-dt-only">
@@ -595,8 +644,8 @@ function renderAttendanceTable() {
     `;
     tbody.appendChild(tr);
   });
-  document.getElementById("attendanceCount").innerText =
-    `${presentCount}/${squadData.length} Presentes`;
+  const countEl = document.getElementById("attendanceCount");
+  if (countEl) countEl.innerText = `${presentCount}/${squadData.length} Presentes`;
   applyRolePermissions();
 }
 
@@ -721,30 +770,135 @@ function renderSquadCallupList() {
   });
 }
 
+let currentProfilePlayerId = null;
+
 function openProfileModal(id) {
   const p = squadData.find((x) => x.id === id);
   if (!p) return;
+  ensureRegFields(p);
+  currentProfilePlayerId = id;
 
-  document.getElementById("profileNumber").innerText = p.number;
-  document.getElementById("profileName").innerText = p.name;
-  document.getElementById("profilePosition").innerText = p.position;
+  // Foto
+  const photoEl = document.getElementById("profilePhoto");
+  if (photoEl) photoEl.src = p.photo || "LAGUNA.jpg";
+
+  // Info básica
+  const numEl = document.getElementById("profileNumber");
+  if (numEl) numEl.textContent = p.number;
+
+  const nameEl = document.getElementById("profileName");
+  if (nameEl) nameEl.textContent = p.name;
+
+  const posEl = document.getElementById("profilePosition");
+  if (posEl) posEl.textContent = p.position + (p.positionAlt ? " / " + p.positionAlt : "");
 
   const badge = document.getElementById("profileStatusBadge");
-  if (p.injured) {
-    badge.className = "badge badge-danger mt-2";
-    badge.innerText = "Baja Médica";
-  } else {
-    badge.className = "badge badge-success mt-2";
-    badge.innerText = "Activo";
+  if (badge) {
+    if (p.injured) {
+      badge.className = "badge badge-danger";
+      badge.textContent = "Baja Médica";
+    } else {
+      const sc = (p.regStatus || "Activo").toLowerCase();
+      badge.className = `badge badge-status-${sc}`;
+      badge.textContent = p.regStatus || "Activo";
+    }
   }
 
-  document.getElementById("profileGoals").innerText = p.goals;
-  document.getElementById("profileAssists").innerText = p.assists;
-  document.getElementById("profileMins").innerText = p.mins + "'";
-  document.getElementById("profileCards").innerText = p.cards;
+  const groupBadge = document.getElementById("profileGroupBadge");
+  if (groupBadge) groupBadge.textContent = p.group || "Sin Cat.";
+
+  // Edad
+  const ageBadge = document.getElementById("profileAgeBadge");
+  if (ageBadge) {
+    if (p.birthdate) {
+      const bd = new Date(p.birthdate);
+      const age = Math.floor((Date.now() - bd) / (365.25 * 24 * 60 * 60 * 1000));
+      ageBadge.textContent = age + " años";
+    } else {
+      ageBadge.textContent = "— años";
+    }
+  }
+
+  // Estadísticas
+  const gEl = document.getElementById("profileGoals");
+  const aEl = document.getElementById("profileAssists");
+  const mEl = document.getElementById("profileMins");
+  const cEl = document.getElementById("profileCards");
+
+  if (gEl) gEl.textContent = p.goals || 0;
+  if (aEl) aEl.textContent = p.assists || 0;
+  if (mEl) mEl.textContent = (p.mins || 0) + "'";
+  if (cEl) cEl.textContent = p.cards || 0;
+
+  // Asistencia
+  const attEl = document.getElementById("profileAttendancePct");
+  if (attEl) attEl.textContent = (p.attendancePct || 0) + "%";
+
+  // Pagos
+  const payEl = document.getElementById("profilePaymentStatus");
+  if (payEl) {
+    const playerPays = paymentsData.filter(pay => pay.playerId === p.id);
+    const unpaid = playerPays.filter(pay => pay.status !== "Pagado");
+    if (unpaid.length > 0) {
+      const total = unpaid.reduce((s, pay) => s + (pay.finalAmount || 0), 0);
+      payEl.innerHTML = `<span style="color:var(--accent-danger); font-weight:700;">Adeudo: $${total.toLocaleString("es-MX")} MXN</span>`;
+    } else {
+      payEl.innerHTML = `<span style="color:var(--accent-neon); font-weight:700;">Al corriente ✓</span>`;
+    }
+  }
+
+  // Documentación
+  const docsEl = document.getElementById("profileDocs");
+  if (docsEl) {
+    const docList = [
+      { key: "docActa", label: "Acta Nac." },
+      { key: "docCURP", label: "CURP" },
+      { key: "docMedico", label: "Cert. Médico" },
+      { key: "docINE", label: "ID Tutor" },
+      { key: "docEscolar", label: "Cert. Escolar" },
+    ];
+    docsEl.innerHTML = docList.map(d =>
+      p[d.key]
+        ? `<span class="badge badge-neon" style="font-size:0.7rem;"><i class="fa-solid fa-check"></i> ${d.label}</span>`
+        : `<span class="badge badge-danger" style="font-size:0.7rem; opacity:0.75;"><i class="fa-solid fa-xmark"></i> ${d.label}</span>`
+    ).join("");
+  }
+
+  // Contactos
+  const contEl = document.getElementById("profileContacts");
+  if (contEl) {
+    contEl.innerHTML = (p.contacts || []).map((c, i) => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; ${i>0?'border-top:1px solid var(--border-glass);':''}">
+        <div style="font-size:0.85rem;">
+          <i class="fa-solid fa-user-check text-primary"></i> ${c.relation}: <strong>${c.name}</strong>
+          <span class="mono-text text-muted" style="font-size:0.75rem; margin-left:0.5rem;">${c.phone}</span>
+        </div>
+        <button class="btn-whatsapp-sm" onclick="openWADirect('${c.phone}','${p.name.replace(/'/g,"\\'")}')" title="WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </button>
+      </div>
+    `).join("");
+  }
 
   document.getElementById("playerProfileModal").classList.remove("hidden");
 }
+
+function profileSendWA() {
+  const p = squadData.find(x => x.id === currentProfilePlayerId);
+  if (!p) return;
+  ensureRegFields(p);
+  const c = p.contacts[0];
+  if (!c) return;
+  const msg = encodeURIComponent(`*LAGUNA ATHLETIC*\n\nHola ${c.name}, te contactamos respecto a ${p.name} (#${p.number}).\n\n`);
+  window.open(`https://wa.me/${cleanPhoneForWhatsApp(c.phone)}?text=${msg}`, "_blank");
+}
+
+function openWADirect(phone, playerName) {
+  const cleaned = cleanPhoneForWhatsApp(phone);
+  if (!cleaned) { showToast("Número no válido.", "error"); return; }
+  window.open(`https://wa.me/${cleaned}?text=${encodeURIComponent('*LAGUNA ATHLETIC*\n\nHola, te contactamos de parte del club Laguna Athletic.\n')}`, "_blank");
+}
+
 function closeProfileModal() {
   document.getElementById("playerProfileModal").classList.add("hidden");
 }
@@ -825,13 +979,41 @@ function renderInjuredTable() {
 
 // --- MODULE: CALENDAR & RESULTS ---
 let currentEventForResult = null;
+let calView = "lista"; // 'lista' | 'mes'
+
+function setCalView(view) {
+  calView = view;
+  document.getElementById("calViewListBtn")?.classList.toggle("active", view === "lista");
+  document.getElementById("calViewMonthBtn")?.classList.toggle("active", view === "mes");
+  renderCalendarEvents();
+}
 
 function renderCalendarEvents() {
   const grid = document.getElementById("calendarEventsGrid");
   if (!grid) return;
-  grid.innerHTML = "";
 
-  calendarEvents
+  const typeFilter = document.getElementById("calTypeFilter")?.value || "todos";
+  const filteredEvents = typeFilter === "todos"
+    ? calendarEvents
+    : calendarEvents.filter(e => e.type === typeFilter);
+
+  if (calView === "mes") {
+    renderCalendarMonth(grid, filteredEvents);
+  } else {
+    renderCalendarList(grid, filteredEvents);
+  }
+}
+
+function renderCalendarList(grid, events) {
+  grid.innerHTML = "";
+  grid.className = "calendar-grid";
+
+  if (events.length === 0) {
+    grid.innerHTML = `<div class="text-center text-muted" style="padding:2rem; grid-column: 1/-1;"><i class="fa-solid fa-calendar-xmark" style="font-size:2rem; margin-bottom: 0.5rem; display:block;"></i><p>Sin eventos programados para este filtro.</p></div>`;
+    return;
+  }
+
+  events
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .forEach((ev) => {
       const card = document.createElement("div");
@@ -876,14 +1058,92 @@ function renderCalendarEvents() {
         resultHtml = `<div class="margin-top text-center"><button class="btn btn-primary btn-sm" onclick="openMatchResultModal(${ev.id}, '${ev.title.replace(/'/g, "\\'")}')"><i class="fa-solid fa-trophy"></i> Cargar Resultado</button></div>`;
       }
 
+      const deleteBtn = isDT
+        ? `<button class="btn btn-ghost" style="padding:0.2rem 0.5rem; font-size:0.75rem; color:var(--accent-danger);" onclick="deleteCalendarEvent(${ev.id})" title="Eliminar evento"><i class="fa-solid fa-trash"></i></button>`
+        : "";
+
       card.innerHTML = `
-      <div class="event-date">${dFormatted} - ${ev.time}</div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="event-date">${dFormatted} - ${ev.time}</div>
+        ${deleteBtn}
+      </div>
       <div class="event-title">${ev.title}</div>
       <div class="subtitle-text"><i class="fa-solid fa-location-dot"></i> ${ev.location}</div>
       ${resultHtml}
     `;
       grid.appendChild(card);
     });
+}
+
+function renderCalendarMonth(grid, events) {
+  grid.className = "calendar-month-grid";
+  grid.innerHTML = "";
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDow = firstDay.getDay(); // 0=Dom
+
+  const monthName = today.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+  grid.innerHTML = `
+    <div class="cal-month-header">
+      <span style="text-transform:capitalize; font-size:1.05rem; font-weight:700; color:var(--accent-gold);">
+        <i class="fa-regular fa-calendar-days"></i> ${monthName}
+      </span>
+    </div>
+    <div class="cal-month-dow-row">
+      ${["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"].map(d => `<div class="cal-dow-label">${d}</div>`).join("")}
+    </div>
+    <div class="cal-month-days" id="calMonthDays"></div>
+  `;
+
+  const daysContainer = grid.querySelector("#calMonthDays");
+  for (let i = 0; i < startDow; i++) {
+    daysContainer.innerHTML += `<div class="cal-day cal-day-empty"></div>`;
+  }
+
+  const todayStr = today.toISOString().split("T")[0];
+
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const dayEvents = events.filter(e => e.date === dateStr);
+    const isToday = dateStr === todayStr;
+
+    let dotHtml = "";
+    dayEvents.forEach(e => {
+      const color = e.type === "partido" ? "var(--accent-danger)" : e.type === "entrenamiento" ? "var(--accent-neon)" : "var(--accent-gold)";
+      dotHtml += `<span class="cal-day-dot" style="background:${color};"></span>`;
+    });
+
+    daysContainer.innerHTML += `
+      <div class="cal-day ${isToday ? "cal-day-today" : ""} ${dayEvents.length > 0 ? "cal-day-has-event" : ""}" title="${dayEvents.map(e=>e.title).join(", ")}">
+        <div class="cal-day-num">${d}</div>
+        <div class="cal-day-dots">${dotHtml}</div>
+        ${dayEvents.length > 0 ? `<div class="cal-day-evtname">${dayEvents[0].title.substring(0,10)}${dayEvents[0].title.length > 10 ? "…" : ""}</div>` : ""}
+      </div>
+    `;
+  }
+}
+
+function deleteCalendarEvent(eventId) {
+  const ev = calendarEvents.find(e => e.id === eventId);
+  if (!ev) return;
+  showConfirmModal(
+    `¿Eliminar "${ev.title}"?`,
+    `Se eliminará este evento del calendario permanentemente.`,
+    "Eliminar",
+    "btn-danger-style",
+    () => {
+      calendarEvents = calendarEvents.filter(e => e.id !== eventId);
+      saveData();
+      renderCalendarEvents();
+      if (typeof renderDashboard === "function") renderDashboard();
+      showToast("Evento eliminado del calendario.", "info");
+    }
+  );
 }
 
 function openAddEventModal() {
@@ -1908,7 +2168,7 @@ function renderPlayerGameInfo() {
   if (playersWithGameInfo.length === 0) {
     container.innerHTML = `
       <div class="glass-panel text-center" style="padding: 2rem 1rem; border-radius: var(--radius-md); color: var(--text-muted);">
-        <i class="fa-solid fa-folder-open" style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--accent-gold); opacity: 0.6;"></i>
+        <i class="fa-solid fa-folder-open" style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--accent-primary); opacity: 0.6;"></i>
         <p style="margin-bottom: 0.5rem; font-weight: 600;">No hay información ni descargas de partidos vinculadas.</p>
         <button class="btn btn-outline btn-sm role-admin-trainer-only" onclick="openPlayerGameInfoModal()">
           <i class="fa-solid fa-plus"></i> Enlazar primer reporte
@@ -1993,6 +2253,106 @@ function renderPlayerGameInfo() {
       `;
     })
     .join("");
+}
+
+// ==========================================================================
+// FORMACIONES TÁCTICAS DINÁMICAS
+// ==========================================================================
+const FORMATIONS = {
+  "4-3-3": [
+    { slot: "GK",  top: "50%", left: "8%",  num: 1,  label: "POR" },
+    { slot: "LB",  top: "15%", left: "25%", num: 3,  label: "LTI" },
+    { slot: "CB1", top: "35%", left: "22%", num: 4,  label: "DFC" },
+    { slot: "CB2", top: "65%", left: "22%", num: 5,  label: "DFC" },
+    { slot: "RB",  top: "85%", left: "25%", num: 2,  label: "LTD" },
+    { slot: "MC1", top: "25%", left: "50%", num: 8,  label: "MC" },
+    { slot: "MCD", top: "50%", left: "45%", num: 6,  label: "MCD" },
+    { slot: "MC2", top: "75%", left: "50%", num: 10, label: "MCO" },
+    { slot: "EI",  top: "20%", left: "75%", num: 11, label: "EI" },
+    { slot: "DC",  top: "50%", left: "82%", num: 9,  label: "DC" },
+    { slot: "ED",  top: "80%", left: "75%", num: 7,  label: "ED" },
+  ],
+  "4-4-2": [
+    { slot: "GK",  top: "50%", left: "8%",  num: 1,  label: "POR" },
+    { slot: "LB",  top: "10%", left: "25%", num: 3,  label: "LTI" },
+    { slot: "CB1", top: "33%", left: "22%", num: 4,  label: "DFC" },
+    { slot: "CB2", top: "67%", left: "22%", num: 5,  label: "DFC" },
+    { slot: "RB",  top: "90%", left: "25%", num: 2,  label: "LTD" },
+    { slot: "MC1", top: "15%", left: "50%", num: 7,  label: "MI" },
+    { slot: "MCD", top: "38%", left: "48%", num: 6,  label: "MC" },
+    { slot: "MC2", top: "62%", left: "48%", num: 8,  label: "MC" },
+    { slot: "EI",  top: "85%", left: "50%", num: 11, label: "MD" },
+    { slot: "DC",  top: "35%", left: "80%", num: 9,  label: "DC" },
+    { slot: "ED",  top: "65%", left: "80%", num: 10, label: "DC" },
+  ],
+  "4-2-3-1": [
+    { slot: "GK",  top: "50%", left: "8%",  num: 1,  label: "POR" },
+    { slot: "LB",  top: "12%", left: "25%", num: 3,  label: "LTI" },
+    { slot: "CB1", top: "35%", left: "22%", num: 4,  label: "DFC" },
+    { slot: "CB2", top: "65%", left: "22%", num: 5,  label: "DFC" },
+    { slot: "RB",  top: "88%", left: "25%", num: 2,  label: "LTD" },
+    { slot: "MCD", top: "38%", left: "42%", num: 6,  label: "MCD" },
+    { slot: "MC1", top: "62%", left: "42%", num: 8,  label: "MCD" },
+    { slot: "MC2", top: "50%", left: "62%", num: 10, label: "MCO" },
+    { slot: "EI",  top: "20%", left: "62%", num: 11, label: "MI" },
+    { slot: "ED",  top: "80%", left: "62%", num: 7,  label: "MD" },
+    { slot: "DC",  top: "50%", left: "82%", num: 9,  label: "DC" },
+  ],
+  "3-5-2": [
+    { slot: "GK",  top: "50%", left: "8%",  num: 1,  label: "POR" },
+    { slot: "CB1", top: "25%", left: "22%", num: 4,  label: "DFC" },
+    { slot: "CB2", top: "50%", left: "20%", num: 5,  label: "LIB" },
+    { slot: "RB",  top: "75%", left: "22%", num: 6,  label: "DFC" },
+    { slot: "LB",  top: "10%", left: "48%", num: 3,  label: "CARI" },
+    { slot: "MCD", top: "35%", left: "46%", num: 8,  label: "MC" },
+    { slot: "MC1", top: "50%", left: "44%", num: 7,  label: "MCD" },
+    { slot: "MC2", top: "65%", left: "46%", num: 10, label: "MCO" },
+    { slot: "EI",  top: "90%", left: "48%", num: 11, label: "CARD" },
+    { slot: "DC",  top: "35%", left: "78%", num: 9,  label: "DC" },
+    { slot: "ED",  top: "65%", left: "78%", num: 2,  label: "DC" },
+  ],
+  "5-3-2": [
+    { slot: "GK",  top: "50%", left: "8%",  num: 1,  label: "POR" },
+    { slot: "LB",  top: "10%", left: "25%", num: 3,  label: "LTI" },
+    { slot: "CB1", top: "28%", left: "22%", num: 4,  label: "DFC" },
+    { slot: "CB2", top: "50%", left: "20%", num: 5,  label: "LIB" },
+    { slot: "RB",  top: "72%", left: "22%", num: 2,  label: "DFC" },
+    { slot: "EI",  top: "90%", left: "25%", num: 11, label: "LTD" },
+    { slot: "MCD", top: "25%", left: "50%", num: 8,  label: "MC" },
+    { slot: "MC1", top: "50%", left: "48%", num: 6,  label: "MCD" },
+    { slot: "MC2", top: "75%", left: "50%", num: 10, label: "MC" },
+    { slot: "DC",  top: "35%", left: "80%", num: 9,  label: "DC" },
+    { slot: "ED",  top: "65%", left: "80%", num: 7,  label: "DC" },
+  ],
+};
+
+function changeFormation() {
+  const sel = document.getElementById("formationSelect");
+  if (!sel) return;
+  const formation = sel.value;
+  const config = FORMATIONS[formation];
+  if (!config) return;
+
+  const pitch = document.getElementById("tacticalPitch");
+  if (!pitch) return;
+
+  config.forEach((pos) => {
+    const marker = pitch.querySelector(`[data-slot="${pos.slot}"]`);
+    if (!marker) return;
+    marker.style.top = pos.top;
+    marker.style.left = pos.left;
+    const shirt = marker.querySelector(".marker-shirt");
+    if (shirt && !shirt.dataset.customNumber) {
+      shirt.textContent = pos.num;
+    }
+  });
+
+  savedPositions = {};
+  try {
+    localStorage.removeItem("laguna_pitch_positions");
+  } catch (e) {}
+
+  showToast(`Esquema táctico cambiado a ${formation}.`, "success");
 }
 
 // ==========================================================================
@@ -2550,20 +2910,24 @@ function confirmDeletePlayer(id) {
   const p = squadData.find((x) => x.id === id);
   if (!p) return;
 
-  if (
-    !confirm(`¿Eliminar permanentemente a ${p.name} (#${p.number}) del equipo?`)
-  )
-    return;
-
-  squadData = squadData.filter((x) => x.id !== id);
-  injuredData = injuredData.filter((x) => x.playerId !== id);
-  saveData();
-  showToast(`${p.name} eliminado de la plantilla.`, "warning");
-  renderRegTable();
-  renderSquadCallupList();
-  populateQuickPlayerSelect();
-  populatePaymentPlayerSelect();
-  updatePaymentSummaryStats();
+  showConfirmModal(
+    `¿Eliminar a ${p.name}?`,
+    `Se dará de baja permanentemente a ${p.name} (#${p.number}) del plantel oficial.`,
+    "Eliminar Jugador",
+    "btn-danger-style",
+    () => {
+      squadData = squadData.filter((x) => x.id !== id);
+      injuredData = injuredData.filter((x) => x.playerId !== id);
+      saveData();
+      showToast(`${p.name} eliminado de la plantilla.`, "warning");
+      renderRegTable();
+      renderSquadCallupList();
+      populateQuickPlayerSelect();
+      populatePaymentPlayerSelect();
+      updatePaymentSummaryStats();
+      if (typeof renderDashboard === "function") renderDashboard();
+    }
+  );
 }
 
 // --- MODAL EXPEDIENTE DOCUMENTAL DEL NIÑO ---
@@ -3320,3 +3684,276 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+// ==========================================================================
+// MÓDULO: DASHBOARD HOME
+// ==========================================================================
+function renderDashboard() {
+  const totalPlayers = squadData.length;
+  const presentToday = squadData.filter(p => p.status === "Presente").length;
+  const pct = totalPlayers > 0 ? Math.round((presentToday / totalPlayers) * 100) : 0;
+  const pendingPayments = paymentsData.filter(p => p.status !== "Pagado").reduce((s, p) => s + (p.finalAmount || 0), 0);
+  const injuredCount = injuredData.length;
+
+  const setEl = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+
+  setEl("dashTotalPlayers", totalPlayers);
+  setEl("dashPresentToday", presentToday);
+  setEl("dashAttendancePct", pct + "%");
+  setEl("dashPendingPayments", "$" + pendingPayments.toLocaleString("es-MX", { minimumFractionDigits: 0 }));
+  setEl("dashInjuredCount", injuredCount);
+
+  // Próximo evento
+  const today = new Date().toISOString().split("T")[0];
+  const nextEvent = calendarEvents
+    .filter(e => e.date >= today)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+  if (nextEvent) {
+    const badgeEl = document.getElementById("dashEventBadge");
+    const titleEl = document.getElementById("dashEventTitle");
+    const subEl = document.getElementById("dashEventSub");
+    const dateEl = document.getElementById("dashEventDate");
+
+    if (badgeEl) badgeEl.textContent = nextEvent.type === "partido" ? "⚽ PARTIDO PRÓXIMO" : nextEvent.type === "entrenamiento" ? "🏃 ENTRENAMIENTO" : "📅 EVENTO";
+    if (titleEl) titleEl.textContent = nextEvent.title;
+    if (subEl) subEl.textContent = `${nextEvent.location} · ${nextEvent.time || "Ver horario"}`;
+
+    const d = new Date(nextEvent.date + "T00:00:00");
+    const daysDiff = Math.ceil((d - new Date(today)) / 86400000);
+    if (dateEl) dateEl.textContent = daysDiff === 0 ? "¡HOY!" : daysDiff === 1 ? "Mañana" : `En ${daysDiff} días (${d.toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" })})`;
+  } else {
+    setEl("dashEventTitle", "Sin eventos próximos programados");
+    setEl("dashEventSub", "Agrega fechas desde el módulo Calendario");
+    setEl("dashEventDate", "—");
+  }
+
+  // Top 5 racha
+  const tbody = document.getElementById("dashTopAttendance");
+  if (tbody) {
+    const sorted = [...squadData].sort((a, b) => (b.attendancePct || 0) - (a.attendancePct || 0)).slice(0, 5);
+    tbody.innerHTML = sorted.map((p, i) => `
+      <tr>
+        <td class="text-muted">#${i + 1}</td>
+        <td><strong>${p.name}</strong><br><small class="text-muted">${p.group || p.position}</small></td>
+        <td class="text-primary" style="font-weight:700;">${p.attendancePct || 0}%</td>
+        <td><span class="badge badge-neon" style="font-size:0.7rem;">${p.streak || "1 A"}</span></td>
+      </tr>
+    `).join("");
+  }
+
+  renderDashAlerts();
+}
+
+function renderDashAlerts() {
+  const cont = document.getElementById("dashAlerts");
+  if (!cont) return;
+  const alerts = [];
+  const today = new Date().toISOString().split("T")[0];
+
+  if (injuredData.length > 0) {
+    alerts.push({
+      type: "danger",
+      icon: "fa-briefcase-medical",
+      msg: `${injuredData.length} jugador(es) en enfermería: ${injuredData.map(i => i.player).join(", ")}.`,
+    });
+  }
+
+  const unpaidCount = paymentsData.filter(pay => pay.status !== "Pagado").length;
+  if (unpaidCount > 0) {
+    alerts.push({
+      type: "warning",
+      icon: "fa-coins",
+      msg: `${unpaidCount} registro(s) con colegiaturas o cuotas pendientes de pago.`,
+    });
+  }
+
+  const soon = calendarEvents.filter(e => {
+    const diff = (new Date(e.date + "T00:00:00") - new Date(today + "T00:00:00")) / 86400000;
+    return diff >= 0 && diff <= 3;
+  });
+  if (soon.length > 0) {
+    soon.forEach(e => {
+      const d = new Date(e.date + "T00:00:00");
+      const daysDiff = Math.round((d - new Date(today + "T00:00:00")) / 86400000);
+      const when = daysDiff === 0 ? "¡HOY!" : daysDiff === 1 ? "Mañana" : `En ${daysDiff} días`;
+      alerts.push({
+        type: "info",
+        icon: "fa-calendar-check",
+        msg: `${when}: ${e.title} (${e.location}) a las ${e.time || "–"}.`,
+      });
+    });
+  }
+
+  if (alerts.length === 0) {
+    cont.innerHTML = `<div class="dash-alert dash-alert-success"><i class="fa-solid fa-circle-check"></i> <span>Todo al día. No hay alertas críticas para hoy.</span></div>`;
+    return;
+  }
+
+  cont.innerHTML = alerts.map(a => `
+    <div class="dash-alert dash-alert-${a.type}">
+      <i class="fa-solid ${a.icon}"></i>
+      <span>${a.msg}</span>
+    </div>
+  `).join("");
+}
+
+function confirmResetAttendance() {
+  showConfirmModal(
+    "¿Resetear Asistencia del Día?",
+    "Esto marcará a todo el plantel como 'Ausente' y limpiará las horas de escaneo de hoy. ¿Deseas continuar?",
+    "Resetear Asistencia",
+    "btn-danger-style",
+    () => {
+      squadData.forEach(p => {
+        p.status = "Ausente";
+        p.checkinTime = "-";
+      });
+      saveData();
+      renderAttendanceTable();
+      updateChartData();
+      renderDashboard();
+      showToast("Asistencia del día reiniciada.", "info");
+    }
+  );
+}
+
+// ==========================================================================
+// MODAL DE CONFIRMACIÓN PERSONALIZADO
+// ==========================================================================
+let confirmCallback = null;
+
+function showConfirmModal(title, message, confirmLabel, confirmClass, callback) {
+  confirmCallback = callback;
+  const modal = document.getElementById("customConfirmModal");
+  const titleEl = document.getElementById("confirmModalTitle");
+  const msgEl = document.getElementById("confirmModalMessage");
+  const btn = document.getElementById("confirmModalBtn");
+
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  if (btn) {
+    btn.textContent = confirmLabel || "Confirmar";
+    btn.className = `btn btn-primary ${confirmClass || ""}`;
+    if (confirmClass === "btn-danger-style") {
+      btn.style.background = "var(--accent-danger)";
+      btn.style.borderColor = "var(--accent-danger)";
+    } else {
+      btn.style.background = "";
+      btn.style.borderColor = "";
+    }
+  }
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeConfirmModal() {
+  const modal = document.getElementById("customConfirmModal");
+  if (modal) modal.classList.add("hidden");
+  confirmCallback = null;
+}
+
+function executeConfirmModal() {
+  const cb = confirmCallback;
+  closeConfirmModal();
+  if (typeof cb === "function") cb();
+}
+
+// ==========================================================================
+// EXPORTACIÓN E IMPRESIÓN OFICIAL
+// ==========================================================================
+function exportAttendancePrint() {
+  const today = new Date().toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  const presentCount = squadData.filter(p => p.status === "Presente").length;
+
+  const rows = squadData.map(p => `
+    <tr>
+      <td><strong>#${p.number}</strong></td>
+      <td>${p.name}</td>
+      <td>${p.position || "Jugador"}</td>
+      <td>${p.group || "Sin Cat."}</td>
+      <td style="color:${p.status === "Presente" ? "#10b981" : p.status === "Justificado" ? "#f59e0b" : "#ef4444"}; font-weight:bold;">${p.status}</td>
+      <td>${p.checkinTime || "—"}</td>
+    </tr>
+  `).join("");
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Control de Asistencia - Laguna Athletic</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 25px; color: #1e293b; }
+    h1 { font-size: 1.5rem; margin-bottom: 4px; color: #0f172a; }
+    p { color: #64748b; font-size: 0.9rem; margin-top: 0; margin-bottom: 1.25rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; font-size: 0.85rem; }
+    th { background: #f1f5f9; font-weight: 700; color: #334155; }
+    tr:nth-child(even) { background: #f8fafc; }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    .footer { margin-top: 2.5rem; font-size: 0.75rem; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
+  </style>
+  </head><body>
+  <h1>🏆 Laguna Athletic Club — Registro de Asistencia</h1>
+  <p>${today} · <strong>${presentCount} de ${squadData.length}</strong> jugadores presentes (${Math.round((presentCount/squadData.length)*100)}%)</p>
+  <table>
+    <thead><tr><th>Dorsal</th><th>Nombre del Jugador</th><th>Posición</th><th>Categoría</th><th>Estado</th><th>Hora Check-in</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="footer">Laguna Athletic 2026 · Control Oficial Interno · Generado el ${new Date().toLocaleString("es-ES")}</div>
+  </body></html>`;
+
+  const w = window.open("", "_blank");
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => w.print(), 350);
+  }
+}
+
+function exportPaymentsPrint() {
+  const today = new Date().toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  let total = 0;
+  const rows = paymentsData.map(p => {
+    if (p.status === "Pagado") total += (p.finalAmount || 0);
+    return `
+      <tr>
+        <td><strong>${p.folio}</strong></td>
+        <td>${p.date}</td>
+        <td>${p.playerName}</td>
+        <td>${p.concept}</td>
+        <td>${p.method}</td>
+        <td style="font-weight:bold;">$${(p.finalAmount || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
+        <td style="color:${p.status === "Pagado" ? "#10b981" : "#f59e0b"}; font-weight:bold;">${p.status}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Financiero - Laguna Athletic</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 25px; color: #1e293b; }
+    h1 { font-size: 1.5rem; margin-bottom: 4px; color: #0f172a; }
+    p { color: #64748b; font-size: 0.9rem; margin-top: 0; margin-bottom: 1.25rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; font-size: 0.85rem; }
+    th { background: #f1f5f9; font-weight: 700; color: #334155; }
+    tr:nth-child(even) { background: #f8fafc; }
+    .total-row td { font-weight:bold; background: #ecfdf5; border-top: 2px solid #10b981; }
+    .footer { margin-top: 2.5rem; font-size: 0.75rem; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
+  </style></head><body>
+  <h1>💰 Laguna Athletic — Reporte General de Cobranza</h1>
+  <p>${today} · ${paymentsData.length} movimientos registrados · Total Recaudado: <strong>$${total.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN</strong></p>
+  <table>
+    <thead><tr><th>Folio</th><th>Fecha</th><th>Alumno / Familia</th><th>Concepto</th><th>Método</th><th>Monto Neto</th><th>Estado</th></tr></thead>
+    <tbody>${rows}
+    <tr class="total-row"><td colspan="5">TOTAL CONFIRMADO</td><td>$${total.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN</td><td></td></tr>
+    </tbody>
+  </table>
+  <div class="footer">Laguna Athletic 2026 · Administración y Finanzas · Impreso el ${new Date().toLocaleString("es-ES")}</div>
+  </body></html>`;
+
+  const w = window.open("", "_blank");
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => w.print(), 350);
+  }
+}

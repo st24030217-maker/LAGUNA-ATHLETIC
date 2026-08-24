@@ -109,7 +109,7 @@
               <i class="fa-solid fa-lock"></i> PIN de Acceso
             </label>
             <div class="login-pin-wrap">
-              <input type="password" id="loginPinInput" class="login-pin-input" placeholder="• • • •" value="1234" required />
+              <input type="password" id="loginPinInput" class="login-pin-input" placeholder="• • • •" required autocomplete="current-password" />
               <button type="button" class="pin-toggle-btn" title="Mostrar/Ocultar PIN" onclick="togglePinVisibility()">
                 <i class="fa-solid fa-eye" id="togglePinIcon"></i>
               </button>
@@ -154,6 +154,15 @@
 
         <nav class="sidebar-nav">
           
+          <!-- GRUPO 0: INICIO -->
+          <div class="nav-group open" id="navGroupHome">
+            <div class="nav-group-body" style="padding-top: 0;">
+              <button class="tab-btn active" data-tab="mod-home" onclick="showModuleTab('mod-home')">
+                <i class="fa-solid fa-house-chimney"></i> <span>Dashboard</span>
+              </button>
+            </div>
+          </div>
+
           <!-- GRUPO 1: CONTROL DIARIO -->
           <div class="nav-group open" id="navGroupDaily">
             <button class="nav-group-header" onclick="toggleNavGroup('navGroupDaily')">
@@ -161,7 +170,7 @@
               <i class="fa-solid fa-chevron-down chevron-icon"></i>
             </button>
             <div class="nav-group-body">
-              <button class="tab-btn active" data-tab="mod-qr" onclick="showModuleTab('mod-qr')">
+              <button class="tab-btn" data-tab="mod-qr" onclick="showModuleTab('mod-qr')">
                 <i class="fa-solid fa-qrcode"></i> <span>Registro QR</span>
               </button>
               <button class="tab-btn" data-tab="mod-justificaciones" onclick="showModuleTab('mod-justificaciones')">
@@ -240,8 +249,118 @@
 
         <div class="content-wrapper">
           
+          <!-- 00. DASHBOARD HOME -->
+          <div id="mod-home" class="module-panel active">
+            <!-- Hero Banner -->
+            <div class="hero-event-card glass-panel margin-bottom fade-in-up" id="dashNextEventBanner">
+              <div class="hero-event-info">
+                <span class="badge badge-neon" id="dashEventBadge">PRÓXIMO EVENTO</span>
+                <h2 id="dashEventTitle">Cargando evento próximo...</h2>
+                <p id="dashEventSub">Temporada 2026 · Laguna Athletic</p>
+              </div>
+              <div class="hero-stats">
+                <div class="stat-box">
+                  <i class="fa-solid fa-calendar-day"></i>
+                  <span id="dashEventDate">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- KPI Cards Fila 1 -->
+            <div class="dashboard-kpi-grid margin-bottom fade-in-up" style="animation-delay: 0.05s;">
+              <div class="kpi-card kpi-blue">
+                <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="kpi-body">
+                  <div class="kpi-label">Total Jugadores</div>
+                  <div class="kpi-value" id="dashTotalPlayers">0</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-green">
+                <div class="kpi-icon"><i class="fa-solid fa-user-check"></i></div>
+                <div class="kpi-body">
+                  <div class="kpi-label">Presentes Hoy</div>
+                  <div class="kpi-value" id="dashPresentToday">0</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-gold">
+                <div class="kpi-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="kpi-body">
+                  <div class="kpi-label">% Asistencia</div>
+                  <div class="kpi-value" id="dashAttendancePct">0%</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-red">
+                <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="kpi-body">
+                  <div class="kpi-label">Pagos Pendientes</div>
+                  <div class="kpi-value" id="dashPendingPayments">$0</div>
+                </div>
+              </div>
+              <div class="kpi-card kpi-orange">
+                <div class="kpi-icon"><i class="fa-solid fa-briefcase-medical"></i></div>
+                <div class="kpi-body">
+                  <div class="kpi-label">En Enfermería</div>
+                  <div class="kpi-value" id="dashInjuredCount">0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alertas Automáticas -->
+            <div id="dashAlerts" class="dash-alerts margin-bottom fade-in-up" style="animation-delay: 0.1s;"></div>
+
+            <!-- Grid: Top Racha + Accesos Rápidos -->
+            <div class="grid-2-cols fade-in-up" style="animation-delay: 0.15s;">
+              <!-- Top Racha de Asistencia -->
+              <div class="glass-card">
+                <h3 class="card-title"><i class="fa-solid fa-trophy text-primary"></i> Top Racha de Asistencia</h3>
+                <div class="table-responsive">
+                  <table class="modern-table">
+                    <thead><tr><th>#</th><th>Jugador</th><th>%</th><th>Racha</th></tr></thead>
+                    <tbody id="dashTopAttendance"></tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- Accesos Rápidos -->
+              <div class="glass-card">
+                <h3 class="card-title"><i class="fa-solid fa-bolt text-primary"></i> Accesos Rápidos</h3>
+                <div class="quick-access-grid">
+                  <button class="quick-access-btn" onclick="showModuleTab('mod-qr')">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Registro QR</span>
+                  </button>
+                  <button class="quick-access-btn" onclick="showModuleTab('mod-alineacion')">
+                    <i class="fa-solid fa-shirt"></i>
+                    <span>Pizarra Táctica</span>
+                  </button>
+                  <button class="quick-access-btn" onclick="showModuleTab('mod-pagos')">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    <span>Pagos</span>
+                  </button>
+                  <button class="quick-access-btn" onclick="showModuleTab('mod-avisos')">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span>Avisos WA</span>
+                  </button>
+                  <button class="quick-access-btn" onclick="showModuleTab('mod-estadisticas')">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Rendimiento</span>
+                  </button>
+                  <button class="quick-access-btn" onclick="showModuleTab('mod-registro')">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Registro</span>
+                  </button>
+                </div>
+                <!-- Botón Reset Asistencia -->
+                <div class="margin-top" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+                  <button class="btn btn-ghost btn-block" onclick="confirmResetAttendance()" style="color: var(--accent-danger); border-color: rgba(239,68,68,0.3);">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Asistencia del Día
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- 01. REGISTRO QR -->
-          <div id="mod-qr" class="module-panel active">
+          <div id="mod-qr" class="module-panel">
             <div class="hero-event-card glass-panel margin-bottom fade-in-up" id="nextEventBanner">
               <div class="hero-event-info">
                 <span class="badge badge-neon" id="bannerBadge">MODO ASISTENCIA</span>
@@ -303,7 +422,12 @@
 
               <!-- Lado Derecho: Tabla -->
               <div class="glass-card fade-in-up" style="animation-delay: 0.2s;">
-                <h3 class="card-title">Registro en Vivo</h3>
+                <div class="flex-between align-center margin-bottom">
+                  <h3 class="card-title" style="margin-bottom:0;">Registro en Vivo</h3>
+                  <button class="btn btn-ghost btn-sm role-dt-only" onclick="exportAttendancePrint()" title="Exportar lista de asistencia a PDF/Impresión">
+                    <i class="fa-solid fa-print"></i> Exportar
+                  </button>
+                </div>
                 <div class="table-responsive">
                   <table class="modern-table">
                     <thead>
@@ -329,7 +453,14 @@
               <div id="tacticalBoardCard" class="glass-card fade-in-up">
                 <div style="display: flex; justify-content: space-between; align-items: center;" class="margin-bottom">
                   <h3 class="card-title" style="margin-bottom: 0;">Pizarra Táctica (XI)</h3>
-                  <div style="display: flex; gap: 0.5rem;">
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <select id="formationSelect" class="form-control" onchange="changeFormation()" style="width: auto; padding: 0.2rem 0.5rem; font-size: 0.85rem;" title="Esquema Táctico">
+                      <option value="4-3-3">4-3-3 (Ofensivo)</option>
+                      <option value="4-4-2">4-4-2 (Equilibrado)</option>
+                      <option value="4-2-3-1">4-2-3-1 (Control)</option>
+                      <option value="3-5-2">3-5-2 (Carrileros)</option>
+                      <option value="5-3-2">5-3-2 (Defensivo)</option>
+                    </select>
                     <select id="tacticalGroupSelect" class="form-control" onchange="renderSquadCallupList()" style="width: auto; padding: 0.2rem 0.5rem; font-size: 0.85rem;">
                       <option value="Todos">Todas las Categorías</option>
                       <option value="Sub-8">Sub-8</option>
@@ -492,11 +623,27 @@
           <!-- 03. CALENDARIO -->
           <div id="mod-calendario" class="module-panel">
             <div class="glass-card fade-in-up">
-              <div class="flex-between margin-bottom">
-                <h3 class="card-title">Calendario de Eventos</h3>
-                <button class="btn btn-primary role-dt-only" onclick="openAddEventModal()">
-                  <i class="fa-solid fa-plus"></i> AGREGAR EVENTO
-                </button>
+              <div class="flex-between margin-bottom" style="flex-wrap: wrap; gap: 0.75rem; align-items: center;">
+                <h3 class="card-title" style="margin-bottom:0;"><i class="fa-solid fa-calendar-days text-primary"></i> Calendario de Eventos</h3>
+                <div style="display:flex; gap:0.5rem; flex-wrap: wrap; align-items:center;">
+                  <div class="cal-view-toggle">
+                    <button class="cal-view-btn active" id="calViewListBtn" onclick="setCalView('lista')">
+                      <i class="fa-solid fa-list"></i> Lista
+                    </button>
+                    <button class="cal-view-btn" id="calViewMonthBtn" onclick="setCalView('mes')">
+                      <i class="fa-solid fa-calendar"></i> Mes
+                    </button>
+                  </div>
+                  <select id="calTypeFilter" class="form-control" onchange="renderCalendarEvents()" style="width:auto; padding:0.25rem 0.6rem; font-size:0.82rem;">
+                    <option value="todos">Todos los eventos</option>
+                    <option value="entrenamiento">Entrenamientos</option>
+                    <option value="partido">Partidos Oficiales</option>
+                    <option value="evento">Eventos Especiales</option>
+                  </select>
+                  <button class="btn btn-primary btn-sm role-dt-only" onclick="openAddEventModal()">
+                    <i class="fa-solid fa-plus"></i> AGREGAR EVENTO
+                  </button>
+                </div>
               </div>
               <div class="calendar-grid" id="calendarEventsGrid">
                 <!-- Dinámico -->
@@ -1457,13 +1604,18 @@
 
             <!-- Tabla de Historial de Cobranza General -->
             <div class="glass-card fade-in-up">
-              <div class="flex-between margin-bottom">
+              <div class="flex-between margin-bottom" style="flex-wrap: wrap; gap: 0.75rem; align-items: center;">
                 <h3 class="card-title" style="margin-bottom:0;">
                   <i class="fa-solid fa-clock-rotate-left text-primary"></i> Historial de Cobranza Registrada
                 </h3>
-                <div class="reg-search-box">
-                  <i class="fa-solid fa-magnifying-glass"></i>
-                  <input type="text" id="paySearchInput" class="form-control" placeholder="Buscar alumno, folio o concepto..." oninput="renderPaymentsTable()" style="padding:0.5rem 0.8rem; font-size:0.85rem;" />
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                  <div class="reg-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="paySearchInput" class="form-control" placeholder="Buscar alumno, folio..." oninput="renderPaymentsTable()" style="padding:0.45rem 0.8rem; font-size:0.85rem;" />
+                  </div>
+                  <button class="btn btn-ghost btn-sm" onclick="exportPaymentsPrint()" title="Exportar reporte de cobranza a PDF / Impresión">
+                    <i class="fa-solid fa-print"></i> Exportar
+                  </button>
                 </div>
               </div>
 
@@ -1548,42 +1700,78 @@
       </div>
     </div>
 
-    <!-- Modal Perfil de Jugador -->
+    <!-- Modal Perfil de Jugador EXPANDIDO -->
     <div id="playerProfileModal" class="modal-overlay hidden">
-      <div class="glass-card modal-content player-profile-card">
+      <div class="glass-card modal-content player-profile-card" style="max-width:700px;">
         <div class="profile-header flex-between mb-2">
           <h3 class="card-title" style="margin-bottom: 0;">Ficha del Jugador</h3>
           <button class="btn btn-ghost" style="padding: 0.5rem;" onclick="closeProfileModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="profile-body mt-4">
-          <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1.5rem;">
-            <div class="marker-shirt" style="width: 60px; height: 60px; font-size: 1.5rem;" id="profileNumber">10</div>
+          <!-- Header: foto + info básica -->
+          <div style="display:flex; gap:1.5rem; align-items:center; margin-bottom:1.5rem;">
+            <div style="position:relative; flex-shrink:0;">
+              <img id="profilePhoto" src="LAGUNA.jpg" alt="Foto" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-gold);" />
+              <div class="marker-shirt gk-shirt" id="profileNumber" style="position:absolute; bottom:-8px; right:-8px; width:32px; height:32px; font-size:0.9rem;">1</div>
+            </div>
+            <div style="flex:1;">
+              <h2 style="font-family:var(--font-heading); margin-bottom:0.2rem;" id="profileName">Jugador</h2>
+              <p class="text-muted" id="profilePosition">Posición</p>
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.4rem;">
+                <span id="profileStatusBadge" class="badge badge-success">Activo</span>
+                <span class="badge badge-outline" id="profileGroupBadge">Sin Cat.</span>
+                <span class="badge badge-outline" id="profileAgeBadge">— años</span>
+              </div>
+            </div>
             <div>
-              <h2 style="font-family: var(--font-heading);" id="profileName">Emilio Suárez</h2>
-              <p class="text-muted" id="profilePosition">Medio Ofensivo</p>
-              <span id="profileStatusBadge" class="badge badge-success mt-2">Activo</span>
+              <button class="btn btn-whatsapp btn-sm" id="profileWABtn" onclick="profileSendWA()" title="Enviar WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i> WA
+              </button>
             </div>
           </div>
-          
-          <div class="grid-2-cols gap-2" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
-            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
-              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Goles</p>
-              <h3 style="font-family: var(--font-mono); font-size: 1.8rem;" class="text-primary" id="profileGoals">12</h3>
+
+          <!-- Stats de la temporada -->
+          <div class="grid-2-cols gap-2" style="grid-template-columns:repeat(4,1fr); margin-bottom:1rem;">
+            <div class="stat-box" style="background:var(--bg-input); padding:0.8rem; border-radius:8px; text-align:center;">
+              <p class="text-muted" style="font-size:0.7rem; text-transform:uppercase;">Goles</p>
+              <h3 style="font-family:var(--font-mono); font-size:1.6rem;" class="text-primary" id="profileGoals">0</h3>
             </div>
-            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
-              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Asistencias</p>
-              <h3 style="font-family: var(--font-mono); font-size: 1.8rem;" class="text-primary" id="profileAssists">8</h3>
+            <div class="stat-box" style="background:var(--bg-input); padding:0.8rem; border-radius:8px; text-align:center;">
+              <p class="text-muted" style="font-size:0.7rem; text-transform:uppercase;">Asistencias</p>
+              <h3 style="font-family:var(--font-mono); font-size:1.6rem;" class="text-primary" id="profileAssists">0</h3>
+            </div>
+            <div class="stat-box" style="background:var(--bg-input); padding:0.8rem; border-radius:8px; text-align:center;">
+              <p class="text-muted" style="font-size:0.7rem; text-transform:uppercase;">Minutos</p>
+              <h3 style="font-family:var(--font-mono); font-size:1.2rem;" class="text-primary" id="profileMins">0'</h3>
+            </div>
+            <div class="stat-box" style="background:var(--bg-input); padding:0.8rem; border-radius:8px; text-align:center;">
+              <p class="text-muted" style="font-size:0.7rem; text-transform:uppercase;">Tarjetas</p>
+              <h3 style="font-family:var(--font-mono); font-size:1.2rem;" class="text-warning" id="profileCards">0</h3>
             </div>
           </div>
-          <div class="grid-2-cols gap-2" style="grid-template-columns: 1fr 1fr;">
-            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
-              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Mins Jugados</p>
-              <h3 style="font-family: var(--font-mono); font-size: 1.4rem;" class="text-primary" id="profileMins">1240'</h3>
+
+          <!-- Asistencia + Pagos -->
+          <div class="grid-2-cols gap-2" style="grid-template-columns:1fr 1fr; margin-bottom:1rem;">
+            <div style="background:var(--bg-input); padding:0.8rem; border-radius:8px;">
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.25rem;"><i class="fa-solid fa-chart-pie text-primary"></i> Asistencia Temporada</div>
+              <div id="profileAttendancePct" style="font-size:1.4rem; font-weight:800; color:var(--accent-neon);">0%</div>
             </div>
-            <div class="stat-box" style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
-              <p class="text-muted" style="font-size: 0.75rem; text-transform: uppercase;">Tarjetas</p>
-              <h3 style="font-family: var(--font-mono); font-size: 1.4rem;" class="text-warning" id="profileCards">2</h3>
+            <div style="background:var(--bg-input); padding:0.8rem; border-radius:8px;">
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.25rem;"><i class="fa-solid fa-coins text-gold"></i> Estado de Pagos</div>
+              <div id="profilePaymentStatus" style="font-size:0.9rem; font-weight:700;">Al corriente</div>
             </div>
+          </div>
+
+          <!-- Documentación -->
+          <div style="background:var(--bg-input); padding:0.8rem; border-radius:8px; margin-bottom:1rem;">
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;"><i class="fa-solid fa-folder-open text-primary"></i> <strong>Documentación Entregada</strong></div>
+            <div id="profileDocs" style="display:flex; flex-wrap:wrap; gap:0.4rem;"></div>
+          </div>
+
+          <!-- Contactos -->
+          <div style="background:var(--bg-input); padding:0.8rem; border-radius:8px;">
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.5rem;"><i class="fa-solid fa-address-book text-primary"></i> <strong>Contactos de la Familia</strong></div>
+            <div id="profileContacts"></div>
           </div>
         </div>
       </div>
@@ -1756,6 +1944,24 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal de Confirmación Personalizado -->
+    <div id="customConfirmModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 460px;">
+        <div class="text-center" style="padding: 0.5rem 0 1rem;">
+          <div style="width:56px; height:56px; background:rgba(239,68,68,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 1rem;">
+            <i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-danger); font-size:1.4rem;"></i>
+          </div>
+          <h3 class="card-title" id="confirmModalTitle" style="margin-bottom: 0.5rem;">¿Confirmar acción?</h3>
+          <p class="text-muted" id="confirmModalMessage" style="font-size:0.9rem; line-height:1.5;">Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="flex-center gap-2 mt-4" style="gap: 0.75rem;">
+          <button class="btn btn-ghost" style="flex:1;" onclick="closeConfirmModal()">Cancelar</button>
+          <button class="btn btn-primary" id="confirmModalBtn" style="flex:1;" onclick="executeConfirmModal()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
     <script src="app.js"></script>
   </body>
 </html>
