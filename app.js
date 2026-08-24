@@ -12,6 +12,314 @@ let currentRole = null;
 let loggedInUser = null;
 let attendanceChart = null;
 
+// ==========================================================================
+// MÓDULO: SUPABASE CLOUD DATABASE (Tiempo Real Multi-dispositivo)
+// ==========================================================================
+let supabaseClient = null;
+let cloudConnected = false;
+let realtimeChannel = null;
+
+const SUPABASE_URL_KEY = "laguna_supabase_url";
+const SUPABASE_ANON_KEY = "laguna_supabase_key";
+
+function initSupabase() {
+  try {
+    const url = localStorage.getItem(SUPABASE_URL_KEY);
+    const key = localStorage.getItem(SUPABASE_ANON_KEY);
+    if (url && key && typeof supabase !== "undefined") {
+      supabaseClient = supabase.createClient(url, key);
+      cloudConnected = true;
+      updateCloudStatusBadge(true);
+      setupRealtimeSubscriptions();
+      syncAllFromCloud();
+      return true;
+    }
+  } catch (e) {
+    console.warn("Supabase init error:", e);
+  }
+  cloudConnected = false;
+  updateCloudStatusBadge(false);
+  return false;
+}
+
+function updateCloudStatusBadge(connected) {
+  const badge = document.getElementById("cloudStatusBadge");
+  const icon = document.getElementById("cloudStatusIcon");
+  const text = document.getElementById("cloudStatusText");
+  if (!badge) return;
+  if (connected) {
+    if (icon) { icon.className = "fa-solid fa-cloud-check"; icon.style.color = "#3ecf8e"; }
+    if (text) text.textContent = "Nube Conectada";
+    badge.style.borderColor = "rgba(62,207,142,0.4)";
+    badge.style.background = "rgba(62,207,142,0.1)";
+    badge.style.color = "#3ecf8e";
+  } else {
+    if (icon) { icon.className = "fa-solid fa-cloud"; icon.style.color = "var(--accent-gold)"; }
+    if (text) text.textContent = "Modo Local";
+    badge.style.borderColor = "rgba(245,158,11,0.3)";
+    badge.style.background = "rgba(245,158,11,0.08)";
+    badge.style.color = "#f59e0b";
+  }
+}
+
+async function syncAllFromCloud() {
+  if (!supabaseClient || !cloudConnected) return;
+  try {
+    showToast("Sincronizando datos de la nube...", "info");
+    const [{ data: players }, { data: payments }, { data: events }, { data: injuries }] =
+      await Promise.all([
+        supabaseClient.from("players").select("*").order("number"),
+        supabaseClient.from("payments").select("*").order("id"),
+        supabaseClient.from("calendar_events").select("*").order("date"),
+        supabaseClient.from("injuries").select("*").order("id"),
+      ]);
+
+    if (players && players.length > 0) {
+      squadData = players.map(mapPlayerFromCloud);
+      localStorage.setItem("laguna_squad_v3", JSON.stringify(squadData));
+    }
+    if (payments && payments.length > 0) {
+      paymentsData = payments.map(mapPaymentFromCloud);
+      localStorage.setItem("laguna_payments_v3", JSON.stringify(paymentsData));
+    }
+    if (events && events.length > 0) {
+      calendarEvents = events.map(mapEventFromCloud);
+      localStorage.setItem("laguna_events_v3", JSON.stringify(calendarEvents));
+    }
+    if (injuries && injuries.length > 0) {
+      injuredData = injuries.map(mapInjuryFromCloud);
+      localStorage.setItem("laguna_injured_v3", JSON.stringify(injuredData));
+    }
+
+    refreshAllModules();
+    showToast("✅ Datos sincronizados correctamente desde la nube.", "success");
+  } catch (e) {
+    console.error("Error syncing from cloud:", e);
+    showToast("Error al sincronizar desde la nube. Usando datos locales.", "warning");
+  }
+}
+
+// Mapeo: cloud (snake_case) → app (camelCase)
+function mapPlayerFromCloud(p) {
+  return {
+    id: p.id, number: p.number, name: p.name, position: p.position,
+    positionAlt: p.position_alt, group: p.player_group, status: p.status,
+    checkinTime: p.checkin_time, attendancePct: p.attendance_pct, streak: p.streak,
+    starter: p.starter, injured: p.injured, goals: p.goals, assists: p.assists,
+    mins: p.mins, cards: p.cards, regStatus: p.reg_status, birthdate: p.birthdate,
+    tutorName: p.tutor_name, phone: p.phone, photo: p.photo || "LAGUNA.jpg",
+    contacts: p.contacts || [], docActa: p.doc_acta, docCURP: p.doc_curp,
+    docMedico: p.doc_medico, docINE: p.doc_ine, docEscolar: p.doc_escolar,
+    gameInfo: p.game_info || [],
+  };
+}
+function mapPaymentFromCloud(p) {
+  return {
+    id: p.id, folio: p.folio, playerId: p.player_id, playerName: p.player_name,
+    tutorName: p.tutor_name, concept: p.concept, baseAmount: p.base_amount,
+    discountPct: p.discount_pct, discountAmount: p.discount_amount,
+    finalAmount: p.final_amount, method: p.method, date: p.date,
+    status: p.status, notes: p.notes,
+  };
+}
+function mapEventFromCloud(e) {
+  return {
+    id: e.id, type: e.type, title: e.title, date: e.date, time: e.time,
+    location: e.location, result: e.result, matchStats: e.match_stats || [],
+  };
+}
+function mapInjuryFromCloud(i) {
+  return {
+    id: i.id, player: i.player, playerId: i.player_id, diagnosis: i.diagnosis,
+    startDate: i.start_date, estimatedReturn: i.estimated_return, status: i.status,
+  };
+}
+
+// Mapeo inverso: app (camelCase) → cloud (snake_case) para upsert
+function mapPlayerToCloud(p) {
+  return {
+    id: p.id, number: p.number, name: p.name, position: p.position,
+    position_alt: p.positionAlt, player_group: p.group, status: p.status,
+    checkin_time: p.checkinTime, attendance_pct: p.attendancePct, streak: p.streak,
+    starter: p.starter, injured: p.injured, goals: p.goals || 0,
+    assists: p.assists || 0, mins: p.mins || 0, cards: p.cards || 0,
+    reg_status: p.regStatus || "Activo", birthdate: p.birthdate || null,
+    tutor_name: p.tutorName, phone: p.phone, photo: p.photo || "LAGUNA.jpg",
+    contacts: p.contacts || [], doc_acta: p.docActa, doc_curp: p.docCURP,
+    doc_medico: p.docMedico, doc_ine: p.docINE, doc_escolar: p.docEscolar || false,
+    game_info: p.gameInfo || [], updated_at: new Date().toISOString(),
+  };
+}
+function mapPaymentToCloud(p) {
+  return {
+    id: p.id, folio: p.folio, player_id: p.playerId, player_name: p.playerName,
+    tutor_name: p.tutorName, concept: p.concept, base_amount: p.baseAmount,
+    discount_pct: p.discountPct, discount_amount: p.discountAmount,
+    final_amount: p.finalAmount, method: p.method, date: p.date,
+    status: p.status, notes: p.notes,
+  };
+}
+function mapEventToCloud(e) {
+  return {
+    id: e.id, type: e.type, title: e.title, date: e.date, time: e.time,
+    location: e.location, result: e.result, match_stats: e.matchStats || [],
+  };
+}
+
+async function pushPlayerToCloud(player) {
+  if (!supabaseClient || !cloudConnected) return;
+  try {
+    const { error } = await supabaseClient.from("players").upsert(mapPlayerToCloud(player));
+    if (error) console.error("Error pushing player:", error);
+  } catch (e) { console.warn(e); }
+}
+
+async function pushPaymentToCloud(payment) {
+  if (!supabaseClient || !cloudConnected) return;
+  try {
+    const { error } = await supabaseClient.from("payments").upsert(mapPaymentToCloud(payment));
+    if (error) console.error("Error pushing payment:", error);
+  } catch (e) { console.warn(e); }
+}
+
+async function pushEventToCloud(event) {
+  if (!supabaseClient || !cloudConnected) return;
+  try {
+    const { error } = await supabaseClient.from("calendar_events").upsert(mapEventToCloud(event));
+    if (error) console.error("Error pushing event:", error);
+  } catch (e) { console.warn(e); }
+}
+
+async function deletePlayerFromCloud(playerId) {
+  if (!supabaseClient || !cloudConnected) return;
+  try {
+    await supabaseClient.from("players").delete().eq("id", playerId);
+  } catch (e) { console.warn(e); }
+}
+
+function setupRealtimeSubscriptions() {
+  if (!supabaseClient) return;
+  if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+
+  realtimeChannel = supabaseClient
+    .channel("laguna-realtime")
+    .on("postgres_changes", { event: "*", schema: "public", table: "players" }, (payload) => {
+      if (payload.eventType === "UPDATE" || payload.eventType === "INSERT") {
+        const idx = squadData.findIndex(p => p.id === payload.new.id);
+        const updated = mapPlayerFromCloud(payload.new);
+        if (idx >= 0) squadData[idx] = updated;
+        else squadData.push(updated);
+        localStorage.setItem("laguna_squad_v3", JSON.stringify(squadData));
+        refreshAllModules();
+      } else if (payload.eventType === "DELETE") {
+        squadData = squadData.filter(p => p.id !== payload.old.id);
+        localStorage.setItem("laguna_squad_v3", JSON.stringify(squadData));
+        refreshAllModules();
+      }
+    })
+    .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, (payload) => {
+      if (payload.eventType === "INSERT" || payload.eventType === "UPDATE") {
+        const idx = paymentsData.findIndex(p => p.id === payload.new.id);
+        const updated = mapPaymentFromCloud(payload.new);
+        if (idx >= 0) paymentsData[idx] = updated;
+        else paymentsData.push(updated);
+        localStorage.setItem("laguna_payments_v3", JSON.stringify(paymentsData));
+        if (typeof renderPaymentsModule === "function") renderPaymentsModule();
+      }
+    })
+    .subscribe();
+}
+
+function refreshAllModules() {
+  if (typeof renderAttendanceTable === "function") renderAttendanceTable();
+  if (typeof renderRankingTable === "function") renderRankingTable();
+  if (typeof renderDashboard === "function") renderDashboard();
+  if (typeof renderRegistrationTable === "function") renderRegistrationTable();
+  if (typeof updateChartData === "function") updateChartData();
+}
+
+// Modal de configuración
+function openSupabaseConfigModal() {
+  const urlInput = document.getElementById("supabaseUrlInput");
+  const keyInput = document.getElementById("supabaseKeyInput");
+  if (urlInput) urlInput.value = localStorage.getItem(SUPABASE_URL_KEY) || "";
+  if (keyInput) keyInput.value = localStorage.getItem(SUPABASE_ANON_KEY) || "";
+  updateSupabaseModalStatus();
+  document.getElementById("supabaseConfigModal")?.classList.remove("hidden");
+}
+
+function closeSupabaseConfigModal() {
+  document.getElementById("supabaseConfigModal")?.classList.add("hidden");
+}
+
+function updateSupabaseModalStatus() {
+  const bar = document.getElementById("supabaseStatusBar");
+  const txt = document.getElementById("supabaseStatusText");
+  const disconnectRow = document.getElementById("supabaseDisconnectRow");
+  if (cloudConnected) {
+    if (bar) { bar.style.background = "rgba(62,207,142,0.12)"; bar.style.borderColor = "rgba(62,207,142,0.3)"; bar.style.color = "#3ecf8e"; }
+    if (txt) txt.textContent = "✅ Conectado a Supabase — Sincronización en tiempo real activa.";
+    if (disconnectRow) disconnectRow.classList.remove("hidden");
+  } else {
+    if (bar) { bar.style.background = "rgba(245,158,11,0.12)"; bar.style.borderColor = "rgba(245,158,11,0.3)"; bar.style.color = "#f59e0b"; }
+    if (txt) txt.textContent = "Modo Local — Ingresa tus credenciales de Supabase para activar la nube.";
+    if (disconnectRow) disconnectRow?.classList.add("hidden");
+  }
+}
+
+async function testSupabaseConnection() {
+  const url = document.getElementById("supabaseUrlInput")?.value?.trim();
+  const key = document.getElementById("supabaseKeyInput")?.value?.trim();
+  if (!url || !key) { showToast("Completa la URL y la API Key antes de probar.", "warning"); return; }
+  if (typeof supabase === "undefined") { showToast("SDK de Supabase no cargado. Revisa tu conexión a internet.", "error"); return; }
+  showToast("Probando conexión...", "info");
+  try {
+    const testClient = supabase.createClient(url, key);
+    const { error } = await testClient.from("players").select("id").limit(1);
+    if (error) throw error;
+    showToast("✅ Conexión exitosa a Supabase.", "success");
+    const bar = document.getElementById("supabaseStatusBar");
+    const txt = document.getElementById("supabaseStatusText");
+    if (bar) { bar.style.background = "rgba(62,207,142,0.12)"; bar.style.borderColor = "rgba(62,207,142,0.3)"; bar.style.color = "#3ecf8e"; }
+    if (txt) txt.textContent = "✅ Conexión probada con éxito. Haz clic en Conectar para activar.";
+  } catch (e) {
+    showToast("Error de conexión: " + (e.message || "revisa tu URL y API Key."), "error");
+  }
+}
+
+function saveAndConnectSupabase() {
+  const url = document.getElementById("supabaseUrlInput")?.value?.trim();
+  const key = document.getElementById("supabaseKeyInput")?.value?.trim();
+  if (!url || !key) { showToast("Completa la URL y la API Key.", "warning"); return; }
+  localStorage.setItem(SUPABASE_URL_KEY, url);
+  localStorage.setItem(SUPABASE_ANON_KEY, key);
+  const result = initSupabase();
+  if (result) {
+    updateSupabaseModalStatus();
+    showToast("🌐 Conectado a la nube. Sincronizando datos...", "success");
+    setTimeout(() => closeSupabaseConfigModal(), 1500);
+  } else {
+    showToast("No se pudo conectar. Verifica tus credenciales.", "error");
+  }
+}
+
+function disconnectSupabase() {
+  if (realtimeChannel && supabaseClient) {
+    supabaseClient.removeChannel(realtimeChannel);
+    realtimeChannel = null;
+  }
+  supabaseClient = null;
+  cloudConnected = false;
+  localStorage.removeItem(SUPABASE_URL_KEY);
+  localStorage.removeItem(SUPABASE_ANON_KEY);
+  updateCloudStatusBadge(false);
+  updateSupabaseModalStatus();
+  showToast("Desconectado de la nube. Usando almacenamiento local.", "info");
+  setTimeout(() => closeSupabaseConfigModal(), 1200);
+}
+
+
+
 const defaultSquadData = [
   {
     id: 10,

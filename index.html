@@ -28,10 +28,10 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="styles.css?v=2026.8.24.5" />
+    <link rel="stylesheet" href="styles.css?v=2026.8.24.6" />
   </head>
   <body class="dark-theme">
     
@@ -247,6 +247,12 @@
           <div class="topbar-greeting">
             <h1 class="greeting-text" id="greetingHeader">Bienvenido al sistema.</h1>
             <p class="greeting-sub">Gestiona la temporada 2026 en tiempo real.</p>
+          </div>
+          <div class="topbar-actions" style="display: flex; align-items: center; gap: 0.75rem; margin-left: auto;">
+            <button id="cloudStatusBadge" class="badge badge-outline" style="cursor: pointer; display: flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.8rem; font-size: 0.75rem; border-color: rgba(255,255,255,0.2); background: rgba(0,0,0,0.25); color: #fff; transition: all 0.2s;" onclick="openSupabaseConfigModal()" title="Configuración de Base de Datos Supabase (Nube)">
+              <i class="fa-solid fa-cloud" id="cloudStatusIcon" style="color: var(--accent-gold); font-size: 0.85rem;"></i> 
+              <span id="cloudStatusText">Modo Local</span>
+            </button>
           </div>
           <div id="toastContainer" class="toast-container"></div>
         </header>
@@ -2254,6 +2260,67 @@
       </div>
     </div>
 
-    <script src="app.js?v=2026.8.24.5"></script>
+    <!-- Modal: Configuración Supabase / Estado de Nube -->
+    <div id="supabaseConfigModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 520px;">
+        <div class="profile-header flex-between mb-2">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,#1a1a2e,#3ecf8e22); border:1.5px solid #3ecf8e55; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#3ecf8e;">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <div>
+              <h3 class="card-title" style="margin-bottom:0; font-size:1.05rem;">Conexión a Base de Datos Supabase</h3>
+              <p class="text-muted" style="margin:0; font-size:0.75rem;">Sincronización en tiempo real · Multi-dispositivo</p>
+            </div>
+          </div>
+          <button class="btn btn-ghost" style="padding:0.5rem;" onclick="closeSupabaseConfigModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Estado actual -->
+        <div id="supabaseStatusBar" class="alert" style="margin-bottom:1rem; display:flex; align-items:center; gap:0.6rem; padding:0.65rem 0.9rem; font-size:0.82rem; border-radius:8px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); color:#f59e0b;">
+          <i class="fa-solid fa-circle-dot"></i>
+          <span id="supabaseStatusText">Modo Local — Ingresa tus credenciales de Supabase para activar la nube.</span>
+        </div>
+
+        <!-- Instrucciones rápidas -->
+        <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border-glass); border-radius:8px; padding:0.75rem 0.9rem; margin-bottom:1rem; font-size:0.78rem; color:var(--text-muted); line-height:1.6;">
+          <strong style="color:var(--text-main);">¿Cómo obtener tus credenciales?</strong><br>
+          1. Ve a <a href="https://supabase.com/dashboard" target="_blank" style="color:#3ecf8e;">supabase.com/dashboard</a><br>
+          2. Abre tu proyecto → <strong>Settings → API</strong><br>
+          3. Copia la <strong>Project URL</strong> y la clave <strong>anon public</strong><br>
+          4. Pégalas aquí y haz clic en <strong>Conectar</strong>
+        </div>
+
+        <!-- Formulario de credenciales -->
+        <div class="form-group mb-2">
+          <label class="form-label"><i class="fa-solid fa-link text-primary"></i> Project URL</label>
+          <input type="url" id="supabaseUrlInput" class="form-control" placeholder="https://xxxxxxxxxxxx.supabase.co" />
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label"><i class="fa-solid fa-key text-gold"></i> API Key (anon public)</label>
+          <input type="password" id="supabaseKeyInput" class="form-control" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex-between gap-2 margin-top">
+          <button class="btn btn-ghost" style="flex:1;" onclick="closeSupabaseConfigModal()">Cancelar</button>
+          <button class="btn btn-ghost btn-sm" style="flex:0.6;" onclick="testSupabaseConnection()">
+            <i class="fa-solid fa-plug-circle-check"></i> Probar
+          </button>
+          <button class="btn btn-primary" style="flex:1.2;" onclick="saveAndConnectSupabase()">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Conectar a la Nube
+          </button>
+        </div>
+
+        <!-- Boton desconectar (solo visible si está conectado) -->
+        <div id="supabaseDisconnectRow" class="hidden margin-top" style="border-top:1px solid var(--border-glass); padding-top:0.75rem;">
+          <button class="btn btn-ghost btn-block" style="color:var(--accent-danger); font-size:0.8rem;" onclick="disconnectSupabase()">
+            <i class="fa-solid fa-cloud-slash"></i> Desconectar y usar solo almacenamiento local
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js?v=2026.8.24.6"></script>
   </body>
 </html>
