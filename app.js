@@ -4182,3 +4182,396 @@ function exportPaymentsPrint() {
     setTimeout(() => w.print(), 350);
   }
 }
+
+// ==========================================================================
+// MÓDULO: ESCÁNER QR REAL CON CÁMARA & AUDIO FEEDBACK
+// ==========================================================================
+let html5QrScanner = null;
+let isCameraScanning = false;
+
+function playSuccessBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, ctx.currentTime); // La (A5)
+    osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (e) {}
+}
+
+function toggleQRScannerMode(mode) {
+  const camBtn = document.getElementById("qrModeCamBtn");
+  const simBtn = document.getElementById("qrModeSimBtn");
+  const camCont = document.getElementById("qrCameraContainer");
+  const simCont = document.getElementById("qrSimContainer");
+
+  if (mode === "cam") {
+    if (camBtn) camBtn.classList.add("active");
+    if (simBtn) simBtn.classList.remove("active");
+    if (camCont) camCont.classList.remove("hidden");
+    if (simCont) simCont.classList.add("hidden");
+  } else {
+    if (simBtn) simBtn.classList.add("active");
+    if (camBtn) camBtn.classList.remove("active");
+    if (simCont) simCont.classList.remove("hidden");
+    if (camCont) camCont.classList.add("hidden");
+    stopCameraScanner();
+  }
+}
+
+function startCameraScanner() {
+  if (typeof Html5Qrcode === "undefined") {
+    showToast("Librería de cámara cargando. Intenta de nuevo en 2 segundos.", "warning");
+    return;
+  }
+
+  const placeholder = document.getElementById("qrCameraPlaceholder");
+  const activeBar = document.getElementById("qrCameraActiveBar");
+
+  if (!html5QrScanner) {
+    html5QrScanner = new Html5Qrcode("qrCameraReader");
+  }
+
+  const qrCodeSuccessCallback = (decodedText) => {
+    handleScannedQRCode(decodedText);
+  };
+
+  const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+  html5QrScanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+    .then(() => {
+      isCameraScanning = true;
+      if (placeholder) placeholder.classList.add("hidden");
+      if (activeBar) activeBar.classList.remove("hidden");
+      showToast("Cámara activada para escaneo de credenciales.", "info");
+    })
+    .catch((err) => {
+      console.warn("Error iniciando cámara trasera, probando cualquier cámara...", err);
+      html5QrScanner.start({ facingMode: "user" }, config, qrCodeSuccessCallback)
+        .then(() => {
+          isCameraScanning = true;
+          if (placeholder) placeholder.classList.add("hidden");
+          if (activeBar) activeBar.classList.remove("hidden");
+          showToast("Cámara activada.", "info");
+        })
+        .catch((e2) => {
+          showToast("No se pudo acceder a la cámara. Revisa los permisos del navegador.", "error");
+        });
+    });
+}
+
+function stopCameraScanner() {
+  if (html5QrScanner && isCameraScanning) {
+    html5QrScanner.stop().then(() => {
+      isCameraScanning = false;
+      const placeholder = document.getElementById("qrCameraPlaceholder");
+      const activeBar = document.getElementById("qrCameraActiveBar");
+      if (placeholder) placeholder.classList.remove("hidden");
+      if (activeBar) activeBar.classList.add("hidden");
+    }).catch(() => {});
+  }
+}
+
+function handleScannedQRCode(qrText) {
+  if (!qrText) return;
+  
+  // Formatos soportados: "LAGUNA-10", "ID:10", "10", o JSON
+  let playerId = null;
+
+  if (qrText.startsWith("LAGUNA-")) {
+    playerId = parseInt(qrText.replace("LAGUNA-", ""));
+  } else if (qrText.startsWith("ID:")) {
+    playerId = parseInt(qrText.replace("ID:", ""));
+  } else {
+    playerId = parseInt(qrText);
+  }
+
+  const player = squadData.find((p) => p.id === playerId || p.number === playerId);
+
+  if (!player) {
+    showToast(`Código QR no reconocido: "${qrText}".`, "warning");
+    return;
+  }
+
+  if (player.status === "Presente") {
+    showToast(`${player.name} (#${player.number}) ya tiene asistencia registrada hoy.`, "info");
+    return;
+  }
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+
+  player.status = "Presente";
+  player.checkinTime = timeStr;
+  recalculateAttendancePct();
+  saveData();
+
+  playSuccessBeep();
+
+  const alertBox = document.getElementById("lastCheckinAlert");
+  if (alertBox) {
+    document.getElementById("lastCheckinText").innerText = `✓ Asistencia confirmada: #${player.number} ${player.name} (${timeStr})`;
+    alertBox.classList.remove("hidden");
+    setTimeout(() => alertBox.classList.add("hidden"), 4000);
+  }
+
+  renderAttendanceTable();
+  renderRankingTable();
+  updateChartData();
+  if (typeof renderDashboard === "function") renderDashboard();
+
+  showToast(`¡Asistencia de ${player.name} registrada!`, "success");
+}
+
+// ==========================================================================
+// MÓDULO: CREDENCIALES OFICIALES CON CÓDIGO QR
+// ==========================================================================
+let currentCredentialPlayer = null;
+
+function openCredentialModal(playerId) {
+  const p = squadData.find(x => x.id === playerId);
+  if (!p) return;
+  ensureRegFields(p);
+  currentCredentialPlayer = p;
+
+  const photoEl = document.getElementById("credPhoto");
+  if (photoEl) photoEl.src = p.photo || "LAGUNA.jpg";
+
+  const numEl = document.getElementById("credNumber");
+  if (numEl) numEl.textContent = `#${p.number}`;
+
+  const nameEl = document.getElementById("credName");
+  if (nameEl) nameEl.textContent = p.name;
+
+  const posEl = document.getElementById("credPosition");
+  if (posEl) posEl.textContent = p.position;
+
+  const groupEl = document.getElementById("credGroup");
+  if (groupEl) groupEl.textContent = p.group || "Plantel Oficial";
+
+  const idCodeEl = document.getElementById("credIdCode");
+  if (idCodeEl) idCodeEl.textContent = `LA-2026-${String(p.id).padStart(3, "0")}`;
+
+  // Generar QR interactivo
+  const qrContainer = document.getElementById("credQRCode");
+  if (qrContainer) {
+    qrContainer.innerHTML = "";
+    if (typeof QRCode !== "undefined") {
+      new QRCode(qrContainer, {
+        text: `LAGUNA-${p.id}`,
+        width: 66,
+        height: 66,
+        colorDark: "#0b132b",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+  }
+
+  document.getElementById("playerCredentialModal")?.classList.remove("hidden");
+}
+
+function openCredentialFromProfile() {
+  if (currentProfilePlayerId) {
+    openCredentialModal(currentProfilePlayerId);
+  }
+}
+
+function closeCredentialModal() {
+  document.getElementById("playerCredentialModal")?.classList.add("hidden");
+}
+
+function printCredential() {
+  const p = currentCredentialPlayer;
+  if (!p) return;
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Credencial Oficial - ${p.name}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f8fafc; }
+    .card { width: 340px; background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 16px; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .header { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(245,158,11,0.3); padding-bottom: 8px; margin-bottom: 12px; }
+    .header img { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #f59e0b; }
+    .header h2 { font-size: 1rem; margin: 0; color: #f59e0b; }
+    .header span { font-size: 0.6rem; color: #94a3b8; }
+    .body { display: flex; gap: 12px; align-items: center; }
+    .photo-wrap { position: relative; }
+    .photo { width: 75px; height: 88px; border-radius: 6px; object-fit: cover; border: 2px solid #fff; }
+    .dorsal { position: absolute; bottom: -5px; right: -5px; background: #f59e0b; color: #000; font-weight: bold; font-size: 0.75rem; padding: 1px 5px; border-radius: 8px; }
+    .info h3 { font-size: 0.95rem; margin: 0 0 4px; }
+    .info p { font-size: 0.72rem; color: #cbd5e1; margin: 2px 0; }
+    .qr-wrap { text-align: center; margin-left: auto; }
+    .footer { margin-top: 10px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; font-size: 0.6rem; color: #94a3b8; }
+    @media print { body { background: none; } }
+  </style></head><body>
+  <div class="card">
+    <div class="header">
+      <img src="LAGUNA.jpg" alt="Logo" />
+      <div><h2>LAGUNA ATHLETIC</h2><span>CREDENCIAL OFICIAL · 2026</span></div>
+    </div>
+    <div class="body">
+      <div class="photo-wrap">
+        <img src="${p.photo || "LAGUNA.jpg"}" class="photo" />
+        <div class="dorsal">#${p.number}</div>
+      </div>
+      <div class="info">
+        <h3>${p.name}</h3>
+        <p><strong>Pos:</strong> ${p.position}</p>
+        <p><strong>Cat:</strong> ${p.group || "Plantel"}</p>
+        <p><strong>ID:</strong> LA-2026-${String(p.id).padStart(3, "0")}</p>
+      </div>
+      <div class="qr-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=LAGUNA-${p.id}" width="70" height="70" style="border-radius:4px; background:#fff; padding:2px;" />
+      </div>
+    </div>
+    <div class="footer"><span>TEMPORADA 2026</span><span>CLUB LAGUNA ATHLETIC</span></div>
+  </div>
+  </body></html>`;
+
+  const w = window.open("", "_blank");
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => w.print(), 400);
+  }
+}
+
+function printAllPlayerCredentials() {
+  const cardsHtml = squadData.map(p => `
+    <div style="width: 320px; background: #0b132b; border: 2px solid #f59e0b; border-radius: 10px; padding: 12px; color: #fff; page-break-inside: avoid; margin-bottom: 15px;">
+      <div style="display:flex; align-items:center; gap:8px; border-bottom:1px solid rgba(245,158,11,0.3); padding-bottom:6px; margin-bottom:8px;">
+        <img src="LAGUNA.jpg" style="width:30px; height:30px; border-radius:50%;" />
+        <div><strong style="color:#f59e0b; font-size:0.85rem;">LAGUNA ATHLETIC 2026</strong><div style="font-size:0.58rem; color:#94a3b8;">CREDENCIAL OFICIAL</div></div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <img src="${p.photo || "LAGUNA.jpg"}" style="width:65px; height:78px; border-radius:5px; object-fit:cover; border:1.5px solid #fff;" />
+        <div style="font-size:0.75rem; flex:1;">
+          <div style="font-weight:bold; font-size:0.88rem; margin-bottom:2px;">#${p.number} ${p.name}</div>
+          <div style="color:#cbd5e1;">${p.position}</div>
+          <div style="color:#f59e0b; font-weight:bold;">${p.group || "Sin Cat."}</div>
+        </div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=65x65&data=LAGUNA-${p.id}" width="65" height="65" style="background:#fff; border-radius:4px; padding:2px;" />
+      </div>
+    </div>
+  `).join("");
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Credenciales del Plantel - Laguna Athletic</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+    @media print { .no-print { display: none; } }
+  </style></head><body>
+  <div class="no-print" style="margin-bottom: 20px; text-align: center;">
+    <h2>🏆 Laguna Athletic — Carnets de Identificación</h2>
+    <p>Imprime en hoja gruesa o papel fotográfico para recortar y enmicar.</p>
+    <button onclick="window.print()" style="padding: 8px 18px; font-size: 1rem; cursor: pointer; background: #2563eb; color: #fff; border: none; border-radius: 6px;">Imprimir Todo</button>
+  </div>
+  <div class="grid">${cardsHtml}</div>
+  </body></html>`;
+
+  const w = window.open("", "_blank");
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    setTimeout(() => w.print(), 500);
+  }
+}
+
+// ==========================================================================
+// MÓDULO: CENTRO DE RESPALDO Y SEGURIDAD DE DATOS (BACKUP / RESTORE)
+// ==========================================================================
+function exportDatabaseBackup() {
+  const backupData = {
+    version: "2.6-enterprise",
+    timestamp: new Date().toISOString(),
+    clubName: "Laguna Athletic",
+    squadData,
+    calendarEvents,
+    paymentsData,
+    justificationsData,
+    injuredData,
+    slotAssignments
+  };
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+  const downloadAnchor = document.createElement("a");
+  const dateStr = new Date().toISOString().split("T")[0];
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `Laguna_Athletic_Backup_${dateStr}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+
+  showToast("Copia de seguridad descargada exitosamente.", "success");
+}
+
+function importDatabaseBackup(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const data = JSON.parse(event.target.result);
+      if (!data.squadData || !Array.isArray(data.squadData)) {
+        throw new Error("Formato de backup no válido.");
+      }
+
+      showConfirmModal(
+        "¿Restaurar Base de Datos?",
+        `Se reemplazarán los datos actuales con el respaldo del archivo (${data.squadData.length} jugadores encontrados).`,
+        "Restaurar",
+        "btn-danger-style",
+        () => {
+          squadData = data.squadData || [];
+          calendarEvents = data.calendarEvents || [];
+          paymentsData = data.paymentsData || [];
+          justificationsData = data.justificationsData || [];
+          injuredData = data.injuredData || [];
+          if (data.slotAssignments) slotAssignments = data.slotAssignments;
+
+          saveData();
+          saveSlotAssignments();
+          postLoginInit();
+          showToast("¡Base de datos restaurada correctamente!", "success");
+        }
+      );
+    } catch (err) {
+      showToast("Error al leer el archivo de respaldo: " + err.message, "error");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+}
+
+function confirmResetFactoryData() {
+  showConfirmModal(
+    "¿Restablecer Datos de Fábrica?",
+    "Esta acción borrará todas las modificaciones locales y cargará la plantilla y datos de demostración originales. ¿Continuar?",
+    "Reiniciar de Fábrica",
+    "btn-danger-style",
+    () => {
+      localStorage.clear();
+      sessionStorage.clear();
+      showToast("Datos restablecidos. Recargando plataforma...", "info");
+      setTimeout(() => { location.reload(); }, 1000);
+    }
+  );
+}
+
+// ==========================================================================
+// REGISTRO DE SERVICE WORKER (PWA PARA CELULARES)
+// ==========================================================================
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("Laguna Athletic PWA Service Worker activo."))
+      .catch((err) => console.log("PWA Service Worker:", err));
+  });
+}
