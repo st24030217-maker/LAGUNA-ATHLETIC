@@ -4093,51 +4093,167 @@ function executeConfirmModal() {
 }
 
 // ==========================================================================
-// EXPORTACIÓN E IMPRESIÓN OFICIAL
+// MÓDULO: EXPORTACIÓN Y REPORTE OFICIAL DE ASISTENCIA (CON LOGO Y NAVEGACIÓN)
 // ==========================================================================
-function exportAttendancePrint() {
+function openAttendanceReportModal() {
+  renderAttendanceReportTable();
+  document.getElementById("attendanceReportModal")?.classList.remove("hidden");
+}
+
+function closeAttendanceReportModal() {
+  document.getElementById("attendanceReportModal")?.classList.add("hidden");
+}
+
+function renderAttendanceReportTable() {
+  const tbody = document.getElementById("attReportTableBody");
+  const statsEl = document.getElementById("attReportStatsSummary");
+  const dateSub = document.getElementById("attReportDateSub");
+  const searchVal = (document.getElementById("attReportSearchInput")?.value || "").toLowerCase().trim();
+  const groupFilter = document.getElementById("attReportGroupFilter")?.value || "Todos";
+
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  if (dateSub) dateSub.textContent = `${dateStr} · Sesión Laguna Athletic 2026`;
+
+  const filtered = squadData.filter((p) => {
+    ensureRegFields(p);
+    const matchGroup = groupFilter === "Todos" || p.group === groupFilter;
+    const matchSearch = !searchVal || 
+      p.name.toLowerCase().includes(searchVal) || 
+      String(p.number).includes(searchVal) || 
+      p.position.toLowerCase().includes(searchVal);
+    return matchGroup && matchSearch;
+  });
+
+  const presentCount = filtered.filter(p => p.status === "Presente").length;
+  const justCount = filtered.filter(p => p.status === "Justificado").length;
+  const absentCount = filtered.filter(p => p.status !== "Presente" && p.status !== "Justificado").length;
+  const pct = filtered.length > 0 ? Math.round((presentCount / filtered.length) * 100) : 0;
+
+  if (statsEl) {
+    statsEl.innerHTML = `
+      <strong>${presentCount}</strong> Presentes · 
+      <strong>${justCount}</strong> Justificados · 
+      <strong>${absentCount}</strong> Ausentes · 
+      <span style="color:var(--accent-neon); font-weight:bold;">${pct}% Asistencia</span> 
+      <span class="text-muted">(${filtered.length} jugadores listados)</span>
+    `;
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted" style="padding:2rem;">Sin registros con ese filtro.</td></tr>`;
+    return;
+  }
+
+  filtered
+    .sort((a, b) => (a.number || 0) - (b.number || 0))
+    .forEach((p) => {
+      const statusColor = p.status === "Presente" ? "var(--accent-neon)" : p.status === "Justificado" ? "var(--accent-gold)" : "var(--accent-danger)";
+      tbody.innerHTML += `
+        <tr>
+          <td class="mono-text text-primary" style="font-weight:700;">#${p.number}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--border-glass);" />
+              <strong>${p.name}</strong>
+            </div>
+          </td>
+          <td class="text-muted">${p.position}</td>
+          <td><span class="badge badge-outline" style="font-size:0.75rem;">${p.group || "Sin Cat."}</span></td>
+          <td><span style="color:${statusColor}; font-weight:bold;"><i class="fa-solid fa-circle" style="font-size:0.55rem; margin-right:4px;"></i>${p.status}</span></td>
+          <td class="mono-text text-muted">${p.checkinTime || "—"}</td>
+        </tr>
+      `;
+    });
+}
+
+function printAttendanceReportArea() {
   const today = new Date().toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   const presentCount = squadData.filter(p => p.status === "Presente").length;
+  const justCount = squadData.filter(p => p.status === "Justificado").length;
+  const absentCount = squadData.filter(p => p.status !== "Presente" && p.status !== "Justificado").length;
+  const pct = Math.round((presentCount / squadData.length) * 100);
 
   const rows = squadData.map(p => `
     <tr>
-      <td><strong>#${p.number}</strong></td>
-      <td>${p.name}</td>
+      <td style="font-family: monospace; font-weight: bold; text-align: center;">#${p.number}</td>
+      <td style="font-weight: 600;">${p.name}</td>
       <td>${p.position || "Jugador"}</td>
       <td>${p.group || "Sin Cat."}</td>
-      <td style="color:${p.status === "Presente" ? "#10b981" : p.status === "Justificado" ? "#f59e0b" : "#ef4444"}; font-weight:bold;">${p.status}</td>
-      <td>${p.checkinTime || "—"}</td>
+      <td style="color:${p.status === "Presente" ? "#16a34a" : p.status === "Justificado" ? "#d97706" : "#dc2626"}; font-weight:bold;">${p.status}</td>
+      <td style="font-family: monospace; text-align: center;">${p.checkinTime || "—"}</td>
     </tr>
   `).join("");
 
-  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Control de Asistencia - Laguna Athletic</title>
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Oficial de Asistencia - Laguna Athletic</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 25px; color: #1e293b; }
-    h1 { font-size: 1.5rem; margin-bottom: 4px; color: #0f172a; }
-    p { color: #64748b; font-size: 0.9rem; margin-top: 0; margin-bottom: 1.25rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; font-size: 0.85rem; }
-    th { background: #f1f5f9; font-weight: 700; color: #334155; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 30px; color: #0f172a; margin: 0; }
+    .header-box { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 15px; }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .club-logo { width: 65px; height: 65px; border-radius: 50%; border: 2px solid #f59e0b; object-fit: cover; }
+    .club-title h1 { margin: 0; font-size: 1.4rem; color: #1e3a8a; letter-spacing: 0.5px; }
+    .club-title p { margin: 2px 0 0; color: #64748b; font-size: 0.85rem; font-weight: 500; }
+    .header-right { text-align: right; }
+    .report-badge { background: #1e3a8a; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-bottom: 4px; }
+    .date-label { font-size: 0.82rem; color: #475569; margin: 0; }
+    
+    .stats-kpi-bar { display: flex; gap: 12px; margin-bottom: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 15px; }
+    .kpi-item { flex: 1; text-align: center; border-right: 1px solid #e2e8f0; }
+    .kpi-item:last-child { border-right: none; }
+    .kpi-lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; }
+    .kpi-val { font-size: 1.15rem; font-weight: 800; color: #1e293b; }
+    .kpi-val.green { color: #16a34a; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; font-size: 0.82rem; }
+    th { background: #f1f5f9; font-weight: 700; color: #334155; text-transform: uppercase; font-size: 0.75rem; }
     tr:nth-child(even) { background: #f8fafc; }
-    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-    .footer { margin-top: 2.5rem; font-size: 0.75rem; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
-  </style>
-  </head><body>
-  <h1>🏆 Laguna Athletic Club — Registro de Asistencia</h1>
-  <p>${today} · <strong>${presentCount} de ${squadData.length}</strong> jugadores presentes (${Math.round((presentCount/squadData.length)*100)}%)</p>
+    .footer { margin-top: 2rem; font-size: 0.72rem; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+    @media print { body { padding: 10px; } }
+  </style></head><body>
+  <div class="header-box">
+    <div class="header-left">
+      <img src="LAGUNA.jpg" alt="Logo Laguna Athletic" class="club-logo" />
+      <div class="club-title">
+        <h1>LAGUNA ATHLETIC CLUB</h1>
+        <p>CONTROL INSTITUCIONAL DE ASISTENCIA DIARIA · TEMPORADA 2026</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="report-badge">DOCUMENTO OFICIAL</div>
+      <p class="date-label">${today}</p>
+    </div>
+  </div>
+
+  <div class="stats-kpi-bar">
+    <div class="kpi-item"><div class="kpi-lbl">Total Plantel</div><div class="kpi-val">${squadData.length}</div></div>
+    <div class="kpi-item"><div class="kpi-lbl">Presentes</div><div class="kpi-val green">${presentCount}</div></div>
+    <div class="kpi-item"><div class="kpi-lbl">Justificados</div><div class="kpi-val">${justCount}</div></div>
+    <div class="kpi-item"><div class="kpi-lbl">Ausentes</div><div class="kpi-val">${absentCount}</div></div>
+    <div class="kpi-item"><div class="kpi-lbl">% Asistencia</div><div class="kpi-val green">${pct}%</div></div>
+  </div>
+
   <table>
-    <thead><tr><th>Dorsal</th><th>Nombre del Jugador</th><th>Posición</th><th>Categoría</th><th>Estado</th><th>Hora Check-in</th></tr></thead>
+    <thead><tr><th style="text-align:center;">#</th><th>Jugador</th><th>Posición</th><th>Categoría</th><th>Estado</th><th style="text-align:center;">Check-in</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>
-  <div class="footer">Laguna Athletic 2026 · Control Oficial Interno · Generado el ${new Date().toLocaleString("es-ES")}</div>
+
+  <div class="footer">Laguna Athletic Club 2026 · Sistema de Gestión Deportiva · Generado el ${new Date().toLocaleString("es-ES")}</div>
   </body></html>`;
 
   const w = window.open("", "_blank");
   if (w) {
     w.document.write(html);
     w.document.close();
-    setTimeout(() => w.print(), 350);
+    setTimeout(() => w.print(), 400);
   }
+}
+
+function exportAttendancePrint() {
+  openAttendanceReportModal();
 }
 
 function exportPaymentsPrint() {
@@ -4153,7 +4269,7 @@ function exportPaymentsPrint() {
         <td>${p.concept}</td>
         <td>${p.method}</td>
         <td style="font-weight:bold;">$${(p.finalAmount || 0).toLocaleString("es-MX", { minimumFractionDigits: 2 })}</td>
-        <td style="color:${p.status === "Pagado" ? "#10b981" : "#f59e0b"}; font-weight:bold;">${p.status}</td>
+        <td style="color:${p.status === "Pagado" ? "#16a34a" : "#d97706"}; font-weight:bold;">${p.status}</td>
       </tr>
     `;
   }).join("");
@@ -4161,8 +4277,11 @@ function exportPaymentsPrint() {
   const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Financiero - Laguna Athletic</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 25px; color: #1e293b; }
-    h1 { font-size: 1.5rem; margin-bottom: 4px; color: #0f172a; }
-    p { color: #64748b; font-size: 0.9rem; margin-top: 0; margin-bottom: 1.25rem; }
+    .header-box { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 15px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .club-logo { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #f59e0b; }
+    h1 { font-size: 1.35rem; margin: 0; color: #1e3a8a; }
+    p { color: #64748b; font-size: 0.85rem; margin: 2px 0 0; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
     th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; font-size: 0.85rem; }
     th { background: #f1f5f9; font-weight: 700; color: #334155; }
@@ -4170,8 +4289,17 @@ function exportPaymentsPrint() {
     .total-row td { font-weight:bold; background: #ecfdf5; border-top: 2px solid #10b981; }
     .footer { margin-top: 2.5rem; font-size: 0.75rem; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }
   </style></head><body>
-  <h1>💰 Laguna Athletic — Reporte General de Cobranza</h1>
-  <p>${today} · ${paymentsData.length} movimientos registrados · Total Recaudado: <strong>$${total.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN</strong></p>
+  <div class="header-box">
+    <div class="header-left">
+      <img src="LAGUNA.jpg" alt="Logo" class="club-logo" />
+      <div>
+        <h1>LAGUNA ATHLETIC CLUB</h1>
+        <p>REPORTE GENERAL DE COBRANZA Y ESTADO FINANCIERO · 2026</p>
+      </div>
+    </div>
+    <div style="text-align:right;"><span style="background:#1e3a8a; color:#fff; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">FINANZAS</span><p style="font-size:0.8rem; color:#64748b; margin-top:3px;">${today}</p></div>
+  </div>
+  <p>${paymentsData.length} movimientos registrados · Total Recaudado: <strong>$${total.toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN</strong></p>
   <table>
     <thead><tr><th>Folio</th><th>Fecha</th><th>Alumno / Familia</th><th>Concepto</th><th>Método</th><th>Monto Neto</th><th>Estado</th></tr></thead>
     <tbody>${rows}
@@ -4185,7 +4313,7 @@ function exportPaymentsPrint() {
   if (w) {
     w.document.write(html);
     w.document.close();
-    setTimeout(() => w.print(), 350);
+    setTimeout(() => w.print(), 400);
   }
 }
 

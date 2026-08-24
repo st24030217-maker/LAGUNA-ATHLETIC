@@ -508,8 +508,8 @@
               <div class="glass-card fade-in-up" style="animation-delay: 0.2s;">
                 <div class="flex-between align-center margin-bottom">
                   <h3 class="card-title" style="margin-bottom:0;">Registro en Vivo</h3>
-                  <button class="btn btn-ghost btn-sm role-dt-only" onclick="exportAttendancePrint()" title="Exportar lista de asistencia a PDF/Impresión">
-                    <i class="fa-solid fa-print"></i> Exportar
+                  <button class="btn btn-ghost btn-sm role-dt-only" onclick="openAttendanceReportModal()" title="Abrir y Exportar Reporte Oficial de Asistencia con Logo">
+                    <i class="fa-solid fa-file-export text-gold"></i> Exportar Reporte
                   </button>
                 </div>
                 <div class="table-responsive">
@@ -2218,6 +2218,80 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal Reporte Oficial de Asistencia (Con Logo e Interacción Entrar/Salir) -->
+    <div id="attendanceReportModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 900px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="profile-header flex-between mb-2">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <img src="LAGUNA.jpg" alt="Laguna Athletic" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-gold);" />
+            <div>
+              <h3 class="card-title" style="margin-bottom: 0.1rem; font-size: 1.15rem;">
+                <i class="fa-solid fa-file-lines text-primary"></i> Reporte Oficial de Asistencia
+              </h3>
+              <p class="subtitle-text text-muted" style="margin: 0; font-size: 0.76rem;" id="attReportDateSub">Temporada 2026 · Laguna Athletic Club</p>
+            </div>
+          </div>
+          <button class="btn btn-ghost" style="padding: 0.5rem;" onclick="closeAttendanceReportModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Barra de herramientas del reporte -->
+        <div class="flex-between margin-top margin-bottom" style="flex-wrap: wrap; gap: 0.6rem; align-items: center;">
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex: 1;">
+            <div class="reg-search-box" style="flex: 1; min-width: 180px;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="attReportSearchInput" class="form-control" placeholder="Buscar jugador..." oninput="renderAttendanceReportTable()" style="padding: 0.4rem 0.8rem; font-size: 0.82rem;" />
+            </div>
+            <select id="attReportGroupFilter" class="form-control" onchange="renderAttendanceReportTable()" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.82rem;">
+              <option value="Todos">Todas las Categorías</option>
+              <option value="Sub-8">Sub-8</option>
+              <option value="Sub-10">Sub-10</option>
+              <option value="Sub-12">Sub-12</option>
+              <option value="Sub-14">Sub-14</option>
+              <option value="Sub-16">Sub-16</option>
+              <option value="Sub-18">Sub-18</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-primary btn-sm" onclick="printAttendanceReportArea()">
+              <i class="fa-solid fa-print"></i> IMPRIMIR / PDF
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="closeAttendanceReportModal()">
+              <i class="fa-solid fa-arrow-left"></i> Volver
+            </button>
+          </div>
+        </div>
+
+        <!-- Área Imprimible / Vista Previa del Reporte con Logo -->
+        <div id="attReportPrintArea" style="flex: 1; overflow-y: auto; max-height: 55vh; padding-right: 0.3rem;">
+          <div class="table-responsive">
+            <table class="modern-table" style="font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th>Dorsal</th>
+                  <th>Jugador</th>
+                  <th>Posición</th>
+                  <th>Categoría</th>
+                  <th>Estado</th>
+                  <th>Hora Check-in</th>
+                </tr>
+              </thead>
+              <tbody id="attReportTableBody">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Resumen pie de reporte -->
+        <div class="flex-between border-top pt-3 mt-3 text-muted" style="font-size: 0.78rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div id="attReportStatsSummary">0 Presentes · 0% Asistencia</div>
+          <button class="btn btn-ghost btn-sm" onclick="closeAttendanceReportModal()">Cerrar Archivo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmación Personalizado -->
     <div id="customConfirmModal" class="modal-overlay hidden">
       <div class="glass-card modal-content" style="max-width: 460px;">
         <div class="text-center" style="padding: 0.5rem 0 1rem;">
