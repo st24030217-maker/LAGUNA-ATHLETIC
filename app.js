@@ -381,6 +381,7 @@ function postLoginInit() {
   initChart();
   updateNoticeTemplate();
   initDragAndDrop();
+  updatePitchDisplay();
 
   // Activar recordatorios automáticos
   checkAutomatedPaymentReminders();
@@ -649,9 +650,11 @@ function renderAttendanceTable() {
   applyRolePermissions();
 }
 
-// --- MODULE: ALINEACION & PERFILES ---
+// --- MODULE: ALINEACION, PIZARRA TÁCTICA & PERFILES ---
 let currentSlotForModal = null;
-const slotAssignments = {
+let currentSquadFilter = "todos"; // 'todos' | 'titulares' | 'suplentes' | 'lesionados'
+
+let slotAssignments = {
   GK: 1,
   LB: 3,
   CB1: 4,
@@ -665,76 +668,254 @@ const slotAssignments = {
   ED: 7,
 };
 
+// Cargar asignaciones guardadas
+try {
+  const savedSlots = localStorage.getItem("laguna_slot_assignments");
+  if (savedSlots) slotAssignments = JSON.parse(savedSlots);
+} catch (e) {}
+
+function saveSlotAssignments() {
+  try {
+    localStorage.setItem("laguna_slot_assignments", JSON.stringify(slotAssignments));
+  } catch (e) {}
+}
+
+function updatePitchDisplay() {
+  const pitch = document.getElementById("tacticalPitch");
+  if (!pitch) return;
+
+  let startersCount = 0;
+
+  Object.keys(slotAssignments).forEach((slotKey) => {
+    const marker = pitch.querySelector(`[data-slot="${slotKey}"]`);
+    if (!marker) return;
+
+    const assignedVal = slotAssignments[slotKey];
+    // assignedVal puede ser el ID del jugador o su número de dorsal
+    const player = squadData.find((p) => p.id === assignedVal || p.number === assignedVal);
+    const nameSpan = document.getElementById(`slot-${slotKey}`);
+    const shirt = marker.querySelector(".marker-shirt");
+
+    if (player && !player.injured) {
+      startersCount++;
+      marker.classList.add("is-assigned");
+      if (shirt) {
+        shirt.textContent = player.number;
+        shirt.dataset.customNumber = player.number;
+      }
+      if (nameSpan) {
+        // Nombre corto: Primer nombre + inicial o apellido
+        const parts = player.name.split(" ");
+        const shortName = parts.length > 1 ? `${parts[0][0]}. ${parts[1]}` : player.name;
+        nameSpan.textContent = shortName;
+        nameSpan.title = `#${player.number} ${player.name} (${player.position})`;
+      }
+    } else {
+      marker.classList.remove("is-assigned");
+      if (shirt) delete shirt.dataset.customNumber;
+      if (nameSpan) {
+        const formation = document.getElementById("formationSelect")?.value || "4-3-3";
+        const formConfig = FORMATIONS[formation]?.find((f) => f.slot === slotKey);
+        nameSpan.textContent = formConfig ? formConfig.label : slotKey;
+      }
+    }
+  });
+
+  const badgeEl = document.getElementById("tacticalStartersBadge");
+  if (badgeEl) {
+    badgeEl.textContent = `${startersCount} Titulares Listos`;
+    badgeEl.className = startersCount === 11 ? "badge badge-neon" : "badge badge-warning";
+  }
+}
+
 function changePitchSlot(slotPos) {
   if (currentRole !== "dt") return;
   currentSlotForModal = slotPos;
   const select = document.getElementById("modalPlayerSelect");
+  if (!select) return;
   select.innerHTML = "";
 
   const groupFilter = document.getElementById("tacticalGroupSelect")
     ? document.getElementById("tacticalGroupSelect").value
     : "Todos";
 
-  squadData.forEach((p) => {
-    if (p.injured) return; // Injured players cannot play
-    if (groupFilter !== "Todos" && p.group !== groupFilter) return; // Filtro de categoría
+  const available = squadData.filter((p) => {
+    if (p.injured) return false;
+    if (groupFilter !== "Todos" && p.group !== groupFilter) return false;
+    return true;
+  });
 
+  if (available.length === 0) {
+    showToast("No hay jugadores disponibles en esta categoría.", "warning");
+    return;
+  }
+
+  available.forEach((p) => {
     const opt = document.createElement("option");
     opt.value = p.id;
-    opt.textContent = `#${p.number} ${p.name} (${p.position})`;
+    const isCurrent = slotAssignments[slotPos] === p.id || slotAssignments[slotPos] === p.number;
+    opt.textContent = `#${p.number} ${p.name} — ${p.position}${isCurrent ? " (Actual)" : ""}`;
+    if (isCurrent) opt.selected = true;
     select.appendChild(opt);
   });
 
-  document.getElementById("modalPositionTitle").innerText =
-    `Asignar Posición [${slotPos}]`;
-  document.getElementById("playerSelectModal").classList.remove("hidden");
+  const modalTitle = document.getElementById("modalPositionTitle");
+  if (modalTitle) modalTitle.innerText = `Asignar Titular en Posición [${slotPos}]`;
+  document.getElementById("playerSelectModal")?.classList.remove("hidden");
 }
 
 function closePlayerModal() {
-  document.getElementById("playerSelectModal").classList.add("hidden");
+  document.getElementById("playerSelectModal")?.classList.add("hidden");
   currentSlotForModal = null;
 }
 
 function confirmPlayerSelection() {
-  const playerId = parseInt(document.getElementById("modalPlayerSelect").value);
+  const select = document.getElementById("modalPlayerSelect");
+  if (!select) return;
+  const playerId = parseInt(select.value);
   const player = squadData.find((p) => p.id === playerId);
 
   if (player && currentSlotForModal) {
     if (player.injured) {
-      showToast("Este jugador está lesionado.", "error");
+      showToast("Este jugador tiene baja médica activa.", "error");
       return;
     }
 
-    document.getElementById(`slot-${currentSlotForModal}`).innerText =
-      currentSlotForModal;
-
-    // Update marker shirt visually
-    const marker = document.getElementById(`slot-${currentSlotForModal}`)
-      .previousElementSibling.previousElementSibling;
-    if (marker && marker.classList.contains("marker-shirt")) {
-      marker.innerText = player.number;
-    }
-
-    const prevId = slotAssignments[currentSlotForModal];
+    const prevAssignedId = slotAssignments[currentSlotForModal];
     slotAssignments[currentSlotForModal] = player.id;
 
-    if (prevId && prevId !== player.id) {
-      const stillHasSlot = Object.values(slotAssignments).includes(prevId);
-      const prev = squadData.find((p) => p.id === prevId);
-      if (prev && !stillHasSlot) prev.starter = false;
+    // Si el jugador anterior ya no está en ningún slot, pasa a suplente
+    if (prevAssignedId && prevAssignedId !== player.id) {
+      const stillAssigned = Object.values(slotAssignments).some((id) => id === prevAssignedId);
+      const prevPlayer = squadData.find((p) => p.id === prevAssignedId || p.number === prevAssignedId);
+      if (prevPlayer && !stillAssigned) prevPlayer.starter = false;
     }
+
     player.starter = true;
 
     saveData();
+    saveSlotAssignments();
+    updatePitchDisplay();
     renderSquadCallupList();
-    showToast(`${player.name} de titular.`, "success");
+    showToast(`${player.name} (#${player.number}) asignado en ${currentSlotForModal}.`, "success");
   }
   closePlayerModal();
 }
 
+function autoLineup() {
+  const groupFilter = document.getElementById("tacticalGroupSelect")?.value || "Todos";
+  const available = squadData.filter((p) => {
+    if (p.injured) return false;
+    if (groupFilter !== "Todos" && p.group !== groupFilter) return false;
+    return true;
+  });
+
+  if (available.length < 11) {
+    showToast(`Plantilla insuficiente: se requieren al menos 11 disponibles (hay ${available.length}).`, "warning");
+  }
+
+  // Desmarcar a todos como titulares
+  squadData.forEach((p) => { p.starter = false; });
+
+  const assignedSet = new Set();
+  const slots = Object.keys(slotAssignments);
+
+  // 1. Asignar portero (preferencia: 'Portero' o 'POR')
+  const gk = available.find((p) => p.position.toLowerCase().includes("porter") || p.position === "POR") || available[0];
+  if (gk) {
+    slotAssignments["GK"] = gk.id;
+    gk.starter = true;
+    assignedSet.add(gk.id);
+  }
+
+  // 2. Asignar resto de slots con los mejores disponibles
+  const remaining = available.filter((p) => !assignedSet.has(p.id));
+  let rIdx = 0;
+
+  slots.forEach((slot) => {
+    if (slot === "GK") return;
+    if (rIdx < remaining.length) {
+      const p = remaining[rIdx];
+      slotAssignments[slot] = p.id;
+      p.starter = true;
+      assignedSet.add(p.id);
+      rIdx++;
+    }
+  });
+
+  saveData();
+  saveSlotAssignments();
+  updatePitchDisplay();
+  renderSquadCallupList();
+  showToast("11 Titular autocompletado con éxito.", "success");
+}
+
+function resetPitchPositions() {
+  const formation = document.getElementById("formationSelect")?.value || "4-3-3";
+  const config = FORMATIONS[formation];
+  const pitch = document.getElementById("tacticalPitch");
+  if (!pitch || !config) return;
+
+  config.forEach((pos) => {
+    const marker = pitch.querySelector(`[data-slot="${pos.slot}"]`);
+    if (!marker) return;
+    marker.style.top = pos.top;
+    marker.style.left = pos.left;
+  });
+
+  savedPositions = {};
+  try { localStorage.removeItem("laguna_pitch_positions"); } catch (e) {}
+
+  updatePitchDisplay();
+  showToast("Posiciones reglamentarias restablecidas.", "info");
+}
+
+function setSquadCallupFilter(filter, btn) {
+  currentSquadFilter = filter;
+  document.querySelectorAll(".tactical-filter-btn").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderSquadCallupList();
+}
+
+function toggleStarterDirect(playerId, e) {
+  if (e) e.stopPropagation();
+  if (currentRole !== "dt") return;
+
+  const player = squadData.find((p) => p.id === playerId);
+  if (!player) return;
+
+  if (player.injured) {
+    showToast("No se puede alinear a un jugador en baja médica.", "error");
+    return;
+  }
+
+  player.starter = !player.starter;
+
+  if (!player.starter) {
+    // Quitar de slotAssignments si estaba
+    Object.keys(slotAssignments).forEach((slot) => {
+      if (slotAssignments[slot] === player.id || slotAssignments[slot] === player.number) {
+        delete slotAssignments[slot];
+      }
+    });
+  } else {
+    // Si se activa y hay algún slot vacío, asignarlo
+    const slots = Object.keys(FORMATIONS[document.getElementById("formationSelect")?.value || "4-3-3"] || {});
+    const emptySlot = slots.find((s) => !slotAssignments[s]);
+    if (emptySlot) slotAssignments[emptySlot] = player.id;
+  }
+
+  saveData();
+  saveSlotAssignments();
+  updatePitchDisplay();
+  renderSquadCallupList();
+  showToast(`${player.name}: ${player.starter ? "Alineado como Titular" : "En Banquillo"}`, "info");
+}
+
 function saveLineup() {
   saveData();
-  showToast("Convocatoria publicada al plantel.", "success");
+  saveSlotAssignments();
+  showToast("¡Alineación oficial y convocatoria publicadas exitosamente!", "success");
 }
 
 function renderSquadCallupList() {
@@ -742,32 +923,75 @@ function renderSquadCallupList() {
   if (!container) return;
   container.innerHTML = "";
 
-  const groupFilter = document.getElementById("tacticalGroupSelect")
-    ? document.getElementById("tacticalGroupSelect").value
-    : "Todos";
+  const groupFilter = document.getElementById("tacticalGroupSelect")?.value || "Todos";
 
-  squadData.forEach((p) => {
-    if (groupFilter !== "Todos" && p.group !== groupFilter) return;
-
-    const item = document.createElement("div");
-    item.className = "squad-player-item";
-    item.onclick = () => openProfileModal(p.id);
-
-    let statusHTML = p.starter
-      ? '<span class="badge badge-neon">TITULAR</span>'
-      : '<span class="badge" style="border-color:var(--border-strong);">SUPLENTE</span>';
-    if (p.injured)
-      statusHTML = '<span class="badge badge-danger">LESIONADO</span>';
-
-    item.innerHTML = `
-      <div>
-        <strong style="color: ${p.injured ? "var(--accent-danger)" : "var(--text-main)"}">#${p.number} ${p.name}</strong>
-        <br><small class="text-muted">${p.position}</small>
-      </div>
-      <div>${statusHTML}</div>
-    `;
-    container.appendChild(item);
+  let filtered = squadData.filter((p) => {
+    if (groupFilter !== "Todos" && p.group !== groupFilter) return false;
+    if (currentSquadFilter === "titulares") return p.starter && !p.injured;
+    if (currentSquadFilter === "suplentes") return !p.starter && !p.injured;
+    if (currentSquadFilter === "lesionados") return p.injured;
+    return true;
   });
+
+  const availableCount = squadData.filter((p) => !p.injured && (groupFilter === "Todos" || p.group === groupFilter)).length;
+  const rosterBadge = document.getElementById("rosterCountBadge");
+  if (rosterBadge) rosterBadge.textContent = `${availableCount} Disponibles`;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="text-center text-muted" style="padding: 2rem 1rem;">
+        <i class="fa-solid fa-users-slash" style="font-size: 1.8rem; opacity: 0.5; margin-bottom: 0.5rem; display: block;"></i>
+        <span style="font-size: 0.85rem;">Sin jugadores con este criterio.</span>
+      </div>
+    `;
+    return;
+  }
+
+  // Ordenar: Titulares primero, luego por dorsal
+  filtered
+    .sort((a, b) => {
+      if (a.starter !== b.starter) return a.starter ? -1 : 1;
+      return (a.number || 0) - (b.number || 0);
+    })
+    .forEach((p) => {
+      const item = document.createElement("div");
+      item.className = `squad-player-item ${p.starter ? "is-starter" : ""}`;
+      item.onclick = () => openProfileModal(p.id);
+
+      let statusBadge = "";
+      if (p.injured) {
+        statusBadge = `<span class="badge badge-danger" style="font-size:0.68rem;"><i class="fa-solid fa-briefcase-medical"></i> BAJA</span>`;
+      } else if (p.starter) {
+        statusBadge = `
+          <button class="badge badge-neon" onclick="toggleStarterDirect(${p.id}, event)" title="Clic para pasar a banquillo" style="cursor:pointer; border:none;">
+            <i class="fa-solid fa-shirt"></i> TITULAR
+          </button>
+        `;
+      } else {
+        statusBadge = `
+          <button class="badge" onclick="toggleStarterDirect(${p.id}, event)" title="Clic para alinear de titular" style="border-color:var(--border-strong); cursor:pointer; background:transparent; color:var(--text-muted);">
+            SUPLENTE
+          </button>
+        `;
+      }
+
+      item.innerHTML = `
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" style="width:34px; height:34px; border-radius:50%; object-fit:cover; border:1.5px solid ${p.starter ? "var(--accent-gold)" : "var(--border-glass)"};" />
+          <div>
+            <div style="font-weight:700; font-size:0.88rem; color:${p.injured ? "var(--accent-danger)" : "var(--text-main)"}">
+              #${p.number} ${p.name}
+            </div>
+            <small class="text-muted" style="font-size:0.75rem;">${p.position} · ${p.group || "Sin Cat."}</small>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          ${statusBadge}
+          <i class="fa-solid fa-chevron-right text-muted" style="font-size:0.7rem; opacity:0.6;"></i>
+        </div>
+      `;
+      container.appendChild(item);
+    });
 }
 
 let currentProfilePlayerId = null;
@@ -2352,6 +2576,7 @@ function changeFormation() {
     localStorage.removeItem("laguna_pitch_positions");
   } catch (e) {}
 
+  updatePitchDisplay();
   showToast(`Esquema táctico cambiado a ${formation}.`, "success");
 }
 

@@ -447,21 +447,27 @@
             </div>
           </div>
 
-          <!-- 02. PIZARRA TÁCTICA -->
+          <!-- 02. PIZARRA TÁCTICA PRO -->
           <div id="mod-alineacion" class="module-panel">
             <div class="grid-2-cols">
               <div id="tacticalBoardCard" class="glass-card fade-in-up">
-                <div style="display: flex; justify-content: space-between; align-items: center;" class="margin-bottom">
-                  <h3 class="card-title" style="margin-bottom: 0;">Pizarra Táctica (XI)</h3>
-                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <select id="formationSelect" class="form-control" onchange="changeFormation()" style="width: auto; padding: 0.2rem 0.5rem; font-size: 0.85rem;" title="Esquema Táctico">
+                <!-- Barra superior de herramientas tácticas -->
+                <div class="tactical-toolbar margin-bottom">
+                  <div class="tactical-title-wrap">
+                    <h3 class="card-title" style="margin-bottom: 0;">
+                      <i class="fa-solid fa-chalkboard-user text-primary"></i> Pizarra Táctica (XI Titular)
+                    </h3>
+                    <span class="badge badge-neon" id="tacticalStartersBadge">11 Titulares Listos</span>
+                  </div>
+                  <div class="tactical-controls-row">
+                    <select id="formationSelect" class="form-control tactical-select" onchange="changeFormation()" title="Esquema Táctico">
                       <option value="4-3-3">4-3-3 (Ofensivo)</option>
                       <option value="4-4-2">4-4-2 (Equilibrado)</option>
                       <option value="4-2-3-1">4-2-3-1 (Control)</option>
                       <option value="3-5-2">3-5-2 (Carrileros)</option>
                       <option value="5-3-2">5-3-2 (Defensivo)</option>
                     </select>
-                    <select id="tacticalGroupSelect" class="form-control" onchange="renderSquadCallupList()" style="width: auto; padding: 0.2rem 0.5rem; font-size: 0.85rem;">
+                    <select id="tacticalGroupSelect" class="form-control tactical-select" onchange="renderSquadCallupList()">
                       <option value="Todos">Todas las Categorías</option>
                       <option value="Sub-8">Sub-8</option>
                       <option value="Sub-10">Sub-10</option>
@@ -470,23 +476,67 @@
                       <option value="Sub-16">Sub-16</option>
                       <option value="Sub-18">Sub-18</option>
                     </select>
-                    <button id="btnFullscreenPitch" class="btn btn-outline" style="padding: 0.5rem 1rem;" title="Ver en pantalla completa">
+                    <button class="btn btn-outline btn-sm role-dt-only" onclick="autoLineup()" title="Auto-Completar 11 Titular inteligente">
+                      <i class="fa-solid fa-wand-magic-sparkles"></i> Auto XI
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="resetPitchPositions()" title="Reiniciar posiciones tácticas">
+                      <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button id="btnFullscreenPitch" class="btn btn-outline btn-sm" title="Pantalla Completa">
                       <i class="fa-solid fa-expand"></i>
                     </button>
                   </div>
                 </div>
-                <p class="subtitle-text margin-bottom">Haz clic en un jugador para cambiar la convocatoria.</p>
-                
+
+                <!-- Campo de Fútbol Profesional Horizontal -->
                 <div class="tactical-pitch" id="tacticalPitch">
-                  <div class="pitch-texture"></div>
+                  <!-- Franjas de césped profesional -->
+                  <div class="pitch-stripes"></div>
+                  <!-- Brillos de reflectores de estadio -->
+                  <div class="pitch-stadium-lights"></div>
+
+                  <!-- Líneas reglamentarias completas del campo -->
                   <div class="pitch-lines">
-                    <div class="center-line"></div>
-                    <div class="center-circle"></div>
-                    <div class="penalty-area left"></div>
-                    <div class="penalty-area right"></div>
+                    <!-- Banda exterior -->
+                    <div class="pitch-outer-border"></div>
+
+                    <!-- Línea de medio campo vertical -->
+                    <div class="pitch-halfway-line"></div>
+                    <!-- Círculo central con punto -->
+                    <div class="pitch-center-circle">
+                      <div class="pitch-center-spot"></div>
+                    </div>
+
+                    <!-- Lado Izquierdo (Portería y Área Local) -->
+                    <div class="pitch-box-left">
+                      <div class="pitch-goal-left"></div>
+                      <div class="pitch-six-yard-left"></div>
+                      <div class="pitch-penalty-spot-left"></div>
+                      <div class="pitch-penalty-arc-left"></div>
+                    </div>
+
+                    <!-- Lado Derecho (Portería y Área Visitante) -->
+                    <div class="pitch-box-right">
+                      <div class="pitch-goal-right"></div>
+                      <div class="pitch-six-yard-right"></div>
+                      <div class="pitch-penalty-spot-right"></div>
+                      <div class="pitch-penalty-arc-right"></div>
+                    </div>
+
+                    <!-- Tiros de esquina (4 arcos) -->
+                    <div class="pitch-corner-arc top-left"></div>
+                    <div class="pitch-corner-arc bottom-left"></div>
+                    <div class="pitch-corner-arc top-right"></div>
+                    <div class="pitch-corner-arc bottom-right"></div>
+
+                    <!-- Flecha indicadora de ataque -->
+                    <div class="pitch-attack-direction">
+                      <span>ATAQUE</span>
+                      <i class="fa-solid fa-arrow-right-long"></i>
+                    </div>
                   </div>
 
-                  <!-- 4-3-3 ORDENADO -->
+                  <!-- 11 MARCADORES DE JUGADORES TÁCTICOS -->
                   <!-- PORTERO -->
                   <div class="player-marker role-editable" data-slot="GK" style="top: 50%; left: 8%;">
                     <div class="marker-shirt gk-shirt">1</div>
@@ -547,17 +597,42 @@
                     <span class="marker-name" id="slot-ED">ED</span>
                   </div>
                 </div>
+
+                <div class="tactical-footer-tips">
+                  <span><i class="fa-solid fa-hand-pointer text-primary"></i> <strong>Clic</strong> en jugador para sustituir</span>
+                  <span><i class="fa-solid fa-arrows-up-down-left-right text-neon"></i> <strong>Arrastra</strong> para mover libremente en cancha</span>
+                </div>
               </div>
 
-              <div class="glass-card fade-in-up" style="animation-delay: 0.1s;">
-                <h3 class="card-title">Plantilla Oficial</h3>
-                <p class="subtitle-text text-muted mb-2" style="font-size: 0.8rem;">Haz clic en el nombre de un jugador para ver su perfil y estadísticas.</p>
-                <div class="roster-list" id="squadCallupList">
+              <!-- Tarjeta lateral de Plantilla y Convocatoria -->
+              <div class="glass-card fade-in-up" style="animation-delay: 0.1s; display: flex; flex-direction: column;">
+                <div class="flex-between align-center margin-bottom">
+                  <div>
+                    <h3 class="card-title" style="margin-bottom: 0.2rem;">
+                      <i class="fa-solid fa-users-rectangle text-primary"></i> Plantilla & Convocatoria
+                    </h3>
+                    <p class="subtitle-text text-muted" style="font-size: 0.78rem; margin: 0;">Gestiona el 11 titular y el banquillo oficial.</p>
+                  </div>
+                  <span class="badge badge-primary" id="rosterCountBadge">0 Disponibles</span>
+                </div>
+
+                <!-- Filtros rápidos de convocatoria -->
+                <div class="tactical-roster-filters margin-bottom">
+                  <button class="tactical-filter-btn active" data-squad-filter="todos" onclick="setSquadCallupFilter('todos', this)">Todos</button>
+                  <button class="tactical-filter-btn" data-squad-filter="titulares" onclick="setSquadCallupFilter('titulares', this)">Titulares (XI)</button>
+                  <button class="tactical-filter-btn" data-squad-filter="suplentes" onclick="setSquadCallupFilter('suplentes', this)">Banquillo</button>
+                  <button class="tactical-filter-btn" data-squad-filter="lesionados" onclick="setSquadCallupFilter('lesionados', this)">Bajas</button>
+                </div>
+
+                <div class="roster-list" id="squadCallupList" style="flex: 1;">
                   <!-- Dinámico -->
                 </div>
-                <button class="btn btn-primary btn-block margin-top role-dt-only" onclick="saveLineup()">
-                  <i class="fa-solid fa-cloud-arrow-up"></i> PUBLICAR ALINEACIÓN
-                </button>
+
+                <div class="tactical-action-buttons margin-top">
+                  <button class="btn btn-primary btn-block role-dt-only" onclick="saveLineup()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> PUBLICAR ALINEACIÓN OFICIAL
+                  </button>
+                </div>
               </div>
             </div>
           </div>
