@@ -29,6 +29,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
     <link rel="stylesheet" href="styles.css?v=7.0" />
   </head>
@@ -418,19 +419,48 @@
                   </button>
                 </div>
 
-                <!-- Visor Cámara en Vivo Real -->
+                <!-- Visor Cámara en Vivo Real Pro -->
                 <div id="qrCameraContainer" class="qr-camera-wrap">
-                  <div id="qrCameraReader" style="width: 100%; border-radius: var(--radius-sm); overflow: hidden; background: #000; min-height: 220px; display: flex; align-items: center; justify-content: center;">
-                    <div id="qrCameraPlaceholder" style="padding: 2rem 1rem; color: var(--text-muted);">
-                      <i class="fa-solid fa-camera-viewfinder" style="font-size: 2.5rem; color: var(--accent-primary); margin-bottom: 0.5rem; display: block;"></i>
-                      <p style="font-size: 0.85rem; margin-bottom: 0.8rem;">Cámara lista para escanear credenciales</p>
-                      <button class="btn btn-primary btn-sm" onclick="startCameraScanner()">
-                        <i class="fa-solid fa-play"></i> INICIAR CÁMARA
+                  <div class="qr-live-viewport" id="qrLiveViewport">
+                    <!-- Elemento de video nativo para fluidez máxima a 60fps -->
+                    <video id="qrLiveVideo" playsinline autoplay muted></video>
+                    <canvas id="qrScanCanvas" style="display: none;"></canvas>
+
+                    <!-- Guía de encuadre láser y esquinas -->
+                    <div id="qrScannerOverlay" class="qr-scanner-overlay hidden">
+                      <div class="qr-target-box">
+                        <div class="target-corner tl"></div>
+                        <div class="target-corner tr"></div>
+                        <div class="target-corner bl"></div>
+                        <div class="target-corner br"></div>
+                        <div class="qr-laser-line"></div>
+                      </div>
+                      <div class="qr-status-pill" id="qrStatusPill">
+                        <span class="pulse-dot"></span> Buscando credencial...
+                      </div>
+                    </div>
+
+                    <!-- Placeholder cuando la cámara está apagada -->
+                    <div id="qrCameraPlaceholder" class="qr-placeholder-state">
+                      <div class="cam-icon-ring">
+                        <i class="fa-solid fa-camera-viewfinder"></i>
+                      </div>
+                      <p style="font-size: 0.88rem; margin: 0.6rem 0; color: #fff; font-weight: 600;">Lector Óptico de Credenciales</p>
+                      <p class="text-muted" style="font-size: 0.76rem; margin-bottom: 1rem;">Escanea el código QR del carnet para check-in automático</p>
+                      <button class="btn btn-primary" onclick="startCameraScanner()">
+                        <i class="fa-solid fa-play"></i> ACTIVAR CÁMARA
                       </button>
                     </div>
                   </div>
-                  <div id="qrCameraActiveBar" class="flex-between align-center mt-2 hidden" style="background: rgba(0,0,0,0.3); padding: 0.4rem 0.8rem; border-radius: 6px;">
-                    <span class="badge badge-neon" style="font-size: 0.72rem;"><i class="fa-solid fa-video"></i> Escaneando</span>
+
+                  <!-- Barra de controles cuando la cámara está activa -->
+                  <div id="qrCameraActiveBar" class="flex-between align-center mt-2 hidden" style="background: rgba(15, 23, 42, 0.7); padding: 0.45rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="badge badge-neon" style="font-size: 0.72rem;"><i class="fa-solid fa-circle text-success pulse"></i> EN VIVO</span>
+                      <button class="btn btn-ghost btn-sm" onclick="flipCamera()" title="Cambiar cámara frontal / trasera" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+                        <i class="fa-solid fa-camera-rotate text-gold"></i> Voltear
+                      </button>
+                    </div>
                     <button class="btn btn-ghost btn-sm" onclick="stopCameraScanner()" style="color: var(--accent-danger); padding: 0.2rem 0.6rem; font-size: 0.75rem;">
                       <i class="fa-solid fa-stop"></i> Detener
                     </button>
@@ -2133,6 +2163,10 @@
           <button class="btn btn-primary" onclick="printCredential()">
             <i class="fa-solid fa-print"></i> IMPRIMIR / DESCARGAR CREDENCIAL
           </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal Archivo General de Credenciales del Plantel (Interactivo con Salida/Entrada) -->
     <div id="allCredentialsModal" class="modal-overlay hidden">
       <div class="glass-card modal-content" style="max-width: 900px; max-height: 90vh; display: flex; flex-direction: column;">

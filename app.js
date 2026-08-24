@@ -4190,10 +4190,21 @@ function exportPaymentsPrint() {
 }
 
 // ==========================================================================
-// MÓDULO: ESCÁNER QR REAL CON CÁMARA & AUDIO FEEDBACK
+// MÓDULO: ESCÁNER QR ULTRA FLUIDO (60 FPS + GPU ACCELERATED)
 // ==========================================================================
-let html5QrScanner = null;
-let isCameraScanning = false;
+let cameraStream = null;
+let cameraScanLoopActive = false;
+let currentFacingMode = "environment"; // 'environment' (trasera) o 'user' (frontal)
+let lastScannedCode = null;
+let lastScanTime = 0;
+let barcodeDetectorInstance = null;
+
+// Inicializar BarcodeDetector si está soportado nativamente por el navegador
+if ("BarcodeDetector" in window) {
+  try {
+    barcodeDetectorInstance = new BarcodeDetector({ formats: ["qr_code"] });
+  } catch (e) {}
+}
 
 function playSuccessBeep() {
   try {
@@ -4201,9 +4212,9 @@ function playSuccessBeep() {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(880, ctx.currentTime); // La (A5)
+    osc.frequency.setValueAtTime(880, ctx.currentTime); // Tono A5
     osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.12);
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -4232,56 +4243,140 @@ function toggleQRScannerMode(mode) {
   }
 }
 
-function startCameraScanner() {
-  if (typeof Html5Qrcode === "undefined") {
-    showToast("Librería de cámara cargando. Intenta de nuevo en 2 segundos.", "warning");
-    return;
-  }
+async function startCameraScanner() {
+  stopCameraScanner();
 
+  const video = document.getElementById("qrLiveVideo");
   const placeholder = document.getElementById("qrCameraPlaceholder");
+  const overlay = document.getElementById("qrScannerOverlay");
   const activeBar = document.getElementById("qrCameraActiveBar");
+  const statusPill = document.getElementById("qrStatusPill");
 
-  if (!html5QrScanner) {
-    html5QrScanner = new Html5Qrcode("qrCameraReader");
-  }
+  if (!video) return;
 
-  const qrCodeSuccessCallback = (decodedText) => {
-    handleScannedQRCode(decodedText);
+  if (statusPill) statusPill.innerHTML = `<span class="pulse-dot"></span> Conectando cámara...`;
+
+  const constraints = {
+    audio: false,
+    video: {
+      facingMode: { ideal: currentFacingMode },
+      width: { ideal: 1280, min: 640 },
+      height: { ideal: 720, min: 480 },
+    },
   };
 
-  const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = cameraStream;
+    video.setAttribute("playsinline", "true");
 
-  html5QrScanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-    .then(() => {
-      isCameraScanning = true;
+    await video.play();
+
+    cameraScanLoopActive = true;
+    if (placeholder) placeholder.classList.add("hidden");
+    if (overlay) overlay.classList.remove("hidden");
+    if (activeBar) activeBar.classList.remove("hidden");
+    if (statusPill) statusPill.innerHTML = `<span class="pulse-dot"></span> Buscando credencial en el visor...`;
+
+    showToast("Cámara conectada en vivo.", "info");
+    requestAnimationFrame(scanVideoFrame);
+  } catch (err) {
+    console.warn("Error con cámara requerida, probando configuración básica:", err);
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = cameraStream;
+      video.setAttribute("playsinline", "true");
+      await video.play();
+
+      cameraScanLoopActive = true;
       if (placeholder) placeholder.classList.add("hidden");
+      if (overlay) overlay.classList.remove("hidden");
       if (activeBar) activeBar.classList.remove("hidden");
-      showToast("Cámara activada para escaneo de credenciales.", "info");
-    })
-    .catch((err) => {
-      console.warn("Error iniciando cámara trasera, probando cualquier cámara...", err);
-      html5QrScanner.start({ facingMode: "user" }, config, qrCodeSuccessCallback)
-        .then(() => {
-          isCameraScanning = true;
-          if (placeholder) placeholder.classList.add("hidden");
-          if (activeBar) activeBar.classList.remove("hidden");
-          showToast("Cámara activada.", "info");
-        })
-        .catch((e2) => {
-          showToast("No se pudo acceder a la cámara. Revisa los permisos del navegador.", "error");
-        });
-    });
+      if (statusPill) statusPill.innerHTML = `<span class="pulse-dot"></span> Buscando credencial...`;
+
+      showToast("Cámara activada.", "info");
+      requestAnimationFrame(scanVideoFrame);
+    } catch (err2) {
+      console.error("No se pudo iniciar la cámara:", err2);
+      showToast("No se pudo acceder a la cámara. Revisa los permisos en tu navegador.", "error");
+      stopCameraScanner();
+    }
+  }
+}
+
+async function flipCamera() {
+  currentFacingMode = currentFacingMode === "environment" ? "user" : "environment";
+  showToast(`Cambiando a cámara ${currentFacingMode === "environment" ? "trasera" : "frontal"}...`, "info");
+  await startCameraScanner();
 }
 
 function stopCameraScanner() {
-  if (html5QrScanner && isCameraScanning) {
-    html5QrScanner.stop().then(() => {
-      isCameraScanning = false;
-      const placeholder = document.getElementById("qrCameraPlaceholder");
-      const activeBar = document.getElementById("qrCameraActiveBar");
-      if (placeholder) placeholder.classList.remove("hidden");
-      if (activeBar) activeBar.classList.add("hidden");
-    }).catch(() => {});
+  cameraScanLoopActive = false;
+
+  if (cameraStream) {
+    cameraStream.getTracks().forEach((track) => track.stop());
+    cameraStream = null;
+  }
+
+  const video = document.getElementById("qrLiveVideo");
+  if (video) video.srcObject = null;
+
+  const placeholder = document.getElementById("qrCameraPlaceholder");
+  const overlay = document.getElementById("qrScannerOverlay");
+  const activeBar = document.getElementById("qrCameraActiveBar");
+
+  if (placeholder) placeholder.classList.remove("hidden");
+  if (overlay) overlay.classList.add("hidden");
+  if (activeBar) activeBar.classList.add("hidden");
+}
+
+async function scanVideoFrame() {
+  if (!cameraScanLoopActive) return;
+
+  const video = document.getElementById("qrLiveVideo");
+  const canvas = document.getElementById("qrScanCanvas");
+
+  if (video && video.readyState === video.HAVE_ENOUGH_DATA) {
+    const now = Date.now();
+
+    // 1. Intentar con BarcodeDetector nativo (GPU acelerada a 60fps)
+    if (barcodeDetectorInstance) {
+      try {
+        const barcodes = await barcodeDetectorInstance.detect(video);
+        if (barcodes && barcodes.length > 0) {
+          const rawVal = barcodes[0].rawValue;
+          if (rawVal && (rawVal !== lastScannedCode || now - lastScanTime > 2200)) {
+            lastScannedCode = rawVal;
+            lastScanTime = now;
+            handleScannedQRCode(rawVal);
+          }
+        }
+      } catch (e) {}
+    } else if (typeof jsQR !== "undefined" && canvas) {
+      // 2. Fallback a jsQR con canvas
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (ctx) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+
+        if (code && code.data) {
+          if (code.data !== lastScannedCode || now - lastScanTime > 2200) {
+            lastScannedCode = code.data;
+            lastScanTime = now;
+            handleScannedQRCode(code.data);
+          }
+        }
+      }
+    }
+  }
+
+  if (cameraScanLoopActive) {
+    requestAnimationFrame(scanVideoFrame);
   }
 }
 
@@ -4301,13 +4396,27 @@ function handleScannedQRCode(qrText) {
 
   const player = squadData.find((p) => p.id === playerId || p.number === playerId);
 
+  const statusPill = document.getElementById("qrStatusPill");
+
   if (!player) {
+    if (statusPill) {
+      statusPill.innerHTML = `<span style="color:var(--accent-danger);"><i class="fa-solid fa-xmark"></i> QR no reconocido (${qrText})</span>`;
+      setTimeout(() => {
+        if (statusPill && cameraScanLoopActive) statusPill.innerHTML = `<span class="pulse-dot"></span> Buscando credencial...`;
+      }, 2000);
+    }
     showToast(`Código QR no reconocido: "${qrText}".`, "warning");
     return;
   }
 
   if (player.status === "Presente") {
-    showToast(`${player.name} (#${player.number}) ya tiene asistencia registrada hoy.`, "info");
+    if (statusPill) {
+      statusPill.innerHTML = `<span style="color:var(--accent-gold);"><i class="fa-solid fa-check"></i> ${player.name} ya registrado</span>`;
+      setTimeout(() => {
+        if (statusPill && cameraScanLoopActive) statusPill.innerHTML = `<span class="pulse-dot"></span> Buscando credencial...`;
+      }, 2000);
+    }
+    showToast(`${player.name} (#${player.number}) ya tiene asistencia hoy.`, "info");
     return;
   }
 
@@ -4321,6 +4430,13 @@ function handleScannedQRCode(qrText) {
 
   playSuccessBeep();
 
+  if (statusPill) {
+    statusPill.innerHTML = `<span style="color:var(--accent-neon); font-weight:bold;"><i class="fa-solid fa-circle-check"></i> ¡Asistencia: ${player.name}!</span>`;
+    setTimeout(() => {
+      if (statusPill && cameraScanLoopActive) statusPill.innerHTML = `<span class="pulse-dot"></span> Buscando credencial...`;
+    }, 2500);
+  }
+
   const alertBox = document.getElementById("lastCheckinAlert");
   if (alertBox) {
     document.getElementById("lastCheckinText").innerText = `✓ Asistencia confirmada: #${player.number} ${player.name} (${timeStr})`;
@@ -4333,7 +4449,7 @@ function handleScannedQRCode(qrText) {
   updateChartData();
   if (typeof renderDashboard === "function") renderDashboard();
 
-  showToast(`¡Asistencia de ${player.name} registrada!`, "success");
+  showToast(`¡Asistencia de ${player.name} registrada con éxito!`, "success");
 }
 
 // ==========================================================================
