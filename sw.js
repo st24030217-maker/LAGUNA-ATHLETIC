@@ -1,19 +1,6 @@
-﻿const CACHE_NAME = 'laguna-athletic-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js',
-  './manifest.json',
-  './LAGUNA.jpg'
-];
+const CACHE_NAME = 'laguna-athletic-v2-live';
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS).catch(() => {});
-    })
-  );
   self.skipWaiting();
 });
 
@@ -21,17 +8,22 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+        keys.map((k) => caches.delete(k))
       );
     })
   );
   self.clients.claim();
 });
 
+// Estrategia Network-First: Siempre busca la versión más reciente del servidor
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request).catch(() => caches.match('./index.html'));
-    })
+    fetch(e.request)
+      .then((networkRes) => {
+        return networkRes;
+      })
+      .catch(() => {
+        return caches.match(e.request);
+      })
   );
 });
