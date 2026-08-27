@@ -126,7 +126,8 @@ body::before {
   background: #000;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding: 2rem clamp(1.25rem, 6vw, 7rem) 2rem 2rem;
   z-index: 9999;
   overflow: hidden;
 }
@@ -639,6 +640,18 @@ body::before {
   display: grid;
   grid-template-columns: 270px 1fr;
   min-height: 100vh;
+  animation: appSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes appSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(42px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* GLASSMORPHISM UTILS */
@@ -3710,5 +3723,14 @@ body::before {
 @media (max-width: 600px) {
   .all-cred-grid {
     grid-template-columns: 1fr;
+  }
+
+  .login-overlay {
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .login-box {
+    width: min(100%, 460px);
   }
 }
