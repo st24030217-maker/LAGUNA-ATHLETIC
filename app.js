@@ -609,6 +609,17 @@ function disconnectSupabase() {
   setTimeout(() => closeSupabaseConfigModal(), 1200);
 }
 
+const playerPhotoAssets = [
+  "assets/players/052426da-d923-4c2c-8a7e-787ddbfe5396.jpeg",
+  "assets/players/0d1df12f-a8e1-4ca5-a9ae-a2d4b5ecf3e8.jpeg",
+  "assets/players/13e0e666-1591-426d-a1db-625e2ff7820b.jpeg",
+  "assets/players/70a8b95f-a959-4146-b75e-c422fd63f7de.jpeg",
+  "assets/players/7fb337d9-03e3-4a5f-a29c-b4ac4dbd6ec2.jpeg",
+  "assets/players/a38b27d6-243c-4b80-a156-420f4b51c611.jpeg",
+  "assets/players/ab25b11a-ccb3-4968-a8bc-d81fe3807b91.jpeg",
+  "assets/players/aeef1f1a-7984-4790-95dc-e0ee47b20927.jpeg",
+];
+
 const defaultSquadData = [
   {
     id: 10,
@@ -631,7 +642,7 @@ const defaultSquadData = [
     docCURP: true,
     docMedico: true,
     docINE: true,
-    photo: "LAGUNA.jpg",
+    photo: playerPhotoAssets[0],
     gameInfo: [
       {
         id: 101,
@@ -665,7 +676,7 @@ const defaultSquadData = [
     docCURP: true,
     docMedico: true,
     docINE: true,
-    photo: "LAGUNA.jpg",
+    photo: playerPhotoAssets[1],
     gameInfo: [
       {
         id: 102,
@@ -699,7 +710,7 @@ const defaultSquadData = [
     docCURP: true,
     docMedico: true,
     docINE: false,
-    photo: "LAGUNA.jpg",
+    photo: playerPhotoAssets[2],
     gameInfo: [],
   },
 ];
@@ -813,6 +824,17 @@ function loadData() {
     paymentsData = savedPayments
       ? JSON.parse(savedPayments)
       : [...defaultPayments];
+
+    const demoPhotoByPlayerId = { 10: 0, 15: 1, 2: 2 };
+    squadData.forEach((player) => {
+      const photoIndex = demoPhotoByPlayerId[player.id];
+      if (
+        photoIndex !== undefined &&
+        (!player.photo || player.photo === "LAGUNA.jpg")
+      ) {
+        player.photo = playerPhotoAssets[photoIndex];
+      }
+    });
   } catch (error) {
     console.error("Error loading data:", error);
     squadData = [...defaultSquadData];
