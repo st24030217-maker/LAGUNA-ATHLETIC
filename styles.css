@@ -63,7 +63,7 @@ body {
     ),
     radial-gradient(
       ellipse at 90% 18%,
-      rgba(250, 204, 21, 0.08) 0%,
+      rgba(96, 165, 250, 0.08) 0%,
       transparent 32%
     ),
     radial-gradient(
@@ -90,6 +90,27 @@ body::before {
     rgba(255, 255, 255, 0.02),
     rgba(255, 255, 255, 0)
   );
+}
+
+::selection {
+  background: rgba(96, 165, 250, 0.35);
+  color: #fff;
+}
+
+button,
+select,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-primary-light);
+  outline-offset: 3px;
 }
 
 /* ==========================================================================
@@ -682,6 +703,32 @@ body::before {
     0 0 18px var(--accent-glow);
 }
 
+.glass-card,
+.hero-event-card,
+.topbar {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before,
+.hero-event-card::before,
+.topbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(147, 197, 253, 0.55),
+    transparent
+  );
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 /* ==========================================================================
    SIDEBAR — Estadio de Noche
    ========================================================================== */
@@ -921,6 +968,7 @@ body::before {
 .content-wrapper {
   padding: 2.5rem;
   max-width: 1240px;
+  width: 100%;
 }
 
 /* MODULES & ANIMATIONS */
