@@ -2,6 +2,14 @@
 
 Plataforma oficial de **Laguna Athletic (Temporada 2026)** para control de asistencia, convocatorias, alineaciones tácticas, avisos por WhatsApp y seguimiento de estadísticas.
 
+## Acceso para usuarios
+
+La versión web se publica en:
+
+**https://st24030217-maker.github.io/LAGUNA-ATHLETIC/**
+
+En teléfonos compatibles, abre esa dirección desde Chrome o Safari y selecciona **Instalar aplicación** o **Agregar a pantalla de inicio** para descargarla como PWA.
+
 ## Modulos del Sistema
 
 1. **Registro QR**: Registro instantaneo al llegar a la cancha.
