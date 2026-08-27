@@ -979,7 +979,7 @@ async function handleLogin(e) {
   const pinInput = document.getElementById("loginPinInput")
     ? document.getElementById("loginPinInput").value.trim()
     : "";
-  const email = document.getElementById("loginEmailInput")?.value.trim();
+  const email = localStorage.getItem("laguna_auth_email") || "";
 
   if (!role) {
     showToast("Selecciona tu rol de acceso.", "warning");
@@ -1002,6 +1002,7 @@ async function handleLogin(e) {
       showToast("No se pudo autenticar: " + error.message, "error");
       return;
     }
+    localStorage.setItem("laguna_auth_email", email);
     const { data: profile, error: profileError } = await supabaseClient
       .from("profiles")
       .select("role, player_id")
