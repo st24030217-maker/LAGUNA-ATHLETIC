@@ -609,17 +609,6 @@ function disconnectSupabase() {
   setTimeout(() => closeSupabaseConfigModal(), 1200);
 }
 
-const playerPhotoAssets = [
-  "assets/players/052426da-d923-4c2c-8a7e-787ddbfe5396.jpeg",
-  "assets/players/0d1df12f-a8e1-4ca5-a9ae-a2d4b5ecf3e8.jpeg",
-  "assets/players/13e0e666-1591-426d-a1db-625e2ff7820b.jpeg",
-  "assets/players/70a8b95f-a959-4146-b75e-c422fd63f7de.jpeg",
-  "assets/players/7fb337d9-03e3-4a5f-a29c-b4ac4dbd6ec2.jpeg",
-  "assets/players/a38b27d6-243c-4b80-a156-420f4b51c611.jpeg",
-  "assets/players/ab25b11a-ccb3-4968-a8bc-d81fe3807b91.jpeg",
-  "assets/players/aeef1f1a-7984-4790-95dc-e0ee47b20927.jpeg",
-];
-
 const defaultSquadData = [
   {
     id: 10,
@@ -642,7 +631,7 @@ const defaultSquadData = [
     docCURP: true,
     docMedico: true,
     docINE: true,
-    photo: playerPhotoAssets[0],
+    photo: "LAGUNA.jpg",
     gameInfo: [
       {
         id: 101,
@@ -676,7 +665,7 @@ const defaultSquadData = [
     docCURP: true,
     docMedico: true,
     docINE: true,
-    photo: playerPhotoAssets[1],
+    photo: "LAGUNA.jpg",
     gameInfo: [
       {
         id: 102,
@@ -710,7 +699,7 @@ const defaultSquadData = [
     docCURP: true,
     docMedico: true,
     docINE: false,
-    photo: playerPhotoAssets[2],
+    photo: "LAGUNA.jpg",
     gameInfo: [],
   },
 ];
@@ -824,17 +813,6 @@ function loadData() {
     paymentsData = savedPayments
       ? JSON.parse(savedPayments)
       : [...defaultPayments];
-
-    const demoPhotoByPlayerId = { 10: 0, 15: 1, 2: 2 };
-    squadData.forEach((player) => {
-      const photoIndex = demoPhotoByPlayerId[player.id];
-      if (
-        photoIndex !== undefined &&
-        (!player.photo || player.photo === "LAGUNA.jpg")
-      ) {
-        player.photo = playerPhotoAssets[photoIndex];
-      }
-    });
   } catch (error) {
     console.error("Error loading data:", error);
     squadData = [...defaultSquadData];
@@ -864,9 +842,61 @@ function saveData() {
   }
 }
 
+function initLoginCarousel() {
+  const carousel = document.querySelector(".login-image-carousel");
+  const dotsContainer = document.querySelector(".login-carousel-dots");
+  if (!carousel || !dotsContainer) return;
+
+  const slides = [...carousel.querySelectorAll(".login-slide")];
+  if (slides.length < 2) return;
+
+  let activeIndex = 0;
+  let timerId;
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  const showSlide = (index) => {
+    activeIndex = (index + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.toggle("is-active", slideIndex === activeIndex);
+    });
+    dotsContainer
+      .querySelectorAll(".login-carousel-dot")
+      .forEach((dot, dotIndex) => {
+        dot.classList.toggle("is-active", dotIndex === activeIndex);
+        dot.setAttribute(
+          "aria-current",
+          dotIndex === activeIndex ? "true" : "false",
+        );
+      });
+  };
+
+  slides.forEach((_, index) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "login-carousel-dot";
+    dot.setAttribute("aria-label", `Ver imagen ${index + 1}`);
+    dot.addEventListener("click", () => {
+      showSlide(index);
+      if (!prefersReducedMotion) {
+        clearInterval(timerId);
+        timerId = setInterval(() => showSlide(activeIndex + 1), 5200);
+      }
+    });
+    dotsContainer.appendChild(dot);
+  });
+
+  showSlide(0);
+  if (!prefersReducedMotion) {
+    timerId = setInterval(() => showSlide(activeIndex + 1), 5200);
+  }
+}
+
 // --- INITIALIZATION ---
 document.addEventListener("DOMContentLoaded", () => {
   loadData();
+  initLoginCarousel();
   initSupabase();
   queueCloudSync();
 
