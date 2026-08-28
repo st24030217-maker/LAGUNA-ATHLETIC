@@ -3946,4 +3946,48 @@ textarea:focus-visible {
   .login-club-slogan {
     letter-spacing: 1.6px;
   }
+
+  .login-overlay-dim {
+    background: linear-gradient(
+      180deg,
+      rgba(3, 9, 18, 0.2) 0%,
+      rgba(3, 9, 18, 0.46) 42%,
+      rgba(3, 9, 18, 0.76) 100%
+    );
+  }
+
+  .login-image-carousel {
+    filter: saturate(1.18) contrast(1.05);
+  }
+
+  .login-slide img {
+    object-position: center center;
+  }
+
+  .login-carousel-dots {
+    top: 1.2rem;
+    right: 1.2rem;
+    bottom: auto;
+    left: auto;
+    gap: 0.3rem;
+  }
+
+  .login-carousel-dot {
+    width: 14px;
+    height: 3px;
+  }
+
+  .login-carousel-dot.is-active {
+    width: 30px;
+  }
+
+  .login-box {
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    background: linear-gradient(
+      145deg,
+      rgba(15, 31, 55, 0.58),
+      rgba(5, 12, 24, 0.42)
+    );
+  }
 }
