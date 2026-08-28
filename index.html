@@ -228,6 +228,14 @@
           </button>
         </form>
 
+        <button
+          type="button"
+          class="login-setup-link"
+          onclick="openSupabaseConfigModal()"
+        >
+          <i class="fa-solid fa-sliders"></i> Configurar conexión segura
+        </button>
+
         <!-- Footer seguridad -->
         <div class="login-footer-security">
           <span><i class="fa-solid fa-shield-halved"></i> SSL 256-bit</span>
@@ -4447,6 +4455,23 @@
             class="form-control"
             placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           />
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label"
+            ><i class="fa-solid fa-user-lock text-primary"></i> Correo de la
+            cuenta Supabase</label
+          >
+          <input
+            type="email"
+            id="supabaseAuthEmailInput"
+            class="form-control"
+            placeholder="cuenta@club.com"
+            autocomplete="username"
+          />
+          <small class="text-muted"
+            >Se guarda localmente para que el usuario solo ingrese su
+            PIN.</small
+          >
         </div>
 
         <!-- Botones de acción -->

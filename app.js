@@ -489,8 +489,11 @@ function refreshAllModules() {
 function openSupabaseConfigModal() {
   const urlInput = document.getElementById("supabaseUrlInput");
   const keyInput = document.getElementById("supabaseKeyInput");
+  const emailInput = document.getElementById("supabaseAuthEmailInput");
   if (urlInput) urlInput.value = localStorage.getItem(SUPABASE_URL_KEY) || "";
   if (keyInput) keyInput.value = localStorage.getItem(SUPABASE_ANON_KEY) || "";
+  if (emailInput)
+    emailInput.value = localStorage.getItem("laguna_auth_email") || "";
   updateSupabaseModalStatus();
   document.getElementById("supabaseConfigModal")?.classList.remove("hidden");
 }
@@ -567,12 +570,20 @@ async function testSupabaseConnection() {
 function saveAndConnectSupabase() {
   const url = document.getElementById("supabaseUrlInput")?.value?.trim();
   const key = document.getElementById("supabaseKeyInput")?.value?.trim();
+  const email = document
+    .getElementById("supabaseAuthEmailInput")
+    ?.value?.trim();
   if (!url || !key) {
     showToast("Completa la URL y la API Key.", "warning");
     return;
   }
+  if (!email) {
+    showToast("Completa el correo de la cuenta Supabase.", "warning");
+    return;
+  }
   localStorage.setItem(SUPABASE_URL_KEY, url);
   localStorage.setItem(SUPABASE_ANON_KEY, key);
+  localStorage.setItem("laguna_auth_email", email);
   const result = initSupabase();
   if (result) {
     updateSupabaseModalStatus();
@@ -976,12 +987,6 @@ function triggerAppLoading(
 }
 
 // --- LOGIN MODULE & ROLES ---
-const ROLE_PINS = {
-  dt: "1234",
-  auxiliar: "1111",
-  preparador: "2222",
-  jugador: "0000",
-};
 
 async function handleLogin(e) {
   e.preventDefault();
@@ -999,7 +1004,7 @@ async function handleLogin(e) {
   if (cloudConnected) {
     if (!email || !pinInput) {
       showToast(
-        "Para entrar a la nube necesitas correo y contraseña.",
+        "Configura el correo Supabase y escribe tu contraseña.",
         "warning",
       );
       return;
@@ -1035,33 +1040,10 @@ async function handleLogin(e) {
     showToast("Sesión segura iniciada correctamente.", "success");
     return;
   }
-
-  const expectedPin = ROLE_PINS[role] || "1234";
-  if (pinInput && pinInput !== expectedPin) {
-    showToast("PIN incorrecto para este perfil.", "error");
-    const pinEl = document.getElementById("loginPinInput");
-    if (pinEl) pinEl.value = "";
-    return;
-  }
-
-  currentRole = role;
-  sessionStorage.setItem("laguna_active_role", role);
-
-  document.getElementById("loginScreen").style.opacity = "0";
-  document.getElementById("loginScreen").style.transition = "opacity 0.4s ease";
-
-  setTimeout(() => {
-    document.getElementById("loginScreen").classList.add("hidden");
-    triggerAppLoading(
-      "Autenticando usuario y preparando entorno 2026...",
-      1400,
-      () => {
-        document.getElementById("appLayout").style.display = "grid";
-        postLoginInit();
-        showToast("Sesión iniciada correctamente.", "success");
-      },
-    );
-  }, 400);
+  showToast(
+    "La nube no está configurada. Contacta al administrador para activar Supabase.",
+    "error",
+  );
 }
 
 function logout() {

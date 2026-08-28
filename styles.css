@@ -3926,6 +3926,22 @@ textarea:focus-visible {
   padding: 0.95rem 2.25rem;
 }
 
+.login-setup-link {
+  display: block;
+  margin: 0 auto 1.25rem;
+  padding: 0.35rem 0.65rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: 500 0.72rem var(--font-body);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.login-setup-link:hover {
+  color: var(--accent-primary-light);
+}
+
 @media (max-width: 600px) {
   .login-header {
     padding: 1.5rem 1.25rem 0.75rem;
@@ -3989,6 +4005,10 @@ textarea:focus-visible {
       rgba(15, 31, 55, 0.58),
       rgba(5, 12, 24, 0.42)
     );
+  }
+
+  .login-setup-link {
+    margin-bottom: 1rem;
   }
 }
 
