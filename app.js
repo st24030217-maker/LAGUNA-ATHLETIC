@@ -22,11 +22,15 @@ let cloudSyncTimer = null;
 
 const SUPABASE_URL_KEY = "laguna_supabase_url";
 const SUPABASE_ANON_KEY = "laguna_supabase_key";
+const DEFAULT_SUPABASE_URL = "https://wachximrinjtyasyymlv.supabase.co";
+const DEFAULT_SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndhY2h4aW1yaW5qdHlhc3l5bWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3OTYxOTEsImV4cCI6MjEwMzM3MjE5MX0.5FVsPr25K9C_5VynxuMEx6RVudZyzk124Bu1gs8KAto";
+const DEFAULT_AUTH_USERNAME = "admin";
 
 function initSupabase() {
   try {
-    const url = localStorage.getItem(SUPABASE_URL_KEY);
-    const key = localStorage.getItem(SUPABASE_ANON_KEY);
+    const url = DEFAULT_SUPABASE_URL;
+    const key = DEFAULT_SUPABASE_ANON_KEY;
     if (url && key && typeof supabase !== "undefined") {
       supabaseClient = supabase.createClient(url, key);
       cloudConnected = true;
@@ -990,7 +994,9 @@ function triggerAppLoading(
 
 async function handleLogin(e) {
   e.preventDefault();
-  const username = document.getElementById("loginUsernameInput")?.value.trim();
+  const username =
+    document.getElementById("loginUsernameInput")?.value.trim() ||
+    DEFAULT_AUTH_USERNAME;
   const pinInput = document.getElementById("loginPinInput")
     ? document.getElementById("loginPinInput").value.trim()
     : "";
