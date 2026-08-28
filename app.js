@@ -489,11 +489,11 @@ function refreshAllModules() {
 function openSupabaseConfigModal() {
   const urlInput = document.getElementById("supabaseUrlInput");
   const keyInput = document.getElementById("supabaseKeyInput");
-  const emailInput = document.getElementById("supabaseAuthEmailInput");
+  const phoneInput = document.getElementById("supabaseAuthPhoneInput");
   if (urlInput) urlInput.value = localStorage.getItem(SUPABASE_URL_KEY) || "";
   if (keyInput) keyInput.value = localStorage.getItem(SUPABASE_ANON_KEY) || "";
-  if (emailInput)
-    emailInput.value = localStorage.getItem("laguna_auth_email") || "";
+  if (phoneInput)
+    phoneInput.value = localStorage.getItem("laguna_auth_phone") || "";
   updateSupabaseModalStatus();
   document.getElementById("supabaseConfigModal")?.classList.remove("hidden");
 }
@@ -570,20 +570,20 @@ async function testSupabaseConnection() {
 function saveAndConnectSupabase() {
   const url = document.getElementById("supabaseUrlInput")?.value?.trim();
   const key = document.getElementById("supabaseKeyInput")?.value?.trim();
-  const email = document
-    .getElementById("supabaseAuthEmailInput")
+  const phone = document
+    .getElementById("supabaseAuthPhoneInput")
     ?.value?.trim();
   if (!url || !key) {
     showToast("Completa la URL y la API Key.", "warning");
     return;
   }
-  if (!email) {
-    showToast("Completa el correo de la cuenta Supabase.", "warning");
+  if (!phone) {
+    showToast("Completa el teléfono de la cuenta Supabase.", "warning");
     return;
   }
   localStorage.setItem(SUPABASE_URL_KEY, url);
   localStorage.setItem(SUPABASE_ANON_KEY, key);
-  localStorage.setItem("laguna_auth_email", email);
+  localStorage.setItem("laguna_auth_phone", phone);
   const result = initSupabase();
   if (result) {
     updateSupabaseModalStatus();
@@ -994,7 +994,7 @@ async function handleLogin(e) {
   const pinInput = document.getElementById("loginPinInput")
     ? document.getElementById("loginPinInput").value.trim()
     : "";
-  const email = localStorage.getItem("laguna_auth_email") || "";
+  const phone = localStorage.getItem("laguna_auth_phone") || "";
 
   if (!role) {
     showToast("Selecciona tu rol de acceso.", "warning");
@@ -1002,22 +1002,22 @@ async function handleLogin(e) {
   }
 
   if (cloudConnected) {
-    if (!email || !pinInput) {
+    if (!phone || !pinInput) {
       showToast(
-        "Configura el correo Supabase y escribe tu contraseña.",
+        "Configura el teléfono Supabase y escribe tu contraseña.",
         "warning",
       );
       return;
     }
     const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
+      phone,
       password: pinInput,
     });
     if (error) {
       showToast("No se pudo autenticar: " + error.message, "error");
       return;
     }
-    localStorage.setItem("laguna_auth_email", email);
+    localStorage.setItem("laguna_auth_phone", phone);
     const { data: profile, error: profileError } = await supabaseClient
       .from("profiles")
       .select("role, player_id")
