@@ -3899,6 +3899,13 @@ textarea:focus-visible {
   font-size: 0.92rem;
 }
 
+.login-username-input {
+  text-align: left;
+  letter-spacing: 0;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+}
+
 .login-select:hover,
 .login-pin-input:hover {
   border-color: rgba(96, 165, 250, 0.5);

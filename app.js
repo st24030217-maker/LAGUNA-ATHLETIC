@@ -489,11 +489,11 @@ function refreshAllModules() {
 function openSupabaseConfigModal() {
   const urlInput = document.getElementById("supabaseUrlInput");
   const keyInput = document.getElementById("supabaseKeyInput");
-  const phoneInput = document.getElementById("supabaseAuthPhoneInput");
+  const usernameInput = document.getElementById("supabaseAuthUsernameInput");
   if (urlInput) urlInput.value = localStorage.getItem(SUPABASE_URL_KEY) || "";
   if (keyInput) keyInput.value = localStorage.getItem(SUPABASE_ANON_KEY) || "";
-  if (phoneInput)
-    phoneInput.value = localStorage.getItem("laguna_auth_phone") || "";
+  if (usernameInput)
+    usernameInput.value = localStorage.getItem("laguna_auth_username") || "";
   updateSupabaseModalStatus();
   document.getElementById("supabaseConfigModal")?.classList.remove("hidden");
 }
@@ -570,20 +570,20 @@ async function testSupabaseConnection() {
 function saveAndConnectSupabase() {
   const url = document.getElementById("supabaseUrlInput")?.value?.trim();
   const key = document.getElementById("supabaseKeyInput")?.value?.trim();
-  const phone = document
-    .getElementById("supabaseAuthPhoneInput")
+  const username = document
+    .getElementById("supabaseAuthUsernameInput")
     ?.value?.trim();
   if (!url || !key) {
     showToast("Completa la URL y la API Key.", "warning");
     return;
   }
-  if (!phone) {
-    showToast("Completa el teléfono de la cuenta Supabase.", "warning");
+  if (!username) {
+    showToast("Completa el usuario de la cuenta Supabase.", "warning");
     return;
   }
   localStorage.setItem(SUPABASE_URL_KEY, url);
   localStorage.setItem(SUPABASE_ANON_KEY, key);
-  localStorage.setItem("laguna_auth_phone", phone);
+  localStorage.setItem("laguna_auth_username", username);
   const result = initSupabase();
   if (result) {
     updateSupabaseModalStatus();
@@ -990,34 +990,31 @@ function triggerAppLoading(
 
 async function handleLogin(e) {
   e.preventDefault();
-  const role = document.getElementById("loginRole").value;
+  const username = document.getElementById("loginUsernameInput")?.value.trim();
   const pinInput = document.getElementById("loginPinInput")
     ? document.getElementById("loginPinInput").value.trim()
     : "";
-  const phone = localStorage.getItem("laguna_auth_phone") || "";
+  const authEmail = username ? `${username}@laguna.local` : "";
 
-  if (!role) {
-    showToast("Selecciona tu rol de acceso.", "warning");
+  if (!username) {
+    showToast("Escribe tu usuario.", "warning");
     return;
   }
 
   if (cloudConnected) {
-    if (!phone || !pinInput) {
-      showToast(
-        "Configura el teléfono Supabase y escribe tu contraseña.",
-        "warning",
-      );
+    if (!authEmail || !pinInput) {
+      showToast("Escribe tu usuario y contraseña.", "warning");
       return;
     }
     const { data, error } = await supabaseClient.auth.signInWithPassword({
-      phone,
+      email: authEmail,
       password: pinInput,
     });
     if (error) {
       showToast("No se pudo autenticar: " + error.message, "error");
       return;
     }
-    localStorage.setItem("laguna_auth_phone", phone);
+    localStorage.setItem("laguna_auth_username", username);
     const { data: profile, error: profileError } = await supabaseClient
       .from("profiles")
       .select("role, player_id")

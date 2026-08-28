@@ -154,22 +154,16 @@
         <form id="loginForm" onsubmit="handleLogin(event)" class="login-form">
           <div class="login-field">
             <label class="login-label">
-              <i class="fa-solid fa-users-rectangle"></i> Rol de Acceso
+              <i class="fa-solid fa-user"></i> Usuario
             </label>
-            <select
-              id="loginRole"
-              class="login-select"
-              onchange="onLoginRoleChange()"
+            <input
+              type="text"
+              id="loginUsernameInput"
+              class="login-pin-input login-username-input"
+              placeholder="Escribe tu usuario"
+              autocomplete="username"
               required
-            >
-              <option value="" disabled selected>
-                — Selecciona tu perfil —
-              </option>
-              <option value="dt">Director Técnico / Administrador</option>
-              <option value="auxiliar">Auxiliar Técnico / Cuerpo Médico</option>
-              <option value="preparador">Preparador Físico / Cancha</option>
-              <option value="jugador">Jugador / Padre de Familia</option>
-            </select>
+            />
           </div>
 
           <!-- Banner dinámico de permisos -->
@@ -189,7 +183,7 @@
                 type="password"
                 id="loginPinInput"
                 class="login-pin-input"
-                placeholder="• • • •"
+                placeholder="Escribe tu contraseña"
                 required
                 autocomplete="current-password"
               />
@@ -4458,15 +4452,15 @@
         </div>
         <div class="form-group mb-3">
           <label class="form-label"
-            ><i class="fa-solid fa-mobile-screen text-primary"></i> Teléfono de
-            la cuenta Supabase</label
+            ><i class="fa-solid fa-user text-primary"></i> Usuario de la cuenta
+            Supabase</label
           >
           <input
-            type="tel"
-            id="supabaseAuthPhoneInput"
+            type="text"
+            id="supabaseAuthUsernameInput"
             class="form-control"
-            placeholder="+52 844 000 0000"
-            autocomplete="tel"
+            placeholder="admin"
+            autocomplete="username"
           />
           <small class="text-muted"
             >Se guarda localmente para que el usuario solo ingrese su
