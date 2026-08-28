@@ -105,37 +105,45 @@ async function syncAllFromCloud() {
   if (!supabaseClient || !cloudConnected) return;
   try {
     showToast("Sincronizando datos de la nube...", "info");
-    const [
-      { data: players },
-      { data: payments },
-      { data: events },
-      { data: injuries },
-      { data: justifications },
-    ] = await Promise.all([
+    const results = await Promise.all([
       supabaseClient.from("players").select("*").order("number"),
       supabaseClient.from("payments").select("*").order("id"),
       supabaseClient.from("calendar_events").select("*").order("date"),
       supabaseClient.from("injuries").select("*").order("id"),
       supabaseClient.from("justifications").select("*").order("id"),
     ]);
+    const syncError = results.find((result) => result.error)?.error;
+    if (syncError) throw syncError;
+    const [
+      playersResult,
+      paymentsResult,
+      eventsResult,
+      injuriesResult,
+      justificationsResult,
+    ] = results;
+    const players = playersResult.data;
+    const payments = paymentsResult.data;
+    const events = eventsResult.data;
+    const injuries = injuriesResult.data;
+    const justifications = justificationsResult.data;
 
-    if (players && players.length > 0) {
+    if (Array.isArray(players)) {
       squadData = players.map(mapPlayerFromCloud);
       localStorage.setItem("laguna_squad_v3", JSON.stringify(squadData));
     }
-    if (payments && payments.length > 0) {
+    if (Array.isArray(payments)) {
       paymentsData = payments.map(mapPaymentFromCloud);
       localStorage.setItem("laguna_payments_v3", JSON.stringify(paymentsData));
     }
-    if (events && events.length > 0) {
+    if (Array.isArray(events)) {
       calendarEvents = events.map(mapEventFromCloud);
       localStorage.setItem("laguna_events_v3", JSON.stringify(calendarEvents));
     }
-    if (injuries && injuries.length > 0) {
+    if (Array.isArray(injuries)) {
       injuredData = injuries.map(mapInjuryFromCloud);
       localStorage.setItem("laguna_injured_v3", JSON.stringify(injuredData));
     }
-    if (justifications && justifications.length > 0) {
+    if (Array.isArray(justifications)) {
       justificationsData = justifications.map(mapJustificationFromCloud);
       localStorage.setItem(
         "laguna_justifications_v3",
@@ -222,8 +230,10 @@ function mapInjuryFromCloud(i) {
     id: i.id,
     player: i.player,
     playerId: i.player_id,
+    type: i.diagnosis,
     diagnosis: i.diagnosis,
     startDate: i.start_date,
+    time: i.estimated_return,
     estimatedReturn: i.estimated_return,
     status: i.status,
   };
@@ -4584,7 +4594,7 @@ function renderPaymentsTable() {
   });
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding:2rem;">Sin registros de pagos en el historial.</td>8/tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted" style="padding:2rem;">Sin registros de pagos en el historial.</td></tr>`;
     return;
   }
 

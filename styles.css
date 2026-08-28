@@ -1422,7 +1422,7 @@ textarea:focus-visible {
   width: 100vw !important;
   height: 100vh !important;
   z-index: 99999 !important;
-  background-color: var(--bg-dark) !important;
+  background-color: var(--bg-app) !important;
   overflow: auto !important;
   display: flex !important;
   flex-direction: column !important;
