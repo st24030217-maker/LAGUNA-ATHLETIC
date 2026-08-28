@@ -29,8 +29,11 @@ const DEFAULT_AUTH_USERNAME = "admin";
 
 function initSupabase() {
   try {
-    const url = DEFAULT_SUPABASE_URL;
-    const key = DEFAULT_SUPABASE_ANON_KEY;
+    const url =
+      localStorage.getItem(SUPABASE_URL_KEY)?.trim() || DEFAULT_SUPABASE_URL;
+    const key =
+      localStorage.getItem(SUPABASE_ANON_KEY)?.trim() ||
+      DEFAULT_SUPABASE_ANON_KEY;
     if (url && key && typeof supabase !== "undefined") {
       supabaseClient = supabase.createClient(url, key);
       cloudConnected = true;
@@ -49,22 +52,38 @@ function initSupabase() {
 
 async function restoreSupabaseSession() {
   if (!supabaseClient) return;
-  const {
-    data: { session },
-  } = await supabaseClient.auth.getSession();
-  if (!session) return;
-  const { data: profile } = await supabaseClient
-    .from("profiles")
-    .select("role, player_id")
-    .eq("id", session.user.id)
-    .single();
-  if (!profile) return;
-  applySupabaseProfile(session.user, profile);
-  await syncAllFromCloud();
-  queueCloudSync();
-  document.getElementById("loginScreen")?.classList.add("hidden");
-  document.getElementById("appLayout").style.display = "grid";
-  postLoginInit();
+  try {
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabaseClient.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!session) return;
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("role, player_id")
+      .eq("id", session.user.id)
+      .single();
+    if (profileError || !profile) {
+      console.error("Error restaurando el perfil de Supabase:", profileError);
+      await supabaseClient.auth.signOut();
+      sessionStorage.removeItem("laguna_active_role");
+      sessionStorage.removeItem("laguna_auth_user");
+      return;
+    }
+
+    applySupabaseProfile(session.user, profile);
+    await syncAllFromCloud();
+    queueCloudSync();
+    document.getElementById("loginScreen")?.classList.add("hidden");
+    document.getElementById("appLayout").style.display = "grid";
+    postLoginInit();
+  } catch (error) {
+    console.error("Error restaurando la sesión de Supabase:", error);
+    sessionStorage.removeItem("laguna_active_role");
+    sessionStorage.removeItem("laguna_auth_user");
+  }
 }
 
 function applySupabaseProfile(user, profile) {
@@ -197,6 +216,7 @@ function mapPlayerFromCloud(p) {
     docINE: p.doc_ine,
     docEscolar: p.doc_escolar,
     gameInfo: p.game_info || [],
+    folio: p.folio || null,
   };
 }
 function mapPaymentFromCloud(p) {
@@ -288,6 +308,7 @@ function mapPlayerToCloud(p) {
     doc_ine: p.docINE,
     doc_escolar: p.docEscolar || false,
     game_info: p.gameInfo || [],
+    folio: p.folio || null,
     updated_at: new Date().toISOString(),
   };
 }
@@ -549,9 +570,15 @@ async function testSupabaseConnection() {
   }
   showToast("Probando conexión...", "info");
   try {
-    const testClient = supabase.createClient(url, key);
-    const { error } = await testClient.from("players").select("id").limit(1);
-    if (error) throw error;
+    const response = await fetch(
+      `${url.replace(/\/+$/, "")}/auth/v1/settings`,
+      {
+        headers: { apikey: key },
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Supabase respondió con HTTP ${response.status}.`);
+    }
     showToast("✅ Conexión exitosa a Supabase.", "success");
     const bar = document.getElementById("supabaseStatusBar");
     const txt = document.getElementById("supabaseStatusText");
@@ -923,16 +950,10 @@ document.addEventListener("DOMContentLoaded", () => {
   loadData();
   initLoginCarousel();
   initSupabase();
-  queueCloudSync();
 
-  // Check login state
-  const savedRole = sessionStorage.getItem("laguna_active_role");
-  if (savedRole) {
-    currentRole = savedRole;
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("appLayout").style.display = "grid";
-    postLoginInit();
-  }
+  const savedUsername = localStorage.getItem("laguna_auth_username");
+  const usernameInput = document.getElementById("loginUsernameInput");
+  if (savedUsername && usernameInput) usernameInput.value = savedUsername;
 });
 
 // --- LOADING SYSTEM PROFESIONAL ---
@@ -1000,7 +1021,9 @@ async function handleLogin(e) {
   const pinInput = document.getElementById("loginPinInput")
     ? document.getElementById("loginPinInput").value.trim()
     : "";
-  const authEmail = username ? `${username}@laguna.local` : "";
+  const authEmail = username.includes("@")
+    ? username
+    : `${username}@laguna.local`;
 
   if (!username) {
     showToast("Escribe tu usuario.", "warning");
@@ -1017,7 +1040,14 @@ async function handleLogin(e) {
       password: pinInput,
     });
     if (error) {
-      showToast("No se pudo autenticar: " + error.message, "error");
+      await supabaseClient.auth.signOut();
+      const errorMessage =
+        error.message === "Invalid login credentials"
+          ? "Usuario o contraseña incorrectos."
+          : "No se pudo iniciar sesión: " + error.message;
+      showToast(errorMessage, "error");
+      const pinEl = document.getElementById("loginPinInput");
+      if (pinEl) pinEl.value = "";
       return;
     }
     localStorage.setItem("laguna_auth_username", username);
@@ -3588,6 +3618,19 @@ function onDragEnd() {
 // MODULE: REGISTRO DE JUGADORES, FOTOGRAFÍAS Y EXPEDIENTES
 // ==========================================================================
 
+// ============================================================================
+// FOLIO AUTOMÁTICO DE REGISTRO
+// ============================================================================
+function generateFolio() {
+  const year = new Date().getFullYear();
+  const existing = squadData
+    .map((p) => p.folio)
+    .filter((f) => f && f.startsWith(`LA-${year}-`))
+    .map((f) => parseInt(f.split("-")[2]) || 0);
+  const next = existing.length > 0 ? Math.max(...existing) + 1 : 1;
+  return `LA-${year}-${String(next).padStart(4, "0")}`;
+}
+
 let regFilter = "todos"; // filtro activo de estatus
 let regEditingId = null; // id del jugador en edición (null = nuevo)
 let currentSelectedPhoto = "LAGUNA.jpg"; // photo temp
@@ -3726,6 +3769,7 @@ function renderRegTable() {
             <div>
               <strong>${p.name}</strong>
               <br><small class="text-muted">Tutor: ${p.tutorName || "N/A"}</small>
+              ${p.folio ? `<br><small class="mono-text" style="color:var(--accent-gold);font-size:0.72rem;">${p.folio}</small>` : ""}
             </div>
           </div>
         </td>
@@ -3885,8 +3929,10 @@ function handlePlayerRegSubmit(e) {
     }
   } else {
     const newId = Date.now();
+    const newFolio = generateFolio();
     squadData.push({
       id: newId,
+      folio: newFolio,
       number,
       name,
       position,
@@ -3919,7 +3965,7 @@ function handlePlayerRegSubmit(e) {
     });
     saveData();
     showToast(
-      `Niño ${name} registrado correctamente con su expediente.`,
+      `Niño ${name} registrado correctamente · Folio: ${newFolio}`,
       "success",
     );
   }
@@ -5532,7 +5578,7 @@ function openCredentialModal(playerId) {
 
   const idCodeEl = document.getElementById("credIdCode");
   if (idCodeEl)
-    idCodeEl.textContent = `LA-2026-${String(p.id).padStart(3, "0")}`;
+    idCodeEl.textContent = p.folio || `LA-2026-${String(p.id).padStart(4, "0")}`;
 
   // Generar QR interactivo
   const qrContainer = document.getElementById("credQRCode");

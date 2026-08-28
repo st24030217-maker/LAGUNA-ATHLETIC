@@ -166,6 +166,10 @@ create table if not exists public.justifications (
 alter table public.justifications
   add column if not exists detail text;
 
+-- Columna folio único por jugador (formato LA-YYYY-XXXX)
+alter table public.players
+  add column if not exists folio text unique;
+
 -- ============================================================================
 -- 3. ÍNDICES DE RENDIMIENTO
 -- ============================================================================
