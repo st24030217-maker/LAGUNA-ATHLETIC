@@ -1,0 +1,22 @@
+# Archivos multimedia grandes no referenciados
+Gold_logo_zooms_in_202608121245.mp4
+*.mp4
+*.mov
+
+# Credenciales y configuracion local de Supabase
+.env
+.env.local
+supabase/.temp
+
+# Configuracion local de opencode (contiene API keys - NO subir)
+code.json
+opencode.json
+collect/
+
+# Imagenes huérfanas no referenciadas en la app
+unnamed (1).jpg
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log

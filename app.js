@@ -52,39 +52,15 @@ function initSupabase() {
 }
 
 async function restoreSupabaseSession() {
+  // Auto-login desactivado: siempre se requiere usuario y contraseña al abrir la app.
   if (!supabaseClient) return;
   try {
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabaseClient.auth.getSession();
-    if (sessionError) throw sessionError;
-    if (!session) return;
-
-    const { data: profile, error: profileError } = await supabaseClient
-      .from("profiles")
-      .select("role, player_id")
-      .eq("id", session.user.id)
-      .single();
-    if (profileError || !profile) {
-      console.error("Error restaurando el perfil de Supabase:", profileError);
-      await supabaseClient.auth.signOut();
-      sessionStorage.removeItem("laguna_active_role");
-      sessionStorage.removeItem("laguna_auth_user");
-      return;
-    }
-
-    applySupabaseProfile(session.user, profile);
-    await syncAllFromCloud();
-    queueCloudSync();
-    document.getElementById("loginScreen")?.classList.add("hidden");
-    document.getElementById("appLayout").style.display = "grid";
-    postLoginInit();
-  } catch (error) {
-    console.error("Error restaurando la sesión de Supabase:", error);
-    sessionStorage.removeItem("laguna_active_role");
-    sessionStorage.removeItem("laguna_auth_user");
+    await supabaseClient.auth.signOut();
+  } catch (e) {
+    // silencioso — no importa si ya no había sesión activa
   }
+  sessionStorage.removeItem("laguna_active_role");
+  sessionStorage.removeItem("laguna_auth_user");
 }
 
 function applySupabaseProfile(user, profile) {
@@ -1021,9 +997,9 @@ function triggerAppLoading(
 
 async function handleLogin(e) {
   e.preventDefault();
-  const username =
-    document.getElementById("loginUsernameInput")?.value.trim() ||
-    DEFAULT_AUTH_USERNAME;
+  const username = (
+    document.getElementById("loginUsernameInput")?.value || ""
+  ).trim();
   const pinInput = document.getElementById("loginPinInput")
     ? document.getElementById("loginPinInput").value.trim()
     : "";
@@ -5938,7 +5914,21 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("./sw.js")
-      .then(() => console.log("Laguna Athletic PWA Service Worker activo."))
+      .then((reg) => {
+        console.log("Laguna Athletic PWA Service Worker activo.");
+        reg.addEventListener("updatefound", () => {
+          const newSW = reg.installing;
+          if (!newSW) return;
+          newSW.addEventListener("statechange", () => {
+            if (
+              newSW.state === "activated" &&
+              navigator.serviceWorker.controller
+            ) {
+              location.reload();
+            }
+          });
+        });
+      })
       .catch((err) => console.log("PWA Service Worker:", err));
   });
 }

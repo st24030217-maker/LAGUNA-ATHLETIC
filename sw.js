@@ -1,4 +1,5 @@
-const CACHE_NAME = "laguna-athletic-v3-live";
+const CACHE_VERSION = "2026.8.25.1";
+const CACHE_NAME = `laguna-athletic-${CACHE_VERSION}`;
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,15 +7,10 @@ const APP_SHELL = [
   "./app.js",
   "./manifest.json",
   "./LAGUNA.jpg",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./icon-maskable-512.png",
   "./assets/players/equipo-celebracion-estadio.jpeg",
-  "./assets/players/052426da-d923-4c2c-8a7e-787ddbfe5396.jpeg",
-  "./assets/players/0d1df12f-a8e1-4ca5-a9ae-a2d4b5ecf3e8.jpeg",
-  "./assets/players/13e0e666-1591-426d-a1db-625e2ff7820b.jpeg",
-  "./assets/players/70a8b95f-a959-4146-b75e-c422fd63f7de.jpeg",
-  "./assets/players/7fb337d9-03e3-4a5f-a29c-b4ac4dbd6ec2.jpeg",
-  "./assets/players/a38b27d6-243c-4b80-a156-420f4b51c611.jpeg",
-  "./assets/players/ab25b11a-ccb3-4968-a8bc-d81fe3807b91.jpeg",
-  "./assets/players/aeef1f1a-7984-4790-95dc-e0ee47b20927.jpeg",
 ];
 
 self.addEventListener("install", (e) => {
@@ -38,15 +34,17 @@ self.addEventListener("activate", (e) => {
 });
 
 // Estrategia Network-First: Siempre busca la versión más reciente del servidor
+// Las fotos de jugadores (assets/players) se cachean bajo demanda al subirlas,
+// evitando editar esta lista manualmente con cada alta.
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+  const url = new URL(e.request.url);
+  const sameOrigin = url.origin === self.location.origin;
+  if (!sameOrigin) return;
   e.respondWith(
     fetch(e.request)
       .then((networkRes) => {
-        if (
-          networkRes.ok &&
-          new URL(e.request.url).origin === self.location.origin
-        ) {
+        if (networkRes.ok) {
           const responseCopy = networkRes.clone();
           caches
             .open(CACHE_NAME)
@@ -55,7 +53,13 @@ self.addEventListener("fetch", (e) => {
         return networkRes;
       })
       .catch(() => {
-        return caches.match(e.request);
+        return caches.match(e.request).then((cached) => {
+          if (cached) return cached;
+          return new Response("", {
+            status: 404,
+            statusText: "Offline sin caché",
+          });
+        });
       }),
   );
 });

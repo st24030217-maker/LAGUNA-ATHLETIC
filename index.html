@@ -13,7 +13,8 @@
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <link rel="icon" type="image/jpeg" href="LAGUNA.jpg" />
+    <link rel="icon" type="image/png" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
     <link rel="manifest" href="manifest.json" />
     <title>Laguna Athletic · Pro Dashboard</title>
     <meta
@@ -32,12 +33,12 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 
-    <link rel="stylesheet" href="styles.css?v=2026.8.24.6" />
+    <link rel="stylesheet" href="styles.css?v=2026.8.25.1" />
   </head>
   <body class="dark-theme">
     <!-- PANTALLA DE CARGA (PRELOADER PROFESIONAL) -->
@@ -163,6 +164,7 @@
               type="text"
               id="loginUsernameInput"
               class="login-pin-input login-username-input"
+              value="admin"
               placeholder="Escribe tu usuario"
               autocomplete="username"
               required
@@ -4541,6 +4543,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=2026.8.24.6"></script>
+    <script src="app.js?v=2026.8.25.1"></script>
   </body>
 </html>

@@ -21,3 +21,10 @@
 -- ==============================================================================
 -- FIN DEL ARCHIVO – no hay SQL ejecutable aquí.
 -- ==============================================================================
+
+-- ⛔ Salvaguarda: este bloque aborta la ejecución si alguien corre este archivo
+-- por error, garantizando que jamás se aplique el esquema inseguro a la BD.
+DO $$
+BEGIN
+    RAISE EXCEPTION 'ARCHIVO OBSOLETO: supabase_schema.sql NO debe ejecutarse. Usa supabase_secure_setup.sql en su lugar.';
+END $$;
