@@ -455,9 +455,10 @@ textarea:focus-visible {
 }
 
 .login-pin-input::placeholder {
-  color: rgba(255, 255, 255, 0.15);
-  letter-spacing: 6px;
-  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: normal;
+  font-size: 0.92rem;
+  font-family: var(--font-body);
 }
 
 .login-pin-input:focus {
@@ -1331,16 +1332,15 @@ textarea:focus-visible {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 6px;
-  min-width: 680px;
 }
 .modern-table th {
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
-  padding: 0 1rem 0.5rem;
+  letter-spacing: 0.8px;
+  padding: 0 0.7rem 0.5rem;
   text-align: left;
   white-space: nowrap;
 }
@@ -1348,8 +1348,8 @@ textarea:focus-visible {
   background: rgba(10, 14, 22, 0.75);
   border-top: 1px solid var(--border-glass);
   border-bottom: 1px solid var(--border-glass);
-  padding: 0.85rem 1rem;
-  font-size: 0.88rem;
+  padding: 0.75rem 0.7rem;
+  font-size: 0.86rem;
   vertical-align: middle;
   transition: background 0.2s;
 }
@@ -4156,5 +4156,90 @@ textarea:focus-visible {
     padding-inline: clamp(2rem, 5vw, 5rem);
     background: rgba(241, 245, 249, 0.68);
     border-top-color: #e2e8f0;
+  }
+}
+
+/* ==========================================================================
+   MOBILE LOGIN — IMAGEN VISIBLE ARRIBA + TARJETA ABAJO
+   ========================================================================== */
+@media (max-width: 900px) {
+  .login-overlay {
+    display: block;
+    padding: 0;
+    overflow-y: auto;
+    background: #050b14;
+  }
+
+  .login-image-carousel {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 38dvh;
+    min-height: 250px;
+    filter: none;
+  }
+
+  .login-overlay-dim {
+    top: 0;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    height: 38dvh;
+    min-height: 250px;
+    background: linear-gradient(
+      180deg,
+      rgba(3, 9, 18, 0) 50%,
+      rgba(5, 11, 20, 0.92) 100%
+    );
+  }
+
+  .login-carousel-dots {
+    top: 1rem;
+    right: 1rem;
+    left: auto;
+    bottom: auto;
+  }
+
+  .login-box {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    max-height: none;
+    margin-top: -22px;
+    border: 0;
+    border-radius: 22px 22px 0 0;
+    background: #070c16;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.55);
+  }
+
+  .login-header {
+    padding-top: 1.6rem;
+  }
+}
+
+/* ==========================================================================
+   BANNER DE EVENTO COMPACTO EN MÓVIL
+   ========================================================================== */
+@media (max-width: 600px) {
+  .hero-event-card {
+    padding: 1.1rem 1.25rem;
+    gap: 0.8rem;
+  }
+
+  .hero-event-info h2 {
+    font-size: 1.25rem;
+    margin: 0.35rem 0;
+  }
+
+  .hero-event-info p {
+    font-size: 0.82rem;
+  }
+
+  .hero-stats .stat-box {
+    padding: 0.55rem 1rem;
+    font-size: 0.95rem;
   }
 }

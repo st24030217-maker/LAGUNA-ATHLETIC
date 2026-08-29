@@ -2994,6 +2994,27 @@ function simulateSendNotices() {
 function initChart() {
   const canvas = document.getElementById("attendanceChart");
   if (!canvas || typeof Chart === "undefined") return;
+  const centerLabelPlugin = {
+    id: "centerLabel",
+    afterDraw(chart) {
+      const values = chart.data.datasets[0].data;
+      const total = values.reduce((sum, v) => sum + v, 0);
+      const pct = total ? Math.round((values[0] / total) * 100) : 0;
+      const { ctx, chartArea } = chart;
+      const x = (chartArea.left + chartArea.right) / 2;
+      const y = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "700 26px 'JetBrains Mono', monospace";
+      ctx.fillStyle = total ? "#10b981" : "#94a3b8";
+      ctx.fillText(total ? `${pct}%` : "—", x, y - 10);
+      ctx.font = "11px 'JetBrains Mono', monospace";
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText(total ? "presentes hoy" : "sin registros", x, y + 14);
+      ctx.restore();
+    },
+  };
   attendanceChart = new Chart(canvas.getContext("2d"), {
     type: "doughnut",
     data: {
@@ -3019,6 +3040,7 @@ function initChart() {
       },
       cutout: "75%",
     },
+    plugins: [centerLabelPlugin],
   });
   updateChartData();
 }
@@ -4458,13 +4480,13 @@ function renderMonthlyMatrix() {
         pay.status === "Pagado",
     );
     const statusBadge = hasAugustPaid
-      ? '<span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> AGOSTO PAGADO</span>'
-      : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> AGOSTO PENDIENTE</span>';
+      ? '<span class="badge badge-success"><i class="fa-solid fa-check-circle"></i> PAGADO</span>'
+      : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> PENDIENTE</span>';
 
     const siblings = detectSiblings(p.id);
     const sibTag =
       siblings.length > 0
-        ? `<br><small class="text-warning"><i class="fa-solid fa-users"></i> Descuento Hermano Active (-20%)</small>`
+        ? `<br><small class="text-warning"><i class="fa-solid fa-users"></i> Desc. Hermano (-20%)</small>`
         : "";
 
     tbody.innerHTML += `
@@ -4481,8 +4503,8 @@ function renderMonthlyMatrix() {
         </td>
         <td style="white-space:nowrap;">${statusBadge}</td>
         <td style="white-space:nowrap;">
-          <button class="btn btn-ghost" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="quickChargeMonth(${p.id}, 'Agosto 2026')">
-            <i class="fa-solid fa-cash-register text-success"></i> Cobrar Mes
+          <button class="btn btn-ghost" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="quickChargeMonth(${p.id}, 'Agosto 2026')" title="Cobrar Agosto 2026">
+            <i class="fa-solid fa-cash-register text-success"></i> Cobrar
           </button>
         </td>
       </tr>
