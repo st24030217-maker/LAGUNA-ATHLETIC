@@ -411,6 +411,42 @@
               Gestiona la temporada 2026 en tiempo real.
             </p>
           </div>
+          <div
+            class="topbar-actions"
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              margin-left: auto;
+            "
+          >
+            <button
+              id="cloudStatusBadge"
+              class="badge badge-outline"
+              style="
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.45rem;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.75rem;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 999px;
+                background: rgba(0, 0, 0, 0.25);
+                color: #fff;
+                transition: all 0.2s;
+              "
+              onclick="openSupabaseConfigModal()"
+              title="Configuración de Base de Datos Supabase (Nube)"
+            >
+              <i
+                class="fa-solid fa-cloud"
+                id="cloudStatusIcon"
+                style="color: var(--accent-gold); font-size: 0.85rem"
+              ></i>
+              <span id="cloudStatusText">Modo Local</span>
+            </button>
+          </div>
           <div id="toastContainer" class="toast-container"></div>
         </header>
 

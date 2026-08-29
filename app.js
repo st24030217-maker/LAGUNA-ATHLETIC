@@ -10,6 +10,7 @@ let paymentsData = [];
 
 let currentRole = null;
 let loggedInUser = null;
+let profilePlayerId = null;
 let attendanceChart = null;
 
 // ==========================================================================
@@ -87,8 +88,9 @@ async function restoreSupabaseSession() {
 }
 
 function applySupabaseProfile(user, profile) {
+  profilePlayerId = profile.player_id;
   loggedInUser =
-    squadData.find((player) => player.id === profile.player_id) || null;
+    squadData.find((player) => player.id === profilePlayerId) || null;
   currentRole = ["admin", "director"].includes(profile.role)
     ? "dt"
     : profile.role === "coach"
@@ -409,8 +411,12 @@ async function deletePlayerFromCloud(playerId) {
   }
 }
 
+function isStaffRole() {
+  return currentRole === "dt" || currentRole === "auxiliar";
+}
+
 async function syncLocalDataToCloud() {
-  if (!supabaseClient || !cloudConnected) return;
+  if (!supabaseClient || !cloudConnected || !isStaffRole()) return;
   const operations = [
     supabaseClient.from("players").upsert(squadData.map(mapPlayerToCloud)),
     supabaseClient.from("payments").upsert(paymentsData.map(mapPaymentToCloud)),
@@ -432,7 +438,7 @@ async function syncLocalDataToCloud() {
 }
 
 function queueCloudSync() {
-  if (!supabaseClient || !cloudConnected) return;
+  if (!supabaseClient || !cloudConnected || !isStaffRole()) return;
   clearTimeout(cloudSyncTimer);
   cloudSyncTimer = setTimeout(async () => {
     try {
@@ -1116,11 +1122,18 @@ function postLoginInit() {
   let displayName = "";
   let displayRole = "";
   if (currentRole === "jugador") {
-    loggedInUser = squadData[0];
-    displayName = loggedInUser.name;
-    displayRole = `Jugador · #${loggedInUser.number} · ${loggedInUser.position}`;
-    document.getElementById("activeUserName").innerText =
-      `${loggedInUser.name} (#${loggedInUser.number})`;
+    loggedInUser =
+      squadData.find((p) => p.id === profilePlayerId) || loggedInUser;
+    if (loggedInUser) {
+      displayName = loggedInUser.name;
+      displayRole = `Jugador · #${loggedInUser.number} · ${loggedInUser.position}`;
+      document.getElementById("activeUserName").innerText =
+        `${loggedInUser.name} (#${loggedInUser.number})`;
+    } else {
+      displayName = "Jugador";
+      displayRole = "Jugador · Sin ficha vinculada";
+      document.getElementById("activeUserName").innerText = "Jugador";
+    }
   } else if (currentRole === "dt") {
     displayName = "Coach Zúñiga";
     displayRole = "Director Técnico · Admin";
@@ -1268,13 +1281,13 @@ function populateDynamicGroups() {
 function populateQuickPlayerSelect() {
   const select = document.getElementById("quickPlayerSelect");
   const injurySelect = document.getElementById("injuryPlayerSelect");
-  if (!select) return;
-  select.innerHTML = "";
+  if (!select && !injurySelect) return;
+  if (select) select.innerHTML = "";
   if (injurySelect) injurySelect.innerHTML = "";
 
   squadData.forEach((p) => {
     const opt = `<option value="${p.id}">#${p.number} ${p.name}</option>`;
-    select.innerHTML += opt;
+    if (select) select.innerHTML += opt;
     if (injurySelect && !p.injured) injurySelect.innerHTML += opt;
   });
 }
