@@ -6,6 +6,7 @@ const APP_SHELL = [
   "./app.js",
   "./manifest.json",
   "./LAGUNA.jpg",
+  "./assets/players/equipo-celebracion-estadio.jpeg",
   "./assets/players/052426da-d923-4c2c-8a7e-787ddbfe5396.jpeg",
   "./assets/players/0d1df12f-a8e1-4ca5-a9ae-a2d4b5ecf3e8.jpeg",
   "./assets/players/13e0e666-1591-426d-a1db-625e2ff7820b.jpeg",
