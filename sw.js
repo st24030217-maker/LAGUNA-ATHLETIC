@@ -1,16 +1,29 @@
-const CACHE_VERSION = "2026.8.25.1";
+const CACHE_VERSION = "2026.8.31.1";
 const CACHE_NAME = `laguna-athletic-${CACHE_VERSION}`;
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
-  "./app.js",
   "./manifest.json",
   "./LAGUNA.jpg",
   "./icon-192.png",
   "./icon-512.png",
   "./icon-maskable-512.png",
   "./assets/players/equipo-celebracion-estadio.jpeg",
+  "./js/state.js",
+  "./js/supabase.js",
+  "./js/ui.js",
+  "./js/auth.js",
+  "./js/attendance.js",
+  "./js/tactical.js",
+  "./js/medical.js",
+  "./js/calendar.js",
+  "./js/justifications.js",
+  "./js/notices.js",
+  "./js/stats.js",
+  "./js/registration.js",
+  "./js/payments.js",
+  "./js/main.js",
 ];
 
 self.addEventListener("install", (e) => {
