@@ -13,16 +13,16 @@
     <link rel="icon" type="image/png" href="icon-192.png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
     <link rel="manifest" href="manifest.json" />
-    <title>Laguna Athletic · Pro Dashboard</title>
+    <title>Laguna Athletic | Gestión del Plantel 2026</title>
     <meta
       name="description"
-      content="Sistema avanzado y moderno de gestión para Laguna Athletic."
+      content="Sistema oficial de gestión, asistencia y táctica de Laguna Athletic (Temporada 2026)."
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
 
@@ -122,10 +122,7 @@
       <div class="login-carousel-dots" aria-label="Galería de imágenes"></div>
       <div class="login-overlay-dim"></div>
 
-      <div class="login-box fade-in-up">
-        <!-- Barra superior dorada -->
-        <div class="login-top-bar"></div>
-
+      <div class="login-box">
         <!-- Encabezado: Logo + Club -->
         <div class="login-header">
           <div class="login-logo-wrapper">
@@ -134,27 +131,17 @@
               alt="Laguna Athletic"
               class="login-logo-img"
             />
-            <div class="login-orbit-ring"></div>
           </div>
           <div class="login-club-info">
-            <h1 class="login-club-name">LAGUNA ATHLETIC</h1>
-            <p class="login-club-slogan">UNIDOS POR LA MISMA PASIÓN</p>
-            <span class="login-portal-badge"
-              ><i class="fa-solid fa-shield-halved"></i> Portal Oficial de
-              Gestión</span
-            >
+            <h1 class="login-club-name">Laguna Athletic</h1>
+            <p class="login-club-slogan">Siempre Contigo · Temporada 2026</p>
           </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="login-divider">
-          <span><i class="fa-solid fa-futbol"></i></span>
         </div>
 
         <!-- Formulario -->
         <form id="loginForm" onsubmit="handleLogin(event)" class="login-form">
           <div class="login-field">
-            <label class="login-label">
+            <label class="login-label" for="loginUsernameInput">
               <i class="fa-solid fa-user"></i> Usuario
             </label>
             <input
@@ -177,8 +164,8 @@
           </div>
 
           <div class="login-field mt-3">
-            <label class="login-label">
-              <i class="fa-solid fa-lock"></i> Contraseña / PIN
+            <label class="login-label" for="loginPinInput">
+              <i class="fa-solid fa-lock"></i> Contraseña o PIN
             </label>
             <div class="login-pin-wrap">
               <input
@@ -214,20 +201,20 @@
                 );
                 return false;
               "
-              >¿Olvidaste tu PIN?</a
+              >¿Olvidaste tu contraseña?</a
             >
           </div>
 
           <button type="submit" id="btnLoginSubmit" class="btn-login-primary">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            <span>INGRESAR AL SISTEMA</span>
+            <span>Iniciar Sesión</span>
+            <i class="fa-solid fa-arrow-right"></i>
           </button>
         </form>
 
         <!-- Footer -->
         <div class="login-footer-security">
-          <span><i class="fa-solid fa-futbol"></i> Laguna Athletic</span>
-          <span>Temporada 2026</span>
+          <span>Laguna Athletic Club</span>
+          <span>Panel de Gestión 2026</span>
         </div>
       </div>
     </div>
@@ -256,7 +243,7 @@
                 data-tab="mod-home"
                 onclick="showModuleTab('mod-home')"
               >
-                <i class="fa-solid fa-house-chimney"></i> <span>Dashboard</span>
+                <i class="fa-solid fa-house-chimney"></i> <span>Tablero Principal</span>
               </button>
             </div>
           </div>
@@ -267,10 +254,7 @@
               class="nav-group-header"
               onclick="toggleNavGroup('navGroupDaily')"
             >
-              <span
-                ><i class="fa-solid fa-clock-rotate-left text-primary"></i>
-                CONTROL DIARIO</span
-              >
+              <span><i class="fa-solid fa-clipboard-user text-primary"></i> Control Diario</span>
               <i class="fa-solid fa-chevron-down chevron-icon"></i>
             </button>
             <div class="nav-group-body">
@@ -279,7 +263,7 @@
                 data-tab="mod-qr"
                 onclick="showModuleTab('mod-qr')"
               >
-                <i class="fa-solid fa-qrcode"></i> <span>Registro QR</span>
+                <i class="fa-solid fa-qrcode"></i> <span>Asistencia QR</span>
               </button>
               <button
                 class="tab-btn"
@@ -294,7 +278,7 @@
                 data-tab="mod-avisos"
                 onclick="showModuleTab('mod-avisos')"
               >
-                <i class="fa-brands fa-whatsapp"></i> <span>Avisos Bot</span>
+                <i class="fa-brands fa-whatsapp"></i> <span>Avisos WhatsApp</span>
               </button>
             </div>
           </div>
@@ -305,9 +289,7 @@
               class="nav-group-header"
               onclick="toggleNavGroup('navGroupSports')"
             >
-              <span
-                ><i class="fa-solid fa-futbol text-primary"></i> DEPORTIVO</span
-              >
+              <span><i class="fa-solid fa-futbol text-primary"></i> Área Deportiva</span>
               <i class="fa-solid fa-chevron-down chevron-icon"></i>
             </button>
             <div class="nav-group-body">
@@ -317,7 +299,7 @@
                 onclick="showModuleTab('mod-registro')"
               >
                 <i class="fa-solid fa-user-plus"></i>
-                <span>Registro Jugadores</span>
+                <span>Fichas de Jugadores</span>
               </button>
               <button
                 class="tab-btn"
@@ -332,21 +314,21 @@
                 onclick="showModuleTab('mod-calendario')"
               >
                 <i class="fa-solid fa-calendar-days"></i>
-                <span>Calendario</span>
+                <span>Calendario Oficial</span>
               </button>
               <button
                 class="tab-btn"
                 data-tab="mod-medico"
                 onclick="showModuleTab('mod-medico')"
               >
-                <i class="fa-solid fa-staff-snake"></i> <span>Enfermería</span>
+                <i class="fa-solid fa-staff-snake"></i> <span>Reporte Médico</span>
               </button>
               <button
                 class="tab-btn"
                 data-tab="mod-estadisticas"
                 onclick="showModuleTab('mod-estadisticas')"
               >
-                <i class="fa-solid fa-chart-line"></i> <span>Rendimiento</span>
+                <i class="fa-solid fa-chart-line"></i> <span>Rendimiento y Goleo</span>
               </button>
             </div>
           </div>
@@ -357,10 +339,7 @@
               class="nav-group-header"
               onclick="toggleNavGroup('navGroupFinance')"
             >
-              <span
-                ><i class="fa-solid fa-wallet text-success"></i> FINANZAS &
-                FAMILIAS</span
-              >
+              <span><i class="fa-solid fa-wallet text-primary"></i> Finanzas y Cuotas</span>
               <i class="fa-solid fa-chevron-down chevron-icon"></i>
             </button>
             <div class="nav-group-body">
@@ -370,7 +349,7 @@
                 onclick="showModuleTab('mod-pagos')"
               >
                 <i class="fa-solid fa-money-bill-wave"></i>
-                <span>Pagos y Hermanos</span>
+                <span>Control de Pagos</span>
               </button>
             </div>
           </div>
@@ -407,10 +386,10 @@
           </button>
           <div class="topbar-greeting">
             <h1 class="greeting-text" id="greetingHeader">
-              Bienvenido al sistema.
+              Bienvenido al sistema
             </h1>
             <p class="greeting-sub">
-              Gestiona la temporada 2026 en tiempo real.
+              Control operativo y seguimiento del plantel 2026
             </p>
           </div>
           <div
@@ -453,19 +432,19 @@
         </header>
 
         <div class="content-wrapper">
-          <!-- 00. DASHBOARD HOME -->
+          <!-- DASHBOARD HOME -->
           <div id="mod-home" class="module-panel active">
             <!-- Hero Banner -->
             <div
-              class="hero-event-card glass-panel margin-bottom fade-in-up"
+              class="hero-event-card margin-bottom"
               id="dashNextEventBanner"
             >
               <div class="hero-event-info">
-                <span class="badge badge-neon" id="dashEventBadge"
-                  >PRÓXIMO EVENTO</span
+                <span class="badge badge-event" id="dashEventBadge"
+                  >Próxima Sesión o Partido</span
                 >
                 <h2 id="dashEventTitle">Cargando evento próximo...</h2>
-                <p id="dashEventSub">Temporada 2026 · Laguna Athletic</p>
+                <p id="dashEventSub">Temporada 2026</p>
               </div>
               <div class="hero-stats">
                 <div class="stat-box">
@@ -565,7 +544,7 @@
                     onclick="showModuleTab('mod-qr')"
                   >
                     <i class="fa-solid fa-qrcode"></i>
-                    <span>Registro QR</span>
+                    <span>Pasar Lista QR</span>
                   </button>
                   <button
                     class="quick-access-btn"
@@ -579,14 +558,14 @@
                     onclick="showModuleTab('mod-pagos')"
                   >
                     <i class="fa-solid fa-money-bill-wave"></i>
-                    <span>Pagos</span>
+                    <span>Control de Pagos</span>
                   </button>
                   <button
                     class="quick-access-btn"
                     onclick="showModuleTab('mod-avisos')"
                   >
                     <i class="fa-brands fa-whatsapp"></i>
-                    <span>Avisos WA</span>
+                    <span>Avisos WhatsApp</span>
                   </button>
                   <button
                     class="quick-access-btn"
@@ -600,7 +579,7 @@
                     onclick="showModuleTab('mod-registro')"
                   >
                     <i class="fa-solid fa-user-plus"></i>
-                    <span>Registro</span>
+                    <span>Nuevo Jugador</span>
                   </button>
                 </div>
               </div>
@@ -608,8 +587,7 @@
 
             <!-- Fila de Respaldo y Mantenimiento de Datos -->
             <div
-              class="glass-card margin-top fade-in-up"
-              style="animation-delay: 0.2s"
+              class="glass-card margin-top"
             >
               <div
                 class="flex-between align-center"
@@ -623,8 +601,7 @@
                       color: var(--accent-gold);
                     "
                   >
-                    <i class="fa-solid fa-shield-halved"></i> Centro de Respaldo
-                    y Seguridad de Datos
+                    <i class="fa-solid fa-database"></i> Respaldo y Base de Datos
                   </h4>
                   <p
                     class="subtitle-text text-muted"
@@ -641,15 +618,14 @@
                     onclick="exportDatabaseBackup()"
                     title="Descargar copia de seguridad en JSON"
                   >
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Descargar
-                    Backup
+                    <i class="fa-solid fa-download"></i> Descargar Copia JSON
                   </button>
                   <label
                     class="btn btn-outline btn-sm"
                     style="margin-bottom: 0; cursor: pointer"
                     title="Restaurar base de datos desde un archivo JSON"
                   >
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Cargar Backup
+                    <i class="fa-solid fa-upload"></i> Restaurar Copia
                     <input
                       type="file"
                       id="backupFileInput"
@@ -664,26 +640,25 @@
                     style="color: var(--accent-danger)"
                     title="Restablecer datos originales del club"
                   >
-                    <i class="fa-solid fa-trash-can"></i> Reiniciar Todo
+                    <i class="fa-solid fa-rotate-left"></i> Restablecer Datos
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 01. REGISTRO QR -->
+          <!-- ASISTENCIA QR -->
           <div id="mod-qr" class="module-panel">
             <div
-              class="hero-event-card glass-panel margin-bottom fade-in-up"
+              class="hero-event-card margin-bottom"
               id="nextEventBanner"
             >
               <div class="hero-event-info">
-                <span class="badge badge-neon" id="bannerBadge"
-                  >MODO ASISTENCIA</span
-                >
-                <h2 id="bannerTitle">Captura de Asistencia en Progreso</h2>
+                <span class="badge badge-event" id="bannerBadge"
+                  >Pase de Lista</span>
+                <h2 id="bannerTitle">Registro de Asistencia</h2>
                 <p id="bannerSubtitle">
-                  El código QR actual es válido para la sesión de hoy.
+                  Escaneo activo para la sesión de hoy.
                 </p>
               </div>
               <div class="hero-stats">
