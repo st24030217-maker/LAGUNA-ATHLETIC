@@ -114,7 +114,7 @@ export function initLoginCarousel() {
 // ---------------------------------------------------------------------------
 // NAVEGACIÓN DE MÓDULOS
 // ---------------------------------------------------------------------------
-export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesInit } = {}) {
+export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesInit, onExpedientesRender } = {}) {
   document.querySelectorAll(".module-panel").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
 
@@ -128,9 +128,10 @@ export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesIni
     if (parentGroup && !parentGroup.classList.contains("open")) parentGroup.classList.add("open");
   }
 
-  if (tabId === "mod-home"         && typeof onHomeRender  === "function") onHomeRender();
-  if (tabId === "mod-estadisticas" && typeof onStatsResize === "function") onStatsResize();
-  if (tabId === "mod-avisos"       && typeof onNoticesInit === "function") onNoticesInit();
+  if (tabId === "mod-home"         && typeof onHomeRender        === "function") onHomeRender();
+  if (tabId === "mod-estadisticas" && typeof onStatsResize      === "function") onStatsResize();
+  if (tabId === "mod-avisos"       && typeof onNoticesInit       === "function") onNoticesInit();
+  if (tabId === "mod-expedientes"  && typeof onExpedientesRender === "function") onExpedientesRender();
 
   if (window.innerWidth <= 900) {
     document.getElementById("mainSidebar")?.classList.remove("open");

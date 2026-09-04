@@ -303,6 +303,14 @@
               </button>
               <button
                 class="tab-btn"
+                data-tab="mod-expedientes"
+                onclick="showModuleTab('mod-expedientes')"
+              >
+                <i class="fa-solid fa-folder-tree"></i>
+                <span>Expedientes por Año</span>
+              </button>
+              <button
+                class="tab-btn"
                 data-tab="mod-alineacion"
                 onclick="showModuleTab('mod-alineacion')"
               >
@@ -645,6 +653,85 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- EXPEDIENTES DIGITALES Y CARPETAS POR AÑO -->
+          <div id="mod-expedientes" class="module-panel">
+            <div class="glass-card margin-bottom">
+              <div class="flex-between align-center flex-wrap gap-2">
+                <div>
+                  <h2 class="section-title mb-1">
+                    <i class="fa-solid fa-folder-tree text-gold"></i> Expedientes y Carpetas por Año
+                  </h2>
+                  <p class="subtitle-text text-muted">
+                    Organización segmentada de documentación oficial por año de nacimiento y categoría.
+                  </p>
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button class="btn btn-outline btn-sm" onclick="renderExpedientesModule()">
+                    <i class="fa-solid fa-arrows-rotate"></i> Actualizar
+                  </button>
+                </div>
+              </div>
+
+              <!-- KPIs de expedientes -->
+              <div class="expedientes-kpi-grid margin-top">
+                <div class="kpi-mini-card kpi-blue">
+                  <i class="fa-solid fa-users"></i>
+                  <div>
+                    <span class="kpi-mini-label">Total Alumnos</span>
+                    <strong class="kpi-mini-val" id="expStatTotal">0</strong>
+                  </div>
+                </div>
+                <div class="kpi-mini-card kpi-green">
+                  <i class="fa-solid fa-file-circle-check"></i>
+                  <div>
+                    <span class="kpi-mini-label">Completos (5/5)</span>
+                    <strong class="kpi-mini-val" id="expStatComplete">0</strong>
+                  </div>
+                </div>
+                <div class="kpi-mini-card kpi-orange">
+                  <i class="fa-solid fa-file-circle-exclamation"></i>
+                  <div>
+                    <span class="kpi-mini-label">Con Faltantes</span>
+                    <strong class="kpi-mini-val" id="expStatPending">0</strong>
+                  </div>
+                </div>
+                <div class="kpi-mini-card kpi-gold">
+                  <i class="fa-solid fa-percent"></i>
+                  <div>
+                    <span class="kpi-mini-label">Cumplimiento Global</span>
+                    <strong class="kpi-mini-val" id="expStatPct">0%</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Toolbar de filtrado y búsqueda -->
+              <div class="expedientes-toolbar margin-top">
+                <div class="exp-search-box">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input
+                    type="text"
+                    id="expSearchInput"
+                    placeholder="Buscar alumno, dorsal, tutor o posición..."
+                    oninput="onExpedientesSearch(this.value)"
+                  />
+                </div>
+                <div class="exp-filters-box">
+                  <select id="expYearFilter" class="form-control select-dark" onchange="setExpedientesFilter(this.value, undefined)">
+                    <option value="Todos">📅 Todos los Años / Categorías</option>
+                  </select>
+                  <select id="expStatusFilter" class="form-control select-dark" onchange="setExpedientesFilter(undefined, this.value)">
+                    <option value="Todos">📄 Todos los Expedientes</option>
+                    <option value="completos">✅ 100% Completos (5/5)</option>
+                    <option value="incompletos">⚠️ Con Documentos Pendientes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contenedor dinámico de Carpetas por Año y tarjetas de niños -->
+            <div id="expedientesYearGrid" class="expedientes-main-grid"></div>
           </div>
 
           <!-- ASISTENCIA QR -->
@@ -4273,6 +4360,78 @@
             Cerrar Archivo
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Modal Ampliado: Carpeta Digital de Expediente del Alumno -->
+    <div id="expChildFolderModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 820px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="profile-header flex-between mb-3 border-bottom pb-2">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <img id="expFolderPhoto" src="LAGUNA.jpg" alt="Foto" style="width: 58px; height: 68px; border-radius: 8px; object-fit: cover; border: 2px solid var(--accent-gold);" />
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <h3 id="expFolderName" class="card-title" style="margin: 0; font-size: 1.25rem; color: #fff;">Nombre del Alumno</h3>
+                <span id="expFolderYearBadge" class="badge badge-gold">Categoría Año ----</span>
+              </div>
+              <p id="expFolderSub" class="text-muted" style="margin: 2px 0 0; font-size: 0.82rem;">#0 · Posición · Estatus</p>
+            </div>
+          </div>
+          <button class="btn btn-ghost" style="padding: 0.5rem;" onclick="closeChildFolderModal()">
+            <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
+          </button>
+        </div>
+
+        <div style="flex: 1; overflow-y: auto; padding-right: 0.3rem;">
+          <!-- Recuadro Tutor y Folio -->
+          <div id="expFolderTutorBox" class="tutor-exp-banner mb-3"></div>
+
+          <!-- Barra de progreso -->
+          <div class="glass-panel p-3 mb-3" style="border-radius: 10px;">
+            <div class="flex-between align-center mb-1">
+              <strong style="font-size: 0.88rem; color: var(--text-main);"><i class="fa-solid fa-file-shield text-gold"></i> Estado de la Documentación Oficial</strong>
+              <span id="expFolderProgText" class="badge badge-outline" style="font-size: 0.75rem;">0 de 5 Documentos</span>
+            </div>
+            <div class="progress-bar-bg" style="height: 10px;">
+              <div id="expFolderProgFill" class="progress-bar-fill complete" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Rejilla de tarjetas de documentos -->
+          <div id="expFolderDocsContainer" class="exp-docs-cards-grid"></div>
+        </div>
+
+        <div class="flex-between align-center border-top pt-3 mt-3">
+          <button class="btn btn-ghost btn-sm" onclick="closeChildFolderModal()">
+            <i class="fa-solid fa-arrow-left"></i> Volver a Expedientes
+          </button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-primary btn-sm" onclick="printChildDossier(currentExpPlayerId)">
+              <i class="fa-solid fa-print"></i> Imprimir Ficha / Dossier
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Visualizador de Documentos Ampliado (Imagen/PDF) -->
+    <div id="documentViewerModal" class="modal-overlay hidden" style="z-index: 1050;">
+      <div class="glass-card modal-content" style="max-width: 900px; width: 95%;">
+        <div class="flex-between align-center mb-2 border-bottom pb-2">
+          <h3 id="docViewerTitle" class="card-title" style="margin: 0; font-size: 1.1rem; color: var(--accent-gold);">
+            <i class="fa-solid fa-file-magnifying-glass"></i> Visualizador de Documento
+          </h3>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button id="docViewerDownloadBtn" class="btn btn-outline btn-sm">
+              <i class="fa-solid fa-download"></i> Descargar
+            </button>
+            <button class="btn btn-ghost" style="padding: 0.4rem;" onclick="closeDocumentViewerModal()">
+              <i class="fa-solid fa-xmark" style="font-size: 1.2rem;"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="docViewerBody" style="padding: 0.5rem 0;"></div>
       </div>
     </div>
 

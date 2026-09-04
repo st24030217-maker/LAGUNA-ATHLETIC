@@ -98,6 +98,13 @@ import {
   injectPaymentsCallbacks
 } from "./payments.js";
 
+import {
+  renderExpedientesModule, openChildFolderModal, closeChildFolderModal,
+  setExpedientesFilter, onExpedientesSearch, handleDocFileUpload,
+  removeDocFile, togglePlayerDocStatus, openDocumentViewerModal,
+  closeDocumentViewerModal, printChildDossier, injectExpedientesCallbacks
+} from "./expedientes.js";
+
 // ---------------------------------------------------------------------------
 // CONEXIÓN DE CALLBACKS CRUZADOS
 // ---------------------------------------------------------------------------
@@ -110,6 +117,7 @@ function refreshAllModules() {
   renderRankingTable();
   renderDashboard();
   renderRegTable();
+  renderExpedientesModule();
   updateChartData();
 }
 
@@ -127,6 +135,7 @@ injectJustificationsCallbacks({ saveData: appSaveData });
 injectStatsCallbacks({ saveData: appSaveData });
 injectRegCallbacks({ saveData: appSaveData, refreshAllModules });
 injectPaymentsCallbacks({ saveData: appSaveData });
+injectExpedientesCallbacks({ saveData: appSaveData, refreshAllModules });
 injectTacticalCallbacks({ saveData: appSaveData, renderSquadCallupList });
 injectPostLogin(postLoginInit);
 
@@ -506,8 +515,20 @@ window.showModuleTab = (tabId) => showModuleTab(tabId, {
     populateGameInfoPlayerSelect();
     renderPlayerGameInfo();
   },
-  onNoticesInit: populateNoticeControls
+  onNoticesInit: populateNoticeControls,
+  onExpedientesRender: renderExpedientesModule
 });
+window.renderExpedientesModule = renderExpedientesModule;
+window.openChildFolderModal = openChildFolderModal;
+window.closeChildFolderModal = closeChildFolderModal;
+window.setExpedientesFilter = setExpedientesFilter;
+window.onExpedientesSearch = onExpedientesSearch;
+window.handleDocFileUpload = handleDocFileUpload;
+window.removeDocFile = removeDocFile;
+window.togglePlayerDocStatus = togglePlayerDocStatus;
+window.openDocumentViewerModal = openDocumentViewerModal;
+window.closeDocumentViewerModal = closeDocumentViewerModal;
+window.printChildDossier = printChildDossier;
 window.toggleNavGroup = toggleNavGroup;
 window.toggleSidebar = toggleSidebar;
 window.simulateQRCheckIn = simulateQRCheckIn;

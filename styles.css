@@ -6899,3 +6899,463 @@ input[type="search"] {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   ESTILOS: EXPEDIENTES DIGITALES Y CARPETAS POR AÑO
+   ========================================================================== */
+
+/* KPIs de expedientes */
+.expedientes-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.kpi-mini-card {
+  background: rgba(16, 28, 46, 0.7);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+
+  i {
+    font-size: 1.5rem;
+  }
+
+  .kpi-mini-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .kpi-mini-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+}
+
+.kpi-mini-card.kpi-blue i { color: #3b82f6; }
+.kpi-mini-card.kpi-green i { color: #10b981; }
+.kpi-mini-card.kpi-orange i { color: #f59e0b; }
+.kpi-mini-card.kpi-gold i { color: #d4af37; }
+
+/* Toolbar */
+.expedientes-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-glass);
+}
+
+.exp-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+
+  i {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.5rem 0.85rem 0.5rem 2.2rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-size: 0.85rem;
+  }
+
+  input:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+  }
+}
+
+.exp-filters-box {
+  display: flex;
+  gap: 0.5rem;
+
+  select {
+    font-size: 0.82rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    border: 1px solid var(--border-glass);
+    color: #fff;
+  }
+}
+
+/* Year Folder Groups */
+.year-folder-group {
+  background: rgba(16, 28, 46, 0.5);
+  border: 1.5px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+.year-folder-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.year-title-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  h3 {
+    font-size: 1.15rem;
+    color: #fff;
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+.year-stat-pill {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-glass);
+  font-size: 0.82rem;
+}
+
+.year-folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Child Folder Cards */
+.child-folder-card {
+  background: linear-gradient(145deg, #0c1524 0%, #101c2e 100%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.child-folder-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-gold);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.folder-card-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.child-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.child-avatar {
+  width: 58px;
+  height: 68px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1.5px solid var(--accent-gold);
+}
+
+.child-number-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: var(--accent-gold);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.65rem;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.child-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.child-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.child-subtext {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.tutor-info {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.wa-quick-btn {
+  color: #25d366;
+  font-size: 0.85rem;
+  margin-left: 4px;
+  transition: transform 0.2s;
+}
+.wa-quick-btn:hover {
+  transform: scale(1.15);
+}
+
+/* Progress bar */
+.doc-progress-wrap {
+  margin-bottom: 0.65rem;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #d4af37);
+  transition: width 0.3s ease;
+  border-radius: 999px;
+}
+
+.progress-bar-fill.complete {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* Chips */
+.doc-quick-chips {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.chip {
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.chip-ok {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.chip-off {
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Footer of folder card */
+.folder-card-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.65rem;
+}
+
+.folder-card-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: space-between;
+}
+
+/* Modal de Expediente */
+.tutor-exp-banner {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.exp-docs-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doc-file-card {
+  background: rgba(10, 18, 31, 0.8);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  transition: border-color 0.2s ease;
+}
+
+.doc-file-card.verified {
+  border-left: 4px solid #10b981;
+}
+
+.doc-file-card.pending {
+  border-left: 4px solid #f59e0b;
+}
+
+.doc-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.doc-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--accent-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.doc-card-info {
+  flex: 1;
+
+  h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+
+  p {
+    margin: 1px 0 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+}
+
+.custom-switch-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.switch-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.doc-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.doc-preview-thumb {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.doc-preview-thumb.pdf-thumb {
+  background: #ef4444;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+
+  span {
+    font-size: 0.55rem;
+    font-weight: bold;
+  }
+}
+
+.thumb-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.doc-preview-thumb:hover .thumb-hover-overlay {
+  opacity: 1;
+}
+
+.doc-preview-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.doc-card-actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}

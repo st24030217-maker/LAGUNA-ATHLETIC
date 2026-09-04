@@ -365,7 +365,7 @@ export function mapPlayerFromCloud(p) {
     tutorName: p.tutor_name, phone: p.phone, photo: p.photo || "LAGUNA.jpg",
     contacts: p.contacts || [], docActa: p.doc_acta, docCURP: p.doc_curp,
     docMedico: p.doc_medico, docINE: p.doc_ine, docEscolar: p.doc_escolar,
-    gameInfo: p.game_info || [], folio: p.folio || null,
+    docFiles: p.doc_files || {}, gameInfo: p.game_info || [], folio: p.folio || null,
   };
 }
 
@@ -379,7 +379,8 @@ export function mapPlayerToCloud(p) {
     birthdate: p.birthdate || null, tutor_name: p.tutorName, phone: p.phone,
     photo: p.photo || "LAGUNA.jpg", contacts: p.contacts || [],
     doc_acta: p.docActa, doc_curp: p.docCURP, doc_medico: p.docMedico,
-    doc_ine: p.docINE, doc_escolar: p.docEscolar || false, game_info: p.gameInfo || [],
+    doc_ine: p.docINE, doc_escolar: p.docEscolar || false,
+    doc_files: p.docFiles || {}, game_info: p.gameInfo || [],
     folio: p.folio || null, updated_at: new Date().toISOString(),
   };
 }

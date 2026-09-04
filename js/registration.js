@@ -6,6 +6,7 @@
 import { squadData, currentRole } from "./state.js";
 import { showToast, showConfirmModal } from "./ui.js";
 import { pushPlayerToCloud, deletePlayerFromCloud } from "./supabase.js";
+import { openChildFolderModal } from "./expedientes.js";
 
 export let regFilter = "todos"; // filtro activo de estatus
 export let regEditingId = null; // id del jugador en edición (null = nuevo)
@@ -56,11 +57,12 @@ export function ensureRegFields(player) {
   if (!player.group) player.group = "";
   if (!player.positionAlt) player.positionAlt = "";
   if (!player.linkedSiblingId) player.linkedSiblingId = null;
-  if (player.docActa === undefined) player.docActa = true;
-  if (player.docCURP === undefined) player.docCURP = true;
-  if (player.docMedico === undefined) player.docMedico = true;
-  if (player.docINE === undefined) player.docINE = true;
+  if (player.docActa === undefined) player.docActa = false;
+  if (player.docCURP === undefined) player.docCURP = false;
+  if (player.docMedico === undefined) player.docMedico = false;
+  if (player.docINE === undefined) player.docINE = false;
   if (player.docEscolar === undefined) player.docEscolar = false;
+  if (!player.docFiles || typeof player.docFiles !== "object") player.docFiles = {};
   return player;
 }
 
@@ -355,76 +357,7 @@ export function confirmDeletePlayer(id) {
 // MODALES DE DOCUMENTACIÓN Y EXPEDIENTES
 // ---------------------------------------------------------------------------
 export function openDocModal(playerId) {
-  const p = squadData.find((x) => x.id === playerId);
-  if (!p) return;
-  ensureRegFields(p);
-
-  currentDocPlayerId = playerId;
-
-  const photo = document.getElementById("docModalPhoto");
-  const name = document.getElementById("docModalName");
-  const sub = document.getElementById("docModalSub");
-  const tutor = document.getElementById("docModalTutor");
-  const phone = document.getElementById("docModalPhone");
-
-  if (photo) photo.src = p.photo || "LAGUNA.jpg";
-  if (name) name.innerText = p.name;
-
-  const groupLabel = p.group ? ` · ${p.group}` : "";
-  const altPos = p.positionAlt ? ` / ${p.positionAlt}` : "";
-  if (sub)
-    sub.innerText = `Dorsal #${p.number} · ${p.position}${altPos}${groupLabel} · ${p.regStatus}`;
-
-  const contacts = p.contacts || [
-    { name: p.tutorName, phone: p.phone, relation: "Tutor" },
-  ];
-  const contactsHtml = contacts
-    .map(
-      (c, i) =>
-        `<div><i class="fa-solid fa-${i === 0 ? "user-group" : "phone"}"></i> ${c.relation}: <strong>${c.name}</strong> — ${c.phone}</div>`,
-    )
-    .join("");
-  if (tutor)
-    tutor.innerHTML = contactsHtml || `<i class="fa-solid fa-user-group"></i> Sin contactos`;
-  if (phone) phone.innerHTML = "";
-
-  if (p.linkedSiblingId && phone) {
-    const sib = squadData.find((x) => x.id === p.linkedSiblingId);
-    if (sib) {
-      phone.innerHTML = `<i class="fa-solid fa-link text-warning"></i> Precio Hermano vinculado con: <strong>#${sib.number} ${sib.name}</strong>`;
-    }
-  }
-
-  const container = document.getElementById("docModalItems");
-  if (container) {
-    container.innerHTML = "";
-    const docs = [
-      { title: "Acta de Nacimiento", key: "docActa" },
-      { title: "CURP Oficial", key: "docCURP" },
-      { title: "Certificado Médico", key: "docMedico" },
-      { title: "Identificación del Tutor", key: "docINE" },
-      { title: "Certificado Escolar / Credencial", key: "docEscolar" },
-    ];
-
-    docs.forEach((d) => {
-      const isReady = p[d.key];
-      const badge = isReady
-        ? '<span class="badge badge-success"><i class="fa-solid fa-check"></i> ENTREGADO Y VERIFICADO</span>'
-        : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> PENDIENTE</span>';
-
-      container.innerHTML += `
-        <div class="doc-status-card">
-          <div>
-            <strong>${d.title}</strong>
-            <br><small class="text-muted">Documento Oficial Expediente</small>
-          </div>
-          <div>${badge}</div>
-        </div>
-      `;
-    });
-  }
-
-  document.getElementById("playerDocModal")?.classList.remove("hidden");
+  openChildFolderModal(playerId);
 }
 
 export function closeDocModal() {
