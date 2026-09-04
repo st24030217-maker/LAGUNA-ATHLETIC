@@ -117,6 +117,7 @@ export function initLoginCarousel() {
 export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesInit, onExpedientesRender } = {}) {
   document.querySelectorAll(".module-panel").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
+  document.querySelectorAll(".dock-item").forEach((el) => el.classList.remove("active"));
 
   const targetPanel = document.getElementById(tabId);
   if (targetPanel) targetPanel.classList.add("active");
@@ -128,6 +129,9 @@ export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesIni
     if (parentGroup && !parentGroup.classList.contains("open")) parentGroup.classList.add("open");
   }
 
+  const dockItem = document.querySelector(`.dock-item[data-tab="${tabId}"]`);
+  if (dockItem) dockItem.classList.add("active");
+
   if (tabId === "mod-home"         && typeof onHomeRender        === "function") onHomeRender();
   if (tabId === "mod-estadisticas" && typeof onStatsResize      === "function") onStatsResize();
   if (tabId === "mod-avisos"       && typeof onNoticesInit       === "function") onNoticesInit();
@@ -135,6 +139,53 @@ export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesIni
 
   if (window.innerWidth <= 900) {
     document.getElementById("mainSidebar")?.classList.remove("open");
+  }
+}
+
+export function initFloatingDock() {
+  const dockDesktop = document.querySelector(".floating-dock-desktop");
+  if (!dockDesktop) return;
+
+  const items = dockDesktop.querySelectorAll(".dock-item");
+
+  dockDesktop.addEventListener("mousemove", (e) => {
+    const mouseX = e.clientX;
+
+    items.forEach((item) => {
+      const rect = item.getBoundingClientRect();
+      const itemCenterX = rect.left + rect.width / 2;
+      const distance = Math.abs(mouseX - itemCenterX);
+      const maxDistance = 130;
+
+      if (distance < maxDistance) {
+        const factor = Math.cos((distance / maxDistance) * (Math.PI / 2));
+        const scale = 1 + factor * 0.4; // magnificación hasta 1.4x
+        const translateY = -factor * 10;
+        item.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+      } else {
+        item.style.transform = "scale(1) translateY(0px)";
+      }
+    });
+  });
+
+  dockDesktop.addEventListener("mouseleave", () => {
+    items.forEach((item) => {
+      item.style.transform = "scale(1) translateY(0px)";
+    });
+  });
+}
+
+export function toggleDockMobileMenu() {
+  const menu = document.getElementById("dockMobileMenu");
+  const icon = document.getElementById("dockMobileTriggerIcon");
+  if (!menu) return;
+  menu.classList.toggle("hidden");
+  if (icon) {
+    if (menu.classList.contains("hidden")) {
+      icon.className = "fa-solid fa-bars-staggered";
+    } else {
+      icon.className = "fa-solid fa-xmark";
+    }
   }
 }
 

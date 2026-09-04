@@ -13,7 +13,8 @@ import {
 import {
   showToast, showModuleTab, toggleNavGroup, toggleSidebar,
   triggerAppLoading, initLoginCarousel, initModalDismiss,
-  showConfirmModal, closeConfirmModal, executeConfirmModal
+  showConfirmModal, closeConfirmModal, executeConfirmModal,
+  initFloatingDock, toggleDockMobileMenu
 } from "./ui.js";
 
 import {
@@ -628,6 +629,7 @@ window.executeConfirmModal = executeConfirmModal;
 window.exportDatabaseBackup = exportDatabaseBackup;
 window.importDatabaseBackup = importDatabaseBackup;
 window.confirmResetFactoryData = confirmResetFactoryData;
+window.toggleDockMobileMenu = toggleDockMobileMenu;
 window.initChart = initChart;
 window.updateChartData = updateChartData;
 
@@ -639,6 +641,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initLoginCarousel();
   initModalDismiss();
   initTacticalFullscreen();
+  initFloatingDock();
   initSupabase();
 
   const savedUsername = localStorage.getItem("laguna_auth_username");
