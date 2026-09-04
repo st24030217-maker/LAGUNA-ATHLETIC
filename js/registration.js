@@ -178,15 +178,82 @@ export function renderRegTable() {
     });
 }
 
-export function openNewPlayerModal() {
+export function resetRegForm() {
   regEditingId = null;
   currentSelectedPhoto = "LAGUNA.jpg";
-  document.getElementById("regPlayerForm")?.reset();
+
+  const form = document.getElementById("regPlayerForm");
+  if (form) form.reset();
+
   const preview = document.getElementById("regPhotoPreview");
   if (preview) preview.src = "LAGUNA.jpg";
-  const title = document.getElementById("regModalTitle");
-  if (title) title.innerText = "Registrar Nuevo Alumno";
-  document.getElementById("regPlayerModal")?.classList.remove("hidden");
+
+  const submitBtn = document.getElementById("regSubmitBtn");
+  if (submitBtn) {
+    submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> REGISTRAR JUGADOR';
+  }
+
+  const cancelBtn = document.getElementById("regCancelBtn");
+  if (cancelBtn) {
+    cancelBtn.style.display = "none";
+  }
+
+  // Ocultar filas de contacto opcionales
+  document.getElementById("contactRow2")?.classList.add("hidden");
+  document.getElementById("contactRow3")?.classList.add("hidden");
+}
+
+export function openNewPlayerModal() {
+  resetRegForm();
+  document.getElementById("regPlayerForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+export function cancelPlayerEdit() {
+  resetRegForm();
+  showToast("Edición cancelada.", "info");
+}
+
+export function addNextContact() {
+  const row2 = document.getElementById("contactRow2");
+  const row3 = document.getElementById("contactRow3");
+  if (row2 && row2.classList.contains("hidden")) {
+    row2.classList.remove("hidden");
+  } else if (row3 && row3.classList.contains("hidden")) {
+    row3.classList.remove("hidden");
+  } else {
+    showToast("Máximo 3 contactos permitidos por alumno.", "info");
+  }
+}
+
+export function removeContact(num) {
+  if (num === 2) {
+    const row2 = document.getElementById("contactRow2");
+    if (row2) row2.classList.add("hidden");
+    const n = document.getElementById("contact2Name");
+    const p = document.getElementById("contact2Phone");
+    if (n) n.value = "";
+    if (p) p.value = "";
+  } else if (num === 3) {
+    const row3 = document.getElementById("contactRow3");
+    if (row3) row3.classList.add("hidden");
+    const n = document.getElementById("contact3Name");
+    const p = document.getElementById("contact3Phone");
+    if (n) n.value = "";
+    if (p) p.value = "";
+  }
+}
+
+export function setRegFilter(filter, btn) {
+  regFilter = filter;
+  if (btn) {
+    document.querySelectorAll(".reg-filter-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
+  renderRegTable();
+}
+
+export function filterRegTable() {
+  renderRegTable();
 }
 
 export function openEditPlayer(id) {
@@ -199,28 +266,75 @@ export function openEditPlayer(id) {
   const numInp = document.getElementById("regNumber");
   const nameInp = document.getElementById("regName");
   const posInp = document.getElementById("regPosition");
+  const posAltInp = document.getElementById("regPositionAlt");
   const groupInp = document.getElementById("regGroup");
   const bdateInp = document.getElementById("regBirthdate");
-  const tutorInp = document.getElementById("regTutor");
-  const phoneInp = document.getElementById("regPhone");
+  const emailInp = document.getElementById("regEmail");
   const statusInp = document.getElementById("regStatus");
+  const starterInp = document.getElementById("regStarter");
+  const notesInp = document.getElementById("regNotes");
+  const siblingInp = document.getElementById("regLinkedSibling");
   const preview = document.getElementById("regPhotoPreview");
 
   if (numInp) numInp.value = p.number;
   if (nameInp) nameInp.value = p.name;
-  if (posInp) posInp.value = p.position;
+  if (posInp) posInp.value = p.position || "";
+  if (posAltInp) posAltInp.value = p.positionAlt || "";
   if (groupInp) groupInp.value = p.group || "";
   if (bdateInp) bdateInp.value = p.birthdate || "";
-  if (tutorInp) tutorInp.value = p.tutorName || "";
-  if (phoneInp) phoneInp.value = p.phone || "";
+  if (emailInp) emailInp.value = p.email || "";
   if (statusInp) statusInp.value = p.regStatus || "Activo";
+  if (starterInp) starterInp.value = String(!!p.starter);
+  if (notesInp) notesInp.value = p.regNotes || "";
+  if (siblingInp) siblingInp.value = p.linkedSiblingId || "";
   if (preview) preview.src = currentSelectedPhoto;
 
-  const docActa = document.getElementById("regDocActa");
-  const docCURP = document.getElementById("regDocCURP");
-  const docMedico = document.getElementById("regDocMedico");
-  const docINE = document.getElementById("regDocINE");
-  const docEscolar = document.getElementById("regDocEscolar");
+  // Cargar contactos
+  const contacts = p.contacts || [{ name: p.tutorName, phone: p.phone, relation: "Tutor" }];
+
+  const c1Name = document.getElementById("contact1Name");
+  const c1Phone = document.getElementById("contact1Phone");
+  const c1Rel = document.getElementById("contact1Relation");
+  if (c1Name) c1Name.value = contacts[0]?.name || p.tutorName || "";
+  if (c1Phone) c1Phone.value = contacts[0]?.phone || p.phone || "";
+  if (c1Rel) c1Rel.value = contacts[0]?.relation || "Tutor";
+
+  const row2 = document.getElementById("contactRow2");
+  const c2Name = document.getElementById("contact2Name");
+  const c2Phone = document.getElementById("contact2Phone");
+  const c2Rel = document.getElementById("contact2Relation");
+  if (contacts[1]) {
+    if (row2) row2.classList.remove("hidden");
+    if (c2Name) c2Name.value = contacts[1].name || "";
+    if (c2Phone) c2Phone.value = contacts[1].phone || "";
+    if (c2Rel) c2Rel.value = contacts[1].relation || "Tutor";
+  } else {
+    if (row2) row2.classList.add("hidden");
+    if (c2Name) c2Name.value = "";
+    if (c2Phone) c2Phone.value = "";
+  }
+
+  const row3 = document.getElementById("contactRow3");
+  const c3Name = document.getElementById("contact3Name");
+  const c3Phone = document.getElementById("contact3Phone");
+  const c3Rel = document.getElementById("contact3Relation");
+  if (contacts[2]) {
+    if (row3) row3.classList.remove("hidden");
+    if (c3Name) c3Name.value = contacts[2].name || "";
+    if (c3Phone) c3Phone.value = contacts[2].phone || "";
+    if (c3Rel) c3Rel.value = contacts[2].relation || "Tutor";
+  } else {
+    if (row3) row3.classList.add("hidden");
+    if (c3Name) c3Name.value = "";
+    if (c3Phone) c3Phone.value = "";
+  }
+
+  // Checkboxes de documentación
+  const docActa = document.getElementById("docActa");
+  const docCURP = document.getElementById("docCURP");
+  const docMedico = document.getElementById("docMedico");
+  const docINE = document.getElementById("docINE");
+  const docEscolar = document.getElementById("docEscolar");
 
   if (docActa) docActa.checked = !!p.docActa;
   if (docCURP) docCURP.checked = !!p.docCURP;
@@ -228,13 +342,21 @@ export function openEditPlayer(id) {
   if (docINE) docINE.checked = !!p.docINE;
   if (docEscolar) docEscolar.checked = !!p.docEscolar;
 
-  const title = document.getElementById("regModalTitle");
-  if (title) title.innerText = `Editar Alumno: ${p.name}`;
-  document.getElementById("regPlayerModal")?.classList.remove("hidden");
+  const submitBtn = document.getElementById("regSubmitBtn");
+  if (submitBtn) {
+    submitBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> GUARDAR CAMBIOS DE ${p.name.toUpperCase()}`;
+  }
+
+  const cancelBtn = document.getElementById("regCancelBtn");
+  if (cancelBtn) {
+    cancelBtn.style.display = "inline-flex";
+  }
+
+  document.getElementById("regPlayerForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 export function closeRegModal() {
-  document.getElementById("regPlayerModal")?.classList.add("hidden");
+  // Función mantenida por compatibilidad
 }
 
 export function savePlayerRegistration(e) {
@@ -242,23 +364,63 @@ export function savePlayerRegistration(e) {
 
   const number = parseInt(document.getElementById("regNumber")?.value) || 0;
   const name = document.getElementById("regName")?.value.trim();
-  const position = document.getElementById("regPosition")?.value;
+  const position = document.getElementById("regPosition")?.value || "Jugador";
+  const positionAlt = document.getElementById("regPositionAlt")?.value || "";
   const group = document.getElementById("regGroup")?.value.trim() || "Sin Cat.";
   const birthdate = document.getElementById("regBirthdate")?.value || "";
-  const tutorName = document.getElementById("regTutor")?.value.trim();
-  const phone = document.getElementById("regPhone")?.value.trim();
+  const email = document.getElementById("regEmail")?.value.trim() || "";
   const regStatus = document.getElementById("regStatus")?.value || "Activo";
+  const starter = document.getElementById("regStarter")?.value === "true";
+  const regNotes = document.getElementById("regNotes")?.value.trim() || "";
+  const linkedSiblingId = parseInt(document.getElementById("regLinkedSibling")?.value) || null;
 
-  const docActa = !!document.getElementById("regDocActa")?.checked;
-  const docCURP = !!document.getElementById("regDocCURP")?.checked;
-  const docMedico = !!document.getElementById("regDocMedico")?.checked;
-  const docINE = !!document.getElementById("regDocINE")?.checked;
-  const docEscolar = !!document.getElementById("regDocEscolar")?.checked;
+  const docActa = !!document.getElementById("docActa")?.checked;
+  const docCURP = !!document.getElementById("docCURP")?.checked;
+  const docMedico = !!document.getElementById("docMedico")?.checked;
+  const docINE = !!document.getElementById("docINE")?.checked;
+  const docEscolar = !!document.getElementById("docEscolar")?.checked;
 
   if (!name || !number) {
     showToast("Por favor ingresa al menos Nombre y Dorsal.", "warning");
     return;
   }
+
+  // Validación de Dorsal duplicado
+  const duplicate = squadData.find((p) => p.number === number && p.id !== regEditingId);
+  if (duplicate) {
+    showToast(`El dorsal #${number} ya pertenece a ${duplicate.name}. Por favor elige otro número.`, "warning");
+    return;
+  }
+
+  // Extraer contactos
+  const contacts = [];
+  const c1Name = document.getElementById("contact1Name")?.value.trim();
+  const c1Phone = document.getElementById("contact1Phone")?.value.trim();
+  const c1Rel = document.getElementById("contact1Relation")?.value || "Tutor";
+  if (c1Name || c1Phone) {
+    contacts.push({ name: c1Name || `Familia ${name.split(" ").pop()}`, phone: c1Phone || "", relation: c1Rel });
+  }
+
+  const c2Name = document.getElementById("contact2Name")?.value.trim();
+  const c2Phone = document.getElementById("contact2Phone")?.value.trim();
+  const c2Rel = document.getElementById("contact2Relation")?.value || "Tutor";
+  if (c2Name || c2Phone) {
+    contacts.push({ name: c2Name, phone: c2Phone, relation: c2Rel });
+  }
+
+  const c3Name = document.getElementById("contact3Name")?.value.trim();
+  const c3Phone = document.getElementById("contact3Phone")?.value.trim();
+  const c3Rel = document.getElementById("contact3Relation")?.value || "Tutor";
+  if (c3Name || c3Phone) {
+    contacts.push({ name: c3Name, phone: c3Phone, relation: c3Rel });
+  }
+
+  if (contacts.length === 0) {
+    contacts.push({ name: `Familia ${name.split(" ").pop()}`, phone: "", relation: "Tutor" });
+  }
+
+  const tutorName = contacts[0].name;
+  const phone = contacts[0].phone;
 
   if (regEditingId) {
     const p = squadData.find((x) => x.id === regEditingId);
@@ -266,24 +428,23 @@ export function savePlayerRegistration(e) {
       p.number = number;
       p.name = name;
       p.position = position;
+      p.positionAlt = positionAlt;
       p.group = group;
       p.birthdate = birthdate;
+      p.email = email;
       p.tutorName = tutorName;
       p.phone = phone;
       p.regStatus = regStatus;
+      p.starter = starter;
+      p.regNotes = regNotes;
+      p.linkedSiblingId = linkedSiblingId;
       p.photo = currentSelectedPhoto;
       p.docActa = docActa;
       p.docCURP = docCURP;
       p.docMedico = docMedico;
       p.docINE = docINE;
       p.docEscolar = docEscolar;
-
-      if (!p.contacts || p.contacts.length === 0) {
-        p.contacts = [{ name: tutorName, phone: phone, relation: "Tutor" }];
-      } else {
-        p.contacts[0].name = tutorName;
-        p.contacts[0].phone = phone;
-      }
+      p.contacts = contacts;
 
       pushPlayerToCloud(p);
       showToast(`Jugador ${p.name} actualizado con éxito.`, "success");
@@ -294,38 +455,43 @@ export function savePlayerRegistration(e) {
       number,
       name,
       position,
+      positionAlt,
       group,
       birthdate,
+      email,
       tutorName,
       phone,
       regStatus,
+      starter,
+      regNotes,
+      linkedSiblingId,
       photo: currentSelectedPhoto,
       docActa,
       docCURP,
       docMedico,
       docINE,
       docEscolar,
+      docFiles: {},
       attendancePct: 100,
       streak: "0 A",
       status: "Ausente",
       checkinTime: "-",
-      starter: false,
       injured: false,
       goals: 0,
       assists: 0,
       mins: 0,
       cards: 0,
       folio: generateFolio(),
-      contacts: [{ name: tutorName, phone: phone, relation: "Tutor" }],
+      contacts: contacts,
       gameInfo: [],
     };
     squadData.push(newPlayer);
     pushPlayerToCloud(newPlayer);
-    showToast(`Nuevo alumno ${name} registrado.`, "success");
+    showToast(`¡Nuevo alumno ${name} registrado con éxito!`, "success");
   }
 
   _saveData();
-  closeRegModal();
+  resetRegForm();
   renderRegTable();
   _refreshModules();
 }

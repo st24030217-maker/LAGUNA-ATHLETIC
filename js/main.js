@@ -86,6 +86,7 @@ import {
   openDocModal, closeDocModal, printOrDownloadDoc,
   openCredentialModal, closeCredentialModal, openAllCredentialsModal,
   closeAllCredentialsModal, printCredential, printAllPlayerCredentials,
+  cancelPlayerEdit, addNextContact, removeContact, setRegFilter, filterRegTable,
   injectRegCallbacks
 } from "./registration.js";
 
@@ -584,6 +585,11 @@ window.openNewPlayerModal = openNewPlayerModal;
 window.openEditPlayer = openEditPlayer;
 window.closeRegModal = closeRegModal;
 window.savePlayerRegistration = savePlayerRegistration;
+window.cancelPlayerEdit = cancelPlayerEdit;
+window.addNextContact = addNextContact;
+window.removeContact = removeContact;
+window.setRegFilter = setRegFilter;
+window.filterRegTable = filterRegTable;
 window.confirmDeletePlayer = confirmDeletePlayer;
 window.handlePhotoSelect = handlePhotoSelect;
 window.openDocModal = openDocModal;
