@@ -12,7 +12,7 @@ import {
 
 import {
   showToast, showModuleTab, toggleNavGroup, toggleSidebar,
-  triggerAppLoading, initLoginCarousel, initModalDismiss,
+  triggerAppLoading, initModalDismiss,
   showConfirmModal, closeConfirmModal, executeConfirmModal
 } from "./ui.js";
 
@@ -636,7 +636,6 @@ window.updateChartData = updateChartData;
 // ---------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   loadData();
-  initLoginCarousel();
   initModalDismiss();
   initTacticalFullscreen();
   initSupabase();

@@ -67,49 +67,6 @@ export function triggerAppLoading(message = "Cargando plataforma...", durationMs
 }
 
 // ---------------------------------------------------------------------------
-// CAROUSEL DE LOGIN
-// ---------------------------------------------------------------------------
-export function initLoginCarousel() {
-  const carousel       = document.querySelector(".login-image-carousel");
-  const dotsContainer  = document.querySelector(".login-carousel-dots");
-  if (!carousel || !dotsContainer) return;
-
-  const slides = [...carousel.querySelectorAll(".login-slide")];
-  if (slides.length < 2) return;
-
-  let activeIndex = 0;
-  let timerId;
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const showSlide = (index) => {
-    activeIndex = (index + slides.length) % slides.length;
-    slides.forEach((slide, i) => slide.classList.toggle("is-active", i === activeIndex));
-    dotsContainer.querySelectorAll(".login-carousel-dot").forEach((dot, i) => {
-      dot.classList.toggle("is-active", i === activeIndex);
-      dot.setAttribute("aria-current", i === activeIndex ? "true" : "false");
-    });
-  };
-
-  slides.forEach((_, index) => {
-    const dot = document.createElement("button");
-    dot.type      = "button";
-    dot.className = "login-carousel-dot";
-    dot.setAttribute("aria-label", `Ver imagen ${index + 1}`);
-    dot.addEventListener("click", () => {
-      showSlide(index);
-      if (!prefersReducedMotion) {
-        clearInterval(timerId);
-        timerId = setInterval(() => showSlide(activeIndex + 1), 5200);
-      }
-    });
-    dotsContainer.appendChild(dot);
-  });
-
-  showSlide(0);
-  if (!prefersReducedMotion) {
-    timerId = setInterval(() => showSlide(activeIndex + 1), 5200);
-  }
-}
 
 // ---------------------------------------------------------------------------
 // NAVEGACIÓN DE MÓDULOS
