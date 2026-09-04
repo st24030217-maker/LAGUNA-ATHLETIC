@@ -158,3 +158,49 @@ export function initModalDismiss() {
     }
   });
 }
+
+// ---------------------------------------------------------------------------
+// STATEFUL BUTTON (ESTILO ACETERNITY UI ADAPTADO A VANILLA JS)
+// ---------------------------------------------------------------------------
+export async function triggerStatefulButton(btn, asyncFn, options = {}) {
+  if (!btn || btn.classList.contains("is-loading")) return;
+  const originalHtml = btn.innerHTML;
+  const loadingText = options.loadingText !== undefined ? options.loadingText : null;
+  const successText = options.successText !== undefined ? options.successText : null;
+
+  btn.disabled = true;
+  btn.classList.add("btn-stateful-active", "is-loading");
+  btn.innerHTML = `
+    <span class="stateful-wrap">
+      <svg class="stateful-loader" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 3a9 9 0 1 0 9 9" stroke-linecap="round" />
+      </svg>
+      <span class="stateful-text">${loadingText || btn.textContent.trim()}</span>
+    </span>
+  `;
+
+  try {
+    const result = await asyncFn();
+    btn.classList.remove("is-loading");
+    btn.classList.add("is-success");
+    btn.innerHTML = `
+      <span class="stateful-wrap">
+        <svg class="stateful-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span class="stateful-text">${successText || "¡Listo!"}</span>
+      </span>
+    `;
+    await new Promise((r) => setTimeout(r, options.successDuration || 900));
+    return result;
+  } catch (err) {
+    btn.classList.remove("is-loading");
+    btn.classList.add("is-error");
+    await new Promise((r) => setTimeout(r, 600));
+    throw err;
+  } finally {
+    btn.classList.remove("btn-stateful-active", "is-loading", "is-success", "is-error");
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}

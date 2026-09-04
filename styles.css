@@ -7352,3 +7352,78 @@ input[type="search"] {
   align-items: center;
 }
 
+/* ==========================================================================
+   STATEFUL BUTTON (ESTILO ACETERNITY UI / ADAPTADO NATIVO)
+   ========================================================================== */
+.btn-stateful {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.stateful-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.stateful-loader {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  animation: statefulSpin 0.6s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@keyframes statefulSpin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.stateful-check {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: statefulCheckStroke 0.35s ease forwards;
+}
+
+@keyframes statefulCheckStroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.btn-stateful.is-loading,
+.btn-stateful-active.is-loading {
+  pointer-events: none;
+  opacity: 0.88;
+  filter: saturate(1.1);
+}
+
+.btn-stateful.is-success,
+.btn-stateful-active.is-success {
+  background: #10b981 !important;
+  border-color: #059669 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.45) !important;
+  transform: scale(1.02);
+}
+
+.btn-stateful.is-error,
+.btn-stateful-active.is-error {
+  background: var(--accent-danger, #ef4444) !important;
+  border-color: #b91c1c !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.45) !important;
+}

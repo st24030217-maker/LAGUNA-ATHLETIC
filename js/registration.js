@@ -4,7 +4,7 @@
    ========================================================================== */
 
 import { squadData, currentRole } from "./state.js";
-import { showToast, showConfirmModal } from "./ui.js";
+import { showToast, showConfirmModal, triggerStatefulButton } from "./ui.js";
 import { pushPlayerToCloud, deletePlayerFromCloud } from "./supabase.js";
 import { openChildFolderModal } from "./expedientes.js";
 
@@ -422,78 +422,93 @@ export function savePlayerRegistration(e) {
   const tutorName = contacts[0].name;
   const phone = contacts[0].phone;
 
-  if (regEditingId) {
-    const p = squadData.find((x) => x.id === regEditingId);
-    if (p) {
-      p.number = number;
-      p.name = name;
-      p.position = position;
-      p.positionAlt = positionAlt;
-      p.group = group;
-      p.birthdate = birthdate;
-      p.email = email;
-      p.tutorName = tutorName;
-      p.phone = phone;
-      p.regStatus = regStatus;
-      p.starter = starter;
-      p.regNotes = regNotes;
-      p.linkedSiblingId = linkedSiblingId;
-      p.photo = currentSelectedPhoto;
-      p.docActa = docActa;
-      p.docCURP = docCURP;
-      p.docMedico = docMedico;
-      p.docINE = docINE;
-      p.docEscolar = docEscolar;
-      p.contacts = contacts;
+  const submitBtn = document.getElementById("regSubmitBtn");
+  const isEditing = regEditingId !== null;
 
-      pushPlayerToCloud(p);
-      showToast(`Jugador ${p.name} actualizado con éxito.`, "success");
+  const executeSave = async () => {
+    if (regEditingId) {
+      const p = squadData.find((x) => x.id === regEditingId);
+      if (p) {
+        p.number = number;
+        p.name = name;
+        p.position = position;
+        p.positionAlt = positionAlt;
+        p.group = group;
+        p.birthdate = birthdate;
+        p.email = email;
+        p.tutorName = tutorName;
+        p.phone = phone;
+        p.regStatus = regStatus;
+        p.starter = starter;
+        p.regNotes = regNotes;
+        p.linkedSiblingId = linkedSiblingId;
+        p.photo = currentSelectedPhoto;
+        p.docActa = docActa;
+        p.docCURP = docCURP;
+        p.docMedico = docMedico;
+        p.docINE = docINE;
+        p.docEscolar = docEscolar;
+        p.contacts = contacts;
+
+        pushPlayerToCloud(p);
+        showToast(`Jugador ${p.name} actualizado con éxito.`, "success");
+      }
+    } else {
+      const newPlayer = {
+        id: Date.now(),
+        number,
+        name,
+        position,
+        positionAlt,
+        group,
+        birthdate,
+        email,
+        tutorName,
+        phone,
+        regStatus,
+        starter,
+        regNotes,
+        linkedSiblingId,
+        photo: currentSelectedPhoto,
+        docActa,
+        docCURP,
+        docMedico,
+        docINE,
+        docEscolar,
+        docFiles: {},
+        attendancePct: 100,
+        streak: "0 A",
+        status: "Ausente",
+        checkinTime: "-",
+        injured: false,
+        goals: 0,
+        assists: 0,
+        mins: 0,
+        cards: 0,
+        folio: generateFolio(),
+        contacts: contacts,
+        gameInfo: [],
+      };
+      squadData.push(newPlayer);
+      pushPlayerToCloud(newPlayer);
+      showToast(`¡Nuevo alumno ${name} registrado con éxito!`, "success");
     }
-  } else {
-    const newPlayer = {
-      id: Date.now(),
-      number,
-      name,
-      position,
-      positionAlt,
-      group,
-      birthdate,
-      email,
-      tutorName,
-      phone,
-      regStatus,
-      starter,
-      regNotes,
-      linkedSiblingId,
-      photo: currentSelectedPhoto,
-      docActa,
-      docCURP,
-      docMedico,
-      docINE,
-      docEscolar,
-      docFiles: {},
-      attendancePct: 100,
-      streak: "0 A",
-      status: "Ausente",
-      checkinTime: "-",
-      injured: false,
-      goals: 0,
-      assists: 0,
-      mins: 0,
-      cards: 0,
-      folio: generateFolio(),
-      contacts: contacts,
-      gameInfo: [],
-    };
-    squadData.push(newPlayer);
-    pushPlayerToCloud(newPlayer);
-    showToast(`¡Nuevo alumno ${name} registrado con éxito!`, "success");
-  }
 
-  _saveData();
-  resetRegForm();
-  renderRegTable();
-  _refreshModules();
+    _saveData();
+    resetRegForm();
+    renderRegTable();
+    _refreshModules();
+  };
+
+  if (submitBtn) {
+    triggerStatefulButton(submitBtn, executeSave, {
+      loadingText: "Guardando...",
+      successText: isEditing ? "¡Actualizado!" : "¡Registrado!",
+      successDuration: 800,
+    });
+  } else {
+    executeSave();
+  }
 }
 
 export function confirmDeletePlayer(id) {

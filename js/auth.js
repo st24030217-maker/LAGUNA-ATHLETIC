@@ -4,7 +4,7 @@
    ========================================================================== */
 
 import { squadData, currentRole, loggedInUser, profilePlayerId, setCurrentRole, setLoggedInUser } from "./state.js";
-import { showToast } from "./ui.js";
+import { showToast, triggerStatefulButton } from "./ui.js";
 import { supabaseClient, cloudConnected, applySupabaseProfile, syncAllFromCloud, queueCloudSync } from "./supabase.js";
 
 // Callback inyectado desde main.js
@@ -16,14 +16,20 @@ export function injectPostLogin(fn) { _postLoginInit = fn; }
 // ---------------------------------------------------------------------------
 export async function handleLogin(e) {
   if (e) e.preventDefault();
-  const username  = (document.getElementById("loginUsernameInput")?.value || "").trim();
-  const pinInput  = document.getElementById("loginPinInput") ? document.getElementById("loginPinInput").value.trim() : "";
+  const loginBtn = document.getElementById("btnLoginSubmit");
+  const username = (document.getElementById("loginUsernameInput")?.value || "").trim();
+  const pinInput = document.getElementById("loginPinInput") ? document.getElementById("loginPinInput").value.trim() : "";
   const authEmail = username.includes("@") ? username : `${username}@laguna.local`;
 
   if (!username) { showToast("Escribe tu usuario.", "warning"); return; }
+  if (!authEmail || !pinInput) { showToast("Escribe tu usuario y contraseña.", "warning"); return; }
 
-  if (cloudConnected) {
-    if (!authEmail || !pinInput) { showToast("Escribe tu usuario y contraseña.", "warning"); return; }
+  if (!cloudConnected) {
+    showToast("La nube no está configurada. Contacta al administrador para activar Supabase.", "error");
+    return;
+  }
+
+  const performLogin = async () => {
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email: authEmail, password: pinInput });
     if (error) {
       await supabaseClient.auth.signOut();
@@ -33,7 +39,7 @@ export async function handleLogin(e) {
       showToast(errorMessage, "error");
       const pinEl = document.getElementById("loginPinInput");
       if (pinEl) pinEl.value = "";
-      return;
+      throw new Error(errorMessage);
     }
     localStorage.setItem("laguna_auth_username", username);
     const { data: profile, error: profileError } = await supabaseClient
@@ -41,7 +47,7 @@ export async function handleLogin(e) {
     if (profileError || !profile) {
       showToast("Tu usuario no tiene un perfil configurado en Supabase.", "error");
       await supabaseClient.auth.signOut();
-      return;
+      throw new Error("Sin perfil");
     }
     applySupabaseProfile(data.user, profile);
     await syncAllFromCloud();
@@ -50,9 +56,20 @@ export async function handleLogin(e) {
     document.getElementById("appLayout").style.display = "grid";
     _postLoginInit();
     showToast("Sesión segura iniciada correctamente.", "success");
-    return;
+  };
+
+  if (loginBtn) {
+    try {
+      await triggerStatefulButton(loginBtn, performLogin, {
+        loadingText: "Verificando...",
+        successText: "¡Bienvenido!"
+      });
+    } catch (_) {
+      // Error ya manejado con toast
+    }
+  } else {
+    try { await performLogin(); } catch (_) {}
   }
-  showToast("La nube no está configurada. Contacta al administrador para activar Supabase.", "error");
 }
 
 export function logout() {

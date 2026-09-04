@@ -13,7 +13,8 @@ import {
 import {
   showToast, showModuleTab, toggleNavGroup, toggleSidebar,
   triggerAppLoading, initModalDismiss,
-  showConfirmModal, closeConfirmModal, executeConfirmModal
+  showConfirmModal, closeConfirmModal, executeConfirmModal,
+  triggerStatefulButton
 } from "./ui.js";
 
 import {
@@ -630,6 +631,7 @@ window.importDatabaseBackup = importDatabaseBackup;
 window.confirmResetFactoryData = confirmResetFactoryData;
 window.initChart = initChart;
 window.updateChartData = updateChartData;
+window.triggerStatefulButton = triggerStatefulButton;
 
 // ---------------------------------------------------------------------------
 // INICIALIZACIÓN AL CARGAR EL DOCUMENTO
