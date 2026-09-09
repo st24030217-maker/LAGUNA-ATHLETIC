@@ -653,7 +653,7 @@ textarea:focus-visible {
    ========================================================================== */
 .app-layout {
   display: grid;
-  grid-template-columns: 270px 1fr;
+  grid-template-columns: 270px minmax(0, 1fr);
   min-height: 100vh;
   animation: appSlideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -1854,16 +1854,25 @@ textarea:focus-visible {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.78);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .modal-content {
-  width: 90%;
+  width: 100%;
   max-width: 450px;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  margin: auto;
+  box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -1919,6 +1928,7 @@ textarea:focus-visible {
   font-size: 0.8rem;
   font-family: var(--font-mono);
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.2s ease;
 }
 .reg-filter-btn:hover {
@@ -2233,13 +2243,34 @@ textarea:focus-visible {
   }
   .sidebar {
     position: fixed;
-    left: -300px;
+    left: -320px;
     width: 280px;
-    background: rgba(10, 15, 25, 0.95);
+    max-width: 85vw;
+    background: rgba(10, 15, 25, 0.98);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-right: 1px solid var(--border-strong);
+    z-index: 1000;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
   }
   .sidebar.open {
     left: 0;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .sidebar-backdrop.active {
+    display: block;
+    opacity: 1;
   }
   .mobile-menu-btn {
     display: block;
@@ -2248,10 +2279,10 @@ textarea:focus-visible {
     display: block;
   }
   .topbar {
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.25rem;
   }
   .content-wrapper {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .hero-event-card {
@@ -6863,7 +6894,24 @@ input[type="search"] {
   gap: 0.5rem;
 }
 
-/* --- Responsive breakpoint helpers --- */
+/* --- Player Profile Modal Helper Classes --- */
+.profile-main-header {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.profile-header-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+/* --- Responsive breakpoint helpers & Mobile Optimizations --- */
 @media (max-width: 900px) {
   .grid-2-cols {
     grid-template-columns: 1fr;
@@ -6871,10 +6919,146 @@ input[type="search"] {
   .split-layout {
     flex-direction: column;
   }
+  .content-wrapper {
+    max-width: 100%;
+  }
 }
+
+/* Evitar auto-zoom molesto en iOS Safari al enfocar inputs */
+@media (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea,
+  .form-control {
+    font-size: 16px !important;
+  }
+}
+
 @media (max-width: 600px) {
   .grid-3-cols {
     grid-template-columns: 1fr;
+  }
+  .content-wrapper {
+    padding: 0.85rem;
+  }
+  .topbar {
+    padding: 0.75rem 0.85rem;
+  }
+  .greeting-text {
+    font-size: 1.15rem;
+  }
+  .greeting-sub {
+    font-size: 0.75rem;
+  }
+
+  /* Pizarra táctica compacta en móviles */
+  .tactical-pitch {
+    height: 420px;
+  }
+  .tactical-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .tactical-controls-row {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .tactical-select {
+    flex: 1 1 130px;
+  }
+
+  /* Expedientes en móvil */
+  .exp-search-box {
+    min-width: 100%;
+  }
+  .exp-filters-box {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.4rem;
+  }
+  .exp-filters-box select {
+    width: 100%;
+  }
+  .year-folder-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Modal Perfil del Jugador */
+  .profile-main-header {
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+  .profile-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Ajustes generales de tarjetas y modales */
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  .modal-content {
+    padding: 1.1rem;
+    max-height: calc(100dvh - 1rem);
+    border-radius: 14px;
+  }
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  .kpi-card {
+    padding: 0.75rem 0.85rem;
+    gap: 0.65rem;
+  }
+  .kpi-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+  .kpi-value {
+    font-size: 1.15rem;
+  }
+
+  /* Credencial deportiva móvil */
+  .credential-card {
+    padding: 0.85rem;
+  }
+  .cred-brand h2 {
+    font-size: 1rem;
+  }
+  .cred-brand span {
+    font-size: 0.6rem;
+  }
+}
+
+/* Pantallas extra compactas / Móviles pequeños ≤ 420px */
+@media (max-width: 420px) {
+  .dashboard-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .greeting-sub {
+    display: none;
+  }
+  #cloudStatusText {
+    display: none;
+  }
+  .credential-body {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  .cred-meta {
+    align-items: center;
+  }
+  .child-avatar {
+    width: 48px;
+    height: 56px;
   }
 }
 

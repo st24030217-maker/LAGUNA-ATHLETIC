@@ -93,6 +93,7 @@ export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesIni
 
   if (window.innerWidth <= 900) {
     document.getElementById("mainSidebar")?.classList.remove("open");
+    document.getElementById("sidebarBackdrop")?.classList.remove("active");
   }
 }
 
@@ -101,7 +102,13 @@ export function toggleNavGroup(groupId) {
 }
 
 export function toggleSidebar() {
-  document.getElementById("mainSidebar")?.classList.toggle("open");
+  const sidebar = document.getElementById("mainSidebar");
+  const backdrop = document.getElementById("sidebarBackdrop");
+  if (!sidebar) return;
+  const isOpen = sidebar.classList.toggle("open");
+  if (backdrop) {
+    backdrop.classList.toggle("active", isOpen);
+  }
 }
 
 // ---------------------------------------------------------------------------

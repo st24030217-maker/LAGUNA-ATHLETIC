@@ -35,7 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 
-    <link rel="stylesheet" href="styles.css?v=2026.8.25.1" />
+    <link rel="stylesheet" href="styles.css?v=2026.9.7.1" />
   </head>
   <body class="dark-theme">
     <!-- PANTALLA DE CARGA (PRELOADER PROFESIONAL) -->
@@ -368,6 +368,9 @@
           </div>
         </nav>
       </aside>
+
+      <!-- BACKDROP MOBILE SIDEBAR -->
+      <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
       <!-- MAIN CONTENT -->
       <main class="main-content">
@@ -2000,19 +2003,21 @@
               </div>
               <div class="glass-card fade-in-up" style="animation-delay: 0.1s">
                 <h3 class="card-title">Top Compromiso</h3>
-                <table class="modern-table margin-top">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Jugador</th>
-                      <th>% Temporada</th>
-                      <th>Racha</th>
-                    </tr>
-                  </thead>
-                  <tbody id="rankingTableBody">
-                    <!-- Dinámico -->
-                  </tbody>
-                </table>
+                <div class="table-responsive">
+                  <table class="modern-table margin-top">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Jugador</th>
+                        <th>% Temporada</th>
+                        <th>Racha</th>
+                      </tr>
+                    </thead>
+                    <tbody id="rankingTableBody">
+                      <!-- Dinámico -->
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
@@ -3358,14 +3363,7 @@
         </div>
         <div class="profile-body mt-4">
           <!-- Header: foto + info básica -->
-          <div
-            style="
-              display: flex;
-              gap: 1.5rem;
-              align-items: center;
-              margin-bottom: 1.5rem;
-            "
-          >
+          <div class="profile-main-header">
             <div style="position: relative; flex-shrink: 0">
               <img
                 id="profilePhoto"
@@ -3394,7 +3392,7 @@
                 1
               </div>
             </div>
-            <div style="flex: 1">
+            <div style="flex: 1; min-width: 140px">
               <h2
                 style="font-family: var(--font-heading); margin-bottom: 0.2rem"
                 id="profileName"
@@ -3421,7 +3419,7 @@
                 >
               </div>
             </div>
-            <div style="display: flex; gap: 0.4rem">
+            <div class="profile-header-actions">
               <button
                 class="btn btn-outline btn-sm"
                 onclick="openCredentialFromProfile()"
@@ -3441,10 +3439,7 @@
           </div>
 
           <!-- Stats de la temporada -->
-          <div
-            class="grid-2-cols gap-2"
-            style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1rem"
-          >
+          <div class="profile-stats-grid gap-2" style="margin-bottom: 1rem">
             <div
               class="stat-box"
               style="
