@@ -4,107 +4,210 @@
    ========================================================================== */
 
 import {
-  squadData, calendarEvents, justificationsData, injuredData, paymentsData,
-  currentRole, loggedInUser, profilePlayerId,
-  setSquadData, setCalendarEvents, setJustificationsData, setInjuredData, setPaymentsData,
-  loadData, saveData
+  squadData,
+  calendarEvents,
+  justificationsData,
+  injuredData,
+  paymentsData,
+  currentRole,
+  loggedInUser,
+  profilePlayerId,
+  setSquadData,
+  setCalendarEvents,
+  setJustificationsData,
+  setInjuredData,
+  setPaymentsData,
+  loadData,
+  saveData,
 } from "./state.js";
 
 import {
-  showToast, showModuleTab, toggleNavGroup, toggleSidebar,
-  triggerAppLoading, initModalDismiss,
-  showConfirmModal, closeConfirmModal, executeConfirmModal,
-  triggerStatefulButton
+  showToast,
+  showModuleTab,
+  toggleNavGroup,
+  toggleSidebar,
+  triggerAppLoading,
+  initModalDismiss,
+  showConfirmModal,
+  closeConfirmModal,
+  executeConfirmModal,
+  triggerStatefulButton,
 } from "./ui.js";
 
 import {
-  initSupabase, cloudConnected, supabaseClient,
-  syncAllFromCloud, queueCloudSync,
-  openSupabaseConfigModal, closeSupabaseConfigModal,
-  testSupabaseConnection, saveAndConnectSupabase, disconnectSupabase,
-  injectCallbacks as injectSupabaseCallbacks
+  initSupabase,
+  cloudConnected,
+  supabaseClient,
+  syncAllFromCloud,
+  queueCloudSync,
+  openSupabaseConfigModal,
+  closeSupabaseConfigModal,
+  testSupabaseConnection,
+  saveAndConnectSupabase,
+  disconnectSupabase,
+  injectCallbacks as injectSupabaseCallbacks,
 } from "./supabase.js";
 
 import {
-  handleLogin, logout, applyRolePermissions, canViewGameInfo, isStaffRole,
-  injectPostLogin
+  handleLogin,
+  logout,
+  applyRolePermissions,
+  canViewGameInfo,
+  isStaffRole,
+  injectPostLogin,
 } from "./auth.js";
 
 import {
-  simulateQRCheckIn, markManualAttendance, confirmResetAttendance,
-  renderAttendanceTable, populateQuickPlayerSelect,
-  openAttendanceReportModal, closeAttendanceReportModal,
-  printAttendanceReportArea, exportAttendancePrint,
-  toggleQRScannerMode, startCameraScanner, flipCamera, stopCameraScanner,
-  injectAttendanceCallbacks
+  simulateQRCheckIn,
+  markManualAttendance,
+  confirmResetAttendance,
+  renderAttendanceTable,
+  populateQuickPlayerSelect,
+  openAttendanceReportModal,
+  closeAttendanceReportModal,
+  printAttendanceReportArea,
+  exportAttendancePrint,
+  toggleQRScannerMode,
+  startCameraScanner,
+  flipCamera,
+  stopCameraScanner,
+  injectAttendanceCallbacks,
 } from "./attendance.js";
 
 import {
-  updatePitchDisplay, changePitchSlot, closePlayerModal,
-  confirmPlayerSelection, autoLineup, changeFormation,
-  initDragAndDrop, initTacticalFullscreen,
-  slotAssignments, saveSlotAssignments,
-  injectTacticalCallbacks
+  updatePitchDisplay,
+  changePitchSlot,
+  closePlayerModal,
+  confirmPlayerSelection,
+  autoLineup,
+  changeFormation,
+  initDragAndDrop,
+  initTacticalFullscreen,
+  slotAssignments,
+  saveSlotAssignments,
+  injectTacticalCallbacks,
 } from "./tactical.js";
 
 import {
-  reportInjury, dischargePlayer, renderInjuredTable,
-  injectMedicalCallbacks
+  reportInjury,
+  dischargePlayer,
+  renderInjuredTable,
+  injectMedicalCallbacks,
 } from "./medical.js";
 
 import {
-  setCalView, renderCalendarEvents, deleteCalendarEvent,
-  openAddEventModal, closeEventModal, saveNewEvent,
-  openMatchResultModal, closeMatchResultModal,
-  addScorerRow, removeScorerRow, stepScorerVal, updateScorerGoalCount, saveMatchResult,
-  injectCalendarCallbacks
+  setCalView,
+  renderCalendarEvents,
+  deleteCalendarEvent,
+  openAddEventModal,
+  closeEventModal,
+  saveNewEvent,
+  openMatchResultModal,
+  closeMatchResultModal,
+  addScorerRow,
+  removeScorerRow,
+  stepScorerVal,
+  updateScorerGoalCount,
+  saveMatchResult,
+  injectCalendarCallbacks,
 } from "./calendar.js";
 
 import {
-  submitJustification, reviewJustification, renderJustifications,
-  injectJustificationsCallbacks
+  submitJustification,
+  reviewJustification,
+  renderJustifications,
+  injectJustificationsCallbacks,
 } from "./justifications.js";
 
 import {
-  switchNoticeMode, onNoticeGroupChange, onNoticePlayerChange,
-  onNoticeContactChange, updateNoticeTemplate, sendGeneralBroadcast,
-  sendGroupBroadcast, sendPersonalWhatsApp, sendIndividualNoticeWhatsApp,
-  copyNoticeText, checkAutomatedPaymentReminders, simulateSendNotices,
-  populateNoticeControls
+  switchNoticeMode,
+  onNoticeGroupChange,
+  onNoticePlayerChange,
+  onNoticeContactChange,
+  updateNoticeTemplate,
+  sendGeneralBroadcast,
+  sendGroupBroadcast,
+  sendPersonalWhatsApp,
+  sendIndividualNoticeWhatsApp,
+  copyNoticeText,
+  checkAutomatedPaymentReminders,
+  simulateSendNotices,
+  populateNoticeControls,
 } from "./notices.js";
 
 import {
-  initChart, updateChartData, renderRankingTable,
-  populateGameInfoPlayerSelect, onGameInfoEventSelect,
-  openPlayerGameInfoModal, closePlayerGameInfoModal, savePlayerGameInfo,
-  deletePlayerGameInfo, copyGameInfoUrl, renderPlayerGameInfo,
-  injectStatsCallbacks
+  initChart,
+  updateChartData,
+  renderRankingTable,
+  populateGameInfoPlayerSelect,
+  onGameInfoEventSelect,
+  openPlayerGameInfoModal,
+  closePlayerGameInfoModal,
+  savePlayerGameInfo,
+  deletePlayerGameInfo,
+  copyGameInfoUrl,
+  renderPlayerGameInfo,
+  injectStatsCallbacks,
 } from "./stats.js";
 
 import {
-  renderRegTable, openNewPlayerModal, openEditPlayer, closeRegModal,
-  savePlayerRegistration, confirmDeletePlayer, handlePhotoSelect,
-  openDocModal, closeDocModal, printOrDownloadDoc,
-  openCredentialModal, closeCredentialModal, openAllCredentialsModal,
-  closeAllCredentialsModal, printCredential, printAllPlayerCredentials,
-  cancelPlayerEdit, addNextContact, removeContact, setRegFilter, filterRegTable,
-  injectRegCallbacks
+  renderRegTable,
+  openNewPlayerModal,
+  openEditPlayer,
+  closeRegModal,
+  savePlayerRegistration,
+  confirmDeletePlayer,
+  handlePhotoSelect,
+  openDocModal,
+  closeDocModal,
+  printOrDownloadDoc,
+  openCredentialModal,
+  closeCredentialModal,
+  openAllCredentialsModal,
+  closeAllCredentialsModal,
+  printCredential,
+  printAllPlayerCredentials,
+  cancelPlayerEdit,
+  addNextContact,
+  removeContact,
+  setRegFilter,
+  filterRegTable,
+  injectRegCallbacks,
 } from "./registration.js";
 
 import {
-  populatePaymentPlayerSelect, populateSiblingSelect, togglePaymentScope,
-  onPaymentFamilyChange, onPaymentPlayerChange, onPaymentConceptChange,
-  setPaymentType, renderMonthlyMatrix, quickChargeMonth, handlePaymentSubmit,
-  renderPaymentsTable, updatePaymentSummaryStats, openReceiptModal,
-  closeReceiptModal, printReceipt, exportPaymentsPrint,
-  injectPaymentsCallbacks
+  populatePaymentPlayerSelect,
+  populateSiblingSelect,
+  togglePaymentScope,
+  onPaymentFamilyChange,
+  onPaymentPlayerChange,
+  onPaymentConceptChange,
+  setPaymentType,
+  renderMonthlyMatrix,
+  quickChargeMonth,
+  handlePaymentSubmit,
+  renderPaymentsTable,
+  updatePaymentSummaryStats,
+  openReceiptModal,
+  closeReceiptModal,
+  printReceipt,
+  exportPaymentsPrint,
+  injectPaymentsCallbacks,
 } from "./payments.js";
 
 import {
-  renderExpedientesModule, openChildFolderModal, closeChildFolderModal,
-  setExpedientesFilter, onExpedientesSearch, handleDocFileUpload,
-  removeDocFile, togglePlayerDocStatus, openDocumentViewerModal,
-  closeDocumentViewerModal, printChildDossier, injectExpedientesCallbacks
+  renderExpedientesModule,
+  openChildFolderModal,
+  closeChildFolderModal,
+  setExpedientesFilter,
+  onExpedientesSearch,
+  handleDocFileUpload,
+  removeDocFile,
+  togglePlayerDocStatus,
+  openDocumentViewerModal,
+  closeDocumentViewerModal,
+  printChildDossier,
+  injectExpedientesCallbacks,
 } from "./expedientes.js";
 
 // ---------------------------------------------------------------------------
@@ -129,10 +232,28 @@ function renderSquadCallupList() {
 }
 
 // Inyección a los submódulos
-injectSupabaseCallbacks({ showToast, refreshAllModules, renderPaymentsModule: renderPaymentsTable });
-injectAttendanceCallbacks({ saveData: appSaveData, renderDashboard, updateChartData, renderRankingTable });
-injectMedicalCallbacks({ saveData: appSaveData, populateQuickPlayerSelect, renderSquadCallupList });
-injectCalendarCallbacks({ saveData: appSaveData, renderDashboard, renderRegTable, updateNoticeTemplate });
+injectSupabaseCallbacks({
+  showToast,
+  refreshAllModules,
+  renderPaymentsModule: renderPaymentsTable,
+});
+injectAttendanceCallbacks({
+  saveData: appSaveData,
+  renderDashboard,
+  updateChartData,
+  renderRankingTable,
+});
+injectMedicalCallbacks({
+  saveData: appSaveData,
+  populateQuickPlayerSelect,
+  renderSquadCallupList,
+});
+injectCalendarCallbacks({
+  saveData: appSaveData,
+  renderDashboard,
+  renderRegTable,
+  updateNoticeTemplate,
+});
 injectJustificationsCallbacks({ saveData: appSaveData });
 injectStatsCallbacks({ saveData: appSaveData });
 injectRegCallbacks({ saveData: appSaveData, refreshAllModules });
@@ -369,7 +490,8 @@ export function postLoginInit() {
       displayName = user.name;
       displayRole = `Jugador · #${user.number} · ${user.position}`;
       const activeUserEl = document.getElementById("activeUserName");
-      if (activeUserEl) activeUserEl.innerText = `${user.name} (#${user.number})`;
+      if (activeUserEl)
+        activeUserEl.innerText = `${user.name} (#${user.number})`;
     } else {
       displayName = "Jugador";
       displayRole = "Jugador · Sin ficha vinculada";
@@ -408,7 +530,7 @@ export function postLoginInit() {
     onStatsResize: () => {
       if (typeof updateChartData === "function") updateChartData();
     },
-    onNoticesInit: populateNoticeControls
+    onNoticesInit: populateNoticeControls,
   });
 }
 
@@ -468,7 +590,8 @@ export function importDatabaseBackup(e) {
           setPaymentsData(data.paymentsData || []);
           setJustificationsData(data.justificationsData || []);
           setInjuredData(data.injuredData || []);
-          if (data.slotAssignments) Object.assign(slotAssignments, data.slotAssignments);
+          if (data.slotAssignments)
+            Object.assign(slotAssignments, data.slotAssignments);
 
           appSaveData();
           saveSlotAssignments();
@@ -510,16 +633,17 @@ export function confirmResetFactoryData() {
 window.showToast = showToast;
 window.handleLogin = handleLogin;
 window.logout = logout;
-window.showModuleTab = (tabId) => showModuleTab(tabId, {
-  onHomeRender: renderDashboard,
-  onStatsResize: () => {
-    if (typeof updateChartData === "function") updateChartData();
-    populateGameInfoPlayerSelect();
-    renderPlayerGameInfo();
-  },
-  onNoticesInit: populateNoticeControls,
-  onExpedientesRender: renderExpedientesModule
-});
+window.showModuleTab = (tabId) =>
+  showModuleTab(tabId, {
+    onHomeRender: renderDashboard,
+    onStatsResize: () => {
+      if (typeof updateChartData === "function") updateChartData();
+      populateGameInfoPlayerSelect();
+      renderPlayerGameInfo();
+    },
+    onNoticesInit: populateNoticeControls,
+    onExpedientesRender: renderExpedientesModule,
+  });
 window.renderExpedientesModule = renderExpedientesModule;
 window.openChildFolderModal = openChildFolderModal;
 window.closeChildFolderModal = closeChildFolderModal;
