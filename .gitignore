@@ -20,3 +20,4 @@ unnamed (1).jpg
 .DS_Store
 Thumbs.db
 *.log
+node_modules/

@@ -3,13 +3,38 @@
    Login, logout, roles y postLoginInit.
    ========================================================================== */
 
-import { squadData, currentRole, loggedInUser, profilePlayerId, setCurrentRole, setLoggedInUser } from "./state.js";
+import {
+  squadData,
+  calendarEvents,
+  paymentsData,
+  currentRole,
+  loggedInUser,
+  profilePlayerId,
+  defaultSquadData,
+  defaultCalendarEvents,
+  defaultPayments,
+  loadData,
+  setCurrentRole,
+  setLoggedInUser,
+  setSquadData,
+  setCalendarEvents,
+  setPaymentsData,
+} from "./state.js";
+import { setProfilePlayerId } from "./state.js";
 import { showToast, triggerStatefulButton } from "./ui.js";
-import { supabaseClient, cloudConnected, applySupabaseProfile, syncAllFromCloud, queueCloudSync } from "./supabase.js";
+import {
+  supabaseClient,
+  cloudConnected,
+  applySupabaseProfile,
+  syncAllFromCloud,
+  queueCloudSync,
+} from "./supabase.js";
 
 // Callback inyectado desde main.js
 let _postLoginInit = () => {};
-export function injectPostLogin(fn) { _postLoginInit = fn; }
+export function injectPostLogin(fn) {
+  _postLoginInit = fn;
+}
 
 // ---------------------------------------------------------------------------
 // LOGIN
@@ -17,25 +42,44 @@ export function injectPostLogin(fn) { _postLoginInit = fn; }
 export async function handleLogin(e) {
   if (e) e.preventDefault();
   const loginBtn = document.getElementById("btnLoginSubmit");
-  const username = (document.getElementById("loginUsernameInput")?.value || "").trim();
-  const pinInput = document.getElementById("loginPinInput") ? document.getElementById("loginPinInput").value.trim() : "";
-  const authEmail = username.includes("@") ? username : `${username}@laguna.local`;
+  const username = (
+    document.getElementById("loginUsernameInput")?.value || ""
+  ).trim();
+  const pinInput = document.getElementById("loginPinInput")
+    ? document.getElementById("loginPinInput").value.trim()
+    : "";
+  const authEmail = username.includes("@")
+    ? username
+    : `${username}@laguna.local`;
 
-  if (!username) { showToast("Escribe tu usuario.", "warning"); return; }
-  if (!authEmail || !pinInput) { showToast("Escribe tu usuario y contraseña.", "warning"); return; }
+  if (!username) {
+    showToast("Escribe tu usuario.", "warning");
+    return;
+  }
+  if (!authEmail || !pinInput) {
+    showToast("Escribe tu usuario y contraseña.", "warning");
+    return;
+  }
 
   if (!cloudConnected) {
-    showToast("La nube no está configurada. Contacta al administrador para activar Supabase.", "error");
+    showToast(
+      "La nube no está configurada. Contacta al administrador para activar Supabase.",
+      "error",
+    );
     return;
   }
 
   const performLogin = async () => {
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email: authEmail, password: pinInput });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: authEmail,
+      password: pinInput,
+    });
     if (error) {
       await supabaseClient.auth.signOut();
-      const errorMessage = error.message === "Invalid login credentials"
-        ? "Usuario o contraseña incorrectos."
-        : "No se pudo iniciar sesión: " + error.message;
+      const errorMessage =
+        error.message === "Invalid login credentials"
+          ? "Usuario o contraseña incorrectos."
+          : "No se pudo iniciar sesión: " + error.message;
       showToast(errorMessage, "error");
       const pinEl = document.getElementById("loginPinInput");
       if (pinEl) pinEl.value = "";
@@ -43,9 +87,15 @@ export async function handleLogin(e) {
     }
     localStorage.setItem("laguna_auth_username", username);
     const { data: profile, error: profileError } = await supabaseClient
-      .from("profiles").select("role, player_id").eq("id", data.user.id).single();
+      .from("profiles")
+      .select("role, player_id")
+      .eq("id", data.user.id)
+      .single();
     if (profileError || !profile) {
-      showToast("Tu usuario no tiene un perfil configurado en Supabase.", "error");
+      showToast(
+        "Tu usuario no tiene un perfil configurado en Supabase.",
+        "error",
+      );
       await supabaseClient.auth.signOut();
       throw new Error("Sin perfil");
     }
@@ -62,14 +112,39 @@ export async function handleLogin(e) {
     try {
       await triggerStatefulButton(loginBtn, performLogin, {
         loadingText: "Verificando...",
-        successText: "¡Bienvenido!"
+        successText: "¡Bienvenido!",
       });
     } catch (_) {
       // Error ya manejado con toast
     }
   } else {
-    try { await performLogin(); } catch (_) {}
+    try {
+      await performLogin();
+    } catch (_) {}
   }
+}
+
+export function handleDemoParentLogin(e) {
+  if (e) e.preventDefault();
+
+  loadData();
+  if (!squadData.length) setSquadData([...defaultSquadData]);
+  if (!calendarEvents.length) setCalendarEvents([...defaultCalendarEvents]);
+  if (!paymentsData.length) setPaymentsData([...defaultPayments]);
+  const demoPlayer =
+    squadData.find((player) => player.id === 10) || squadData[0];
+  setProfilePlayerId(demoPlayer?.id || null);
+  setLoggedInUser(demoPlayer || null);
+  setCurrentRole("guardian");
+  sessionStorage.setItem("laguna_active_role", "guardian");
+  sessionStorage.setItem("laguna_auth_user", "demo-guardian");
+  localStorage.setItem("laguna_auth_username", "padre.demo");
+
+  document.getElementById("loginScreen")?.classList.add("hidden");
+  const appLayout = document.getElementById("appLayout");
+  if (appLayout) appLayout.style.display = "grid";
+  _postLoginInit();
+  showToast("Modo demo: sesión de padre activada.", "success");
 }
 
 export function logout() {
@@ -90,8 +165,9 @@ export function isStaffRole() {
 }
 
 export function applyRolePermissions() {
-  const isDT              = currentRole === "dt";
-  const canViewSensitive  = canViewGameInfo();
+  const isDT = currentRole === "dt";
+  const canViewSensitive = canViewGameInfo();
+  const isGuardian = currentRole === "guardian";
 
   document.querySelectorAll(".role-dt-only").forEach((el) => {
     el.style.display = isDT ? "" : "none";
@@ -99,6 +175,37 @@ export function applyRolePermissions() {
   document.querySelectorAll(".role-admin-trainer-only").forEach((el) => {
     el.style.display = canViewSensitive ? "" : "none";
   });
+  if (isGuardian) {
+    const allowedTabs = new Set([
+      "mod-home",
+      "mod-avisos",
+      "mod-calendario",
+      "mod-pagos",
+      "mod-expedientes",
+    ]);
+    document.querySelectorAll(".tab-btn[data-tab]").forEach((el) => {
+      el.style.display = allowedTabs.has(el.dataset.tab) ? "" : "none";
+    });
+    [
+      "mod-qr",
+      "mod-justificaciones",
+      "mod-registro",
+      "mod-alineacion",
+      "mod-medico",
+      "mod-estadisticas",
+    ].forEach((id) => {
+      document.getElementById(id)?.classList.add("guardian-hidden-module");
+    });
+    document.querySelectorAll(".nav-group-header").forEach((el) => {
+      const group = el.parentElement;
+      if (
+        group &&
+        !group.querySelector('.tab-btn:not([style*="display: none"])')
+      ) {
+        group.style.display = "none";
+      }
+    });
+  }
   document.querySelectorAll(".player-marker").forEach((el) => {
     el.classList.add("role-editable");
     el.style.cursor = "grab";

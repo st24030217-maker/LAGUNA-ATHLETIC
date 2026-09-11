@@ -274,6 +274,15 @@
             <span>Iniciar Sesión</span>
             <i class="fa-solid fa-arrow-right-long"></i>
           </button>
+
+          <button
+            type="button"
+            class="btn btn-ghost btn-block demo-parent-login"
+            onclick="handleDemoParentLogin(event)"
+          >
+            <i class="fa-solid fa-people-roof"></i>
+            Entrar como padre (demo)
+          </button>
         </form>
 
         <!-- Footer -->
@@ -4841,6 +4850,13 @@
       </div>
     </div>
 
-    <script type="module" src="js/main.js?v=2026.9.10.1"></script>
+    <!-- Preline UI: componentes interactivos compatibles con la SPA estática -->
+    <script src="https://cdn.jsdelivr.net/npm/preline@latest/dist/preline.js"></script>
+    <script>
+      window.addEventListener("load", () => {
+        window.HSStaticMethods?.autoInit();
+      });
+    </script>
+    <script type="module" src="js/main.js?v=2026.9.11.1"></script>
   </body>
 </html>

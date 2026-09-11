@@ -50,12 +50,13 @@ import {
 
 import {
   handleLogin,
+  handleDemoParentLogin,
   logout,
   applyRolePermissions,
   canViewGameInfo,
   isStaffRole,
   injectPostLogin,
-} from "./auth.js";
+} from "./auth.js?v=2026.9.11.1";
 
 import {
   simulateQRCheckIn,
@@ -503,6 +504,11 @@ export function postLoginInit() {
     displayRole = "Director Técnico · Admin";
     const activeUserEl = document.getElementById("activeUserName");
     if (activeUserEl) activeUserEl.innerText = "Coach Zúñiga (Admin)";
+  } else if (currentRole === "guardian") {
+    displayName = "Familia Suárez";
+    displayRole = "Padre de familia · Modo demo";
+    const activeUserEl = document.getElementById("activeUserName");
+    if (activeUserEl) activeUserEl.innerText = "Familia Suárez (Demo)";
   } else {
     displayName = "Directiva";
     displayRole = "Acceso de Solo Lectura";
@@ -632,6 +638,7 @@ export function confirmResetFactoryData() {
 // ---------------------------------------------------------------------------
 window.showToast = showToast;
 window.handleLogin = handleLogin;
+window.handleDemoParentLogin = handleDemoParentLogin;
 window.logout = logout;
 window.showModuleTab = (tabId) =>
   showModuleTab(tabId, {
