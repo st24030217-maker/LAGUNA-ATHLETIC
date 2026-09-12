@@ -56,7 +56,7 @@ import {
   canViewGameInfo,
   isStaffRole,
   injectPostLogin,
-} from "./auth.js?v=2026.9.11.1";
+} from "./auth.js";
 
 import {
   simulateQRCheckIn,
@@ -68,6 +68,7 @@ import {
   closeAttendanceReportModal,
   printAttendanceReportArea,
   exportAttendancePrint,
+  renderAttendanceReportTable,
   toggleQRScannerMode,
   startCameraScanner,
   flipCamera,
@@ -82,6 +83,10 @@ import {
   confirmPlayerSelection,
   autoLineup,
   changeFormation,
+  resetPitchPositions,
+  setSquadCallupFilter,
+  saveLineup,
+  renderSquadCallupList,
   initDragAndDrop,
   initTacticalFullscreen,
   slotAssignments,
@@ -157,6 +162,11 @@ import {
   openEditPlayer,
   closeRegModal,
   savePlayerRegistration,
+  handlePlayerRegSubmit,
+  openPlayerProfile,
+  closeProfileModal,
+  openCredentialFromProfile,
+  profileSendWA,
   confirmDeletePlayer,
   handlePhotoSelect,
   openDocModal,
@@ -166,6 +176,7 @@ import {
   closeCredentialModal,
   openAllCredentialsModal,
   closeAllCredentialsModal,
+  renderAllCredentialsGrid,
   printCredential,
   printAllPlayerCredentials,
   cancelPlayerEdit,
@@ -184,6 +195,7 @@ import {
   onPaymentPlayerChange,
   onPaymentConceptChange,
   setPaymentType,
+  recalculatePaymentTotals,
   renderMonthlyMatrix,
   quickChargeMonth,
   handlePaymentSubmit,
@@ -193,6 +205,8 @@ import {
   closeReceiptModal,
   printReceipt,
   exportPaymentsPrint,
+  copyCoachCardNumber,
+  sendPaymentReceiptWA,
   injectPaymentsCallbacks,
 } from "./payments.js";
 
@@ -225,11 +239,7 @@ function refreshAllModules() {
   renderRegTable();
   renderExpedientesModule();
   updateChartData();
-}
-
-function renderSquadCallupList() {
-  // Función auxiliar de refresco visual táctico / lista de convocados
-  renderAttendanceTable();
+  renderSquadCallupList();
 }
 
 // Inyección a los submódulos
@@ -713,10 +723,16 @@ window.savePlayerGameInfo = savePlayerGameInfo;
 window.deletePlayerGameInfo = deletePlayerGameInfo;
 window.copyGameInfoUrl = copyGameInfoUrl;
 window.onGameInfoEventSelect = onGameInfoEventSelect;
+window.renderPlayerGameInfo = renderPlayerGameInfo;
 window.openNewPlayerModal = openNewPlayerModal;
 window.openEditPlayer = openEditPlayer;
 window.closeRegModal = closeRegModal;
 window.savePlayerRegistration = savePlayerRegistration;
+window.handlePlayerRegSubmit = handlePlayerRegSubmit;
+window.openPlayerProfile = openPlayerProfile;
+window.closeProfileModal = closeProfileModal;
+window.openCredentialFromProfile = openCredentialFromProfile;
+window.profileSendWA = profileSendWA;
 window.cancelPlayerEdit = cancelPlayerEdit;
 window.addNextContact = addNextContact;
 window.removeContact = removeContact;
@@ -731,8 +747,15 @@ window.openCredentialModal = openCredentialModal;
 window.closeCredentialModal = closeCredentialModal;
 window.openAllCredentialsModal = openAllCredentialsModal;
 window.closeAllCredentialsModal = closeAllCredentialsModal;
+window.renderAllCredentialsGrid = renderAllCredentialsGrid;
 window.printCredential = printCredential;
 window.printAllPlayerCredentials = printAllPlayerCredentials;
+window.renderAttendanceReportTable = renderAttendanceReportTable;
+window.renderSquadCallupList = renderSquadCallupList;
+window.resetPitchPositions = resetPitchPositions;
+window.setSquadCallupFilter = setSquadCallupFilter;
+window.saveLineup = saveLineup;
+window.renderCalendarEvents = renderCalendarEvents;
 window.populatePaymentPlayerSelect = populatePaymentPlayerSelect;
 window.populateSiblingSelect = populateSiblingSelect;
 window.togglePaymentScope = togglePaymentScope;
@@ -740,6 +763,7 @@ window.onPaymentFamilyChange = onPaymentFamilyChange;
 window.onPaymentPlayerChange = onPaymentPlayerChange;
 window.onPaymentConceptChange = onPaymentConceptChange;
 window.setPaymentType = setPaymentType;
+window.recalculatePaymentTotals = recalculatePaymentTotals;
 window.renderMonthlyMatrix = renderMonthlyMatrix;
 window.quickChargeMonth = quickChargeMonth;
 window.handlePaymentSubmit = handlePaymentSubmit;
@@ -749,6 +773,8 @@ window.openReceiptModal = openReceiptModal;
 window.closeReceiptModal = closeReceiptModal;
 window.printReceipt = printReceipt;
 window.exportPaymentsPrint = exportPaymentsPrint;
+window.copyCoachCardNumber = copyCoachCardNumber;
+window.sendPaymentReceiptWA = sendPaymentReceiptWA;
 window.openSupabaseConfigModal = openSupabaseConfigModal;
 window.closeSupabaseConfigModal = closeSupabaseConfigModal;
 window.testSupabaseConnection = testSupabaseConnection;

@@ -182,7 +182,7 @@ export function resetRegForm() {
   regEditingId = null;
   currentSelectedPhoto = "LAGUNA.jpg";
 
-  const form = document.getElementById("regPlayerForm");
+  const form = document.getElementById("playerRegForm") || document.getElementById("regPlayerForm");
   if (form) form.reset();
 
   const preview = document.getElementById("regPhotoPreview");
@@ -205,7 +205,8 @@ export function resetRegForm() {
 
 export function openNewPlayerModal() {
   resetRegForm();
-  document.getElementById("regPlayerForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const form = document.getElementById("playerRegForm") || document.getElementById("regPlayerForm");
+  form?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 export function cancelPlayerEdit() {
@@ -352,11 +353,16 @@ export function openEditPlayer(id) {
     cancelBtn.style.display = "inline-flex";
   }
 
-  document.getElementById("regPlayerForm")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const form = document.getElementById("playerRegForm") || document.getElementById("regPlayerForm");
+  form?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 export function closeRegModal() {
   // Función mantenida por compatibilidad
+}
+
+export function handlePlayerRegSubmit(e) {
+  return savePlayerRegistration(e);
 }
 
 export function savePlayerRegistration(e) {
@@ -775,4 +781,86 @@ export function printAllPlayerCredentials() {
     w.document.close();
     setTimeout(() => w.print(), 500);
   }
+}
+
+// ---------------------------------------------------------------------------
+// PERFIL DETALLADO DE JUGADOR
+// ---------------------------------------------------------------------------
+export function openPlayerProfile(playerId) {
+  const p = squadData.find((x) => x.id === playerId);
+  if (!p) return;
+  ensureRegFields(p);
+  currentProfilePlayerId = p.id;
+
+  const photo = document.getElementById("profilePhoto");
+  if (photo) photo.src = p.photo || "LAGUNA.jpg";
+
+  const num = document.getElementById("profileNumber");
+  if (num) num.textContent = p.number;
+
+  const name = document.getElementById("profileName");
+  if (name) name.textContent = p.name;
+
+  const pos = document.getElementById("profilePosition");
+  if (pos) pos.textContent = p.position || "Jugador";
+
+  const statusBadge = document.getElementById("profileStatusBadge");
+  if (statusBadge) {
+    statusBadge.textContent = p.injured ? "Baja Médica" : (p.regStatus || "Activo");
+    statusBadge.className = p.injured ? "badge badge-danger" : "badge badge-success";
+  }
+
+  const groupBadge = document.getElementById("profileGroupBadge");
+  if (groupBadge) groupBadge.textContent = p.group || "Sin Cat.";
+
+  const ageBadge = document.getElementById("profileAgeBadge");
+  if (ageBadge) {
+    if (p.birthdate) {
+      const birth = new Date(p.birthdate);
+      const ageDifMs = Date.now() - birth.getTime();
+      const ageDate = new Date(ageDifMs);
+      const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+      ageBadge.textContent = !isNaN(age) ? `${age} años` : "— años";
+    } else {
+      ageBadge.textContent = "— años";
+    }
+  }
+
+  const goals = document.getElementById("profileGoals");
+  if (goals) goals.textContent = p.goals || 0;
+
+  const assists = document.getElementById("profileAssists");
+  if (assists) assists.textContent = p.assists || 0;
+
+  const mins = document.getElementById("profileMins");
+  if (mins) mins.textContent = `${p.mins || 0}'`;
+
+  const cards = document.getElementById("profileCards");
+  if (cards) cards.textContent = p.cards || 0;
+
+  document.getElementById("playerProfileModal")?.classList.remove("hidden");
+}
+
+export function closeProfileModal() {
+  document.getElementById("playerProfileModal")?.classList.add("hidden");
+}
+
+export function openCredentialFromProfile() {
+  if (currentProfilePlayerId) {
+    closeProfileModal();
+    openCredentialModal(currentProfilePlayerId);
+  }
+}
+
+export function profileSendWA() {
+  const p = squadData.find((x) => x.id === currentProfilePlayerId);
+  if (!p || !p.phone) {
+    showToast("El jugador no tiene número telefónico registrado.", "warning");
+    return;
+  }
+  const cleanPhone = p.phone.replace(/\D/g, "");
+  const text = encodeURIComponent(
+    `Hola ${p.tutorName || p.name}, le escribimos de Club Laguna Athletic.`
+  );
+  window.open(`https://wa.me/${cleanPhone}?text=${text}`, "_blank");
 }

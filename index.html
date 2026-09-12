@@ -35,7 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 
-    <link rel="stylesheet" href="styles.css?v=2026.9.10.1" />
+    <link rel="stylesheet" href="styles.css?v=2026.9.11.4" />
   </head>
   <body class="dark-theme">
     <!-- PANTALLA DE CARGA (PRELOADER PROFESIONAL) -->
@@ -2982,6 +2982,62 @@
                 <div class="stat-box" style="color: var(--accent-neon)">
                   <i class="fa-solid fa-coins"></i>
                   <span id="payTotalCollected">$0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tarjeta de Transferencia Oficial del Entrenador para Padres -->
+            <div class="guardian-payment-card margin-bottom fade-in-up hidden">
+              <div class="guardian-payment-card-copy">
+                <span class="badge badge-neon">DATOS PARA TRANSFERIR</span>
+                <h3>Cuenta Oficial del Entrenador</h3>
+                <p class="text-muted">
+                  Realiza el pago de tu colegiatura mensual mediante transferencia SPEI o depósito directo con los siguientes datos bancarios:
+                </p>
+
+                <div class="guardian-transfer-details">
+                  <div><span>Banco:</span> <strong id="coachBankText">BBVA México</strong></div>
+                  <div><span>Beneficiario:</span> <strong id="coachBeneficiaryText">LAGUNA ATHLETIC / PROF. DT</strong></div>
+                  <div><span>CLABE Interbancaria:</span> <strong class="mono-text" id="coachClabeText">012180004152314089</strong></div>
+                  <div><span>Concepto / Referencia:</span> <strong id="coachConceptText">Colegiatura + Alumno</strong></div>
+                </div>
+
+                <div class="guardian-transfer-actions">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="copyCoachCardNumber()" title="Copiar CLABE / Tarjeta al portapapeles">
+                    <i class="fa-solid fa-copy text-gold"></i> Copiar CLABE / Tarjeta
+                  </button>
+                  <button type="button" class="btn btn-whatsapp btn-sm" onclick="sendPaymentReceiptWA()" title="Enviar comprobante de pago por WhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i> Enviar Comprobante
+                  </button>
+                </div>
+
+                <div class="mt-2">
+                  <span class="guardian-payment-status">
+                    <i class="fa-solid fa-circle-check"></i> Mensualidad al día
+                  </span>
+                </div>
+              </div>
+
+              <div
+                class="guardian-payment-card-visual"
+                aria-label="Tarjeta de transferencia del entrenador"
+              >
+                <div class="guardian-card-topline">
+                  <strong>LAGUNA ATHLETIC</strong>
+                  <span>SPEI · BBVA</span>
+                </div>
+                <div class="guardian-card-chip">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="guardian-card-number" id="coachCardNumberDisplay">
+                  4152&nbsp;&nbsp;3140&nbsp;&nbsp;8901&nbsp;&nbsp;2345
+                </div>
+                <div class="guardian-card-bottomline">
+                  <span id="coachCardBeneficiary">PROF. EDGAR LAGUNA (DT)</span>
+                  <span>SPEI 24/7</span>
+                </div>
+                <div class="guardian-card-mark" aria-hidden="true">
+                  <i></i><i></i>
                 </div>
               </div>
             </div>

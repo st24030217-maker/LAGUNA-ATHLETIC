@@ -678,3 +678,48 @@ export function exportPaymentsPrint() {
     setTimeout(() => w.print(), 400);
   }
 }
+
+// ---------------------------------------------------------------------------
+// DATOS BANCARIOS DEL ENTRENADOR / CLUB PARA PADRES
+// ---------------------------------------------------------------------------
+export const coachBankDetails = {
+  bank: "BBVA México",
+  beneficiary: "LAGUNA ATHLETIC (CUERPO TÉCNICO)",
+  cardNumber: "4152 3140 8901 2345",
+  clabe: "012180004152314089",
+  concept: "Colegiatura + Alumno",
+  whatsapp: "528711234567",
+};
+
+export function copyCoachCardNumber() {
+  const number = coachBankDetails.clabe || coachBankDetails.cardNumber;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard
+      .writeText(number.replace(/\s+/g, ""))
+      .then(() => {
+        showToast(
+          `¡CLABE Interbancaria (${number}) copiada con éxito!`,
+          "success",
+        );
+      })
+      .catch(() => {
+        prompt("Copia los datos de transferencia:", number);
+      });
+  } else {
+    prompt("Copia los datos de transferencia:", number);
+  }
+}
+
+export function sendPaymentReceiptWA() {
+  const student =
+    squadData.find((p) => p.id === (window.profilePlayerId || 10)) ||
+    squadData[0];
+  const studentInfo = student
+    ? `#${student.number} ${student.name}`
+    : "mi hijo(a)";
+  const phone = coachBankDetails.whatsapp.replace(/\D/g, "");
+  const text = encodeURIComponent(
+    `Hola Profesor / Directiva de Laguna Athletic, le comparto el comprobante de pago de colegiatura correspondiente al alumno ${studentInfo}. Quedo atento a la confirmación. ¡Muchas gracias!`,
+  );
+  window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
+}

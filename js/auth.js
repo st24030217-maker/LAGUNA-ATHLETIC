@@ -175,7 +175,28 @@ export function applyRolePermissions() {
   document.querySelectorAll(".role-admin-trainer-only").forEach((el) => {
     el.style.display = canViewSensitive ? "" : "none";
   });
+  document.querySelectorAll(".guardian-payment-card").forEach((el) => {
+    el.classList.toggle("hidden", !isGuardian);
+  });
   if (isGuardian) {
+    const student =
+      squadData.find((p) => p.id === profilePlayerId) || loggedInUser;
+    const conceptEl = document.getElementById("coachConceptText");
+    const statusEl = document.querySelector(".guardian-payment-status");
+    if (student) {
+      if (conceptEl) {
+        conceptEl.textContent = `Colegiatura · #${student.number} ${student.name}`;
+      }
+      const hasPending = paymentsData.some(
+        (pay) => pay.playerId === student.id && pay.status === "Pendiente",
+      );
+      if (statusEl) {
+        statusEl.innerHTML = hasPending
+          ? '<i class="fa-solid fa-clock" style="color:var(--accent-warning);"></i> Tienes una colegiatura pendiente'
+          : '<i class="fa-solid fa-circle-check" style="color:#6ee7b7;"></i> Mensualidad al día (Sin adeudo)';
+      }
+    }
+
     const allowedTabs = new Set([
       "mod-home",
       "mod-avisos",

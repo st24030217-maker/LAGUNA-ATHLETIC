@@ -537,3 +537,89 @@ export function initTacticalFullscreen() {
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// FILTROS, GUARDADO Y RENDER DE CONVOCATORIA
+// ---------------------------------------------------------------------------
+export function setSquadCallupFilter(filter, btn) {
+  currentSquadFilter = filter;
+  document
+    .querySelectorAll(".tactical-filter-btn")
+    .forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderSquadCallupList();
+}
+
+export function resetPitchPositions() {
+  savedPositions = {};
+  try {
+    localStorage.removeItem("laguna_pitch_positions");
+  } catch (e) {}
+  changeFormation();
+  showToast("Posiciones reiniciadas al esquema base.", "info");
+}
+
+export function saveLineup() {
+  _saveData();
+  saveSlotAssignments();
+  showToast("Alineación oficial guardada y publicada con éxito.", "success");
+}
+
+export function renderSquadCallupList() {
+  const container = document.getElementById("squadCallupList");
+  const countBadge = document.getElementById("rosterCountBadge");
+  if (!container) return;
+
+  const groupFilter =
+    document.getElementById("tacticalGroupSelect")?.value || "Todos";
+  const startersIds = new Set(Object.values(slotAssignments));
+
+  let filtered = squadData.filter((p) => {
+    if (groupFilter !== "Todos" && p.group !== groupFilter) return false;
+    if (currentSquadFilter === "titulares")
+      return startersIds.has(p.id) && !p.injured;
+    if (currentSquadFilter === "suplentes")
+      return !startersIds.has(p.id) && !p.injured;
+    if (currentSquadFilter === "lesionados") return !!p.injured;
+    return true;
+  });
+
+  if (countBadge) {
+    const availableTotal = squadData.filter(
+      (p) => !p.injured && (groupFilter === "Todos" || p.group === groupFilter),
+    ).length;
+    countBadge.textContent = `${availableTotal} Disponibles`;
+  }
+
+  container.innerHTML = "";
+  if (filtered.length === 0) {
+    container.innerHTML = `<p class="text-muted text-center" style="padding: 1.5rem 0; font-size: 0.85rem;">No hay jugadores en esta vista.</p>`;
+    return;
+  }
+
+  filtered.forEach((p) => {
+    const isStarter = startersIds.has(p.id) && !p.injured;
+    const item = document.createElement("div");
+    item.className = `roster-item ${isStarter ? "is-starter" : ""} ${p.injured ? "is-injured" : ""}`;
+    item.style.cssText =
+      "display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.8rem; margin-bottom: 0.4rem; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border-color);";
+
+    let badgeHtml = isStarter
+      ? `<span class="badge badge-neon" style="font-size:0.68rem;">Titular</span>`
+      : p.injured
+        ? `<span class="badge badge-danger" style="font-size:0.68rem;">Baja</span>`
+        : `<span class="badge badge-ghost" style="font-size:0.68rem;">Banquillo</span>`;
+
+    item.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <span class="mono-text" style="font-weight: 800; color: var(--accent-gold); min-width: 24px;">#${p.number}</span>
+        <div>
+          <div style="font-weight: 600; font-size: 0.85rem; color: #fff;">${p.name}</div>
+          <small class="text-muted">${p.position} ${p.group ? "· " + p.group : ""}</small>
+        </div>
+      </div>
+      <div>${badgeHtml}</div>
+    `;
+    container.appendChild(item);
+  });
+}
