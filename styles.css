@@ -146,8 +146,6 @@ textarea:focus-visible {
     #0a1428 75%,
     #050a12 100%
   );
-  background-size: 400% 400%;
-  animation: loginBgShift 20s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2995,12 +2993,51 @@ textarea:focus-visible {
   border: 1px solid var(--border-glass);
   font-size: 0.9rem;
   gap: 0.8rem;
+  position: relative;
+  overflow: hidden;
+  animation: gafetePulse 3s ease-in-out infinite;
+}
+.fam-child-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(37, 99, 235, 0.08),
+    rgba(212, 175, 55, 0.05),
+    transparent
+  );
+  transition: left 0.6s ease;
+  animation: gafeteShimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.fam-child-row:hover::before {
+  left: 120%;
 }
 .fam-child-info {
   display: flex;
   align-items: center;
   gap: 0.8rem;
   min-width: 0;
+}
+.fam-child-info img {
+  animation: gafetePhotoGlow 3s ease-in-out infinite alternate;
+}
+@keyframes gafetePulse {
+  0%, 100% { border-color: rgba(255, 255, 255, 0.08); }
+  50% { border-color: rgba(37, 99, 235, 0.25); }
+}
+@keyframes gafeteShimmer {
+  0%, 100% { left: -100%; }
+  50% { left: 120%; }
+}
+@keyframes gafetePhotoGlow {
+  0% { box-shadow: 0 0 0 rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 8px rgba(37, 99, 235, 0.4); }
 }
 .fam-child-price-col {
   display: flex;
@@ -3013,6 +3050,33 @@ textarea:focus-visible {
   white-space: nowrap;
   font-size: 0.65rem;
   padding: 0.25rem 0.5rem;
+}
+
+/* GAFETE ANIMADO — Matriz de Mensualidades */
+#monthlyMatrixBody tr {
+  animation: gafetePulse 3s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+#monthlyMatrixBody tr::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(37, 99, 235, 0.06),
+    rgba(212, 175, 55, 0.04),
+    transparent
+  );
+  animation: gafeteShimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+#monthlyMatrixBody tr:hover {
+  border-color: rgba(37, 99, 235, 0.3);
 }
 
 .fam-total-banner {
@@ -8637,3 +8701,274 @@ body {
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   PORTAL DE PADRES DE FAMILIA — LAGUNA ATHLETIC 2026
+   ========================================================================== */
+.guardian-child-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.guardian-child-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.guardian-child-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-gold);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
+}
+
+.guardian-child-number {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: var(--accent-gold);
+  color: #000;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.guardian-child-info h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1.2rem;
+  color: #fff;
+  font-family: var(--font-heading);
+}
+
+.guardian-child-badges {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.guardian-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+}
+
+.guardian-metric-box {
+  background: rgba(4, 16, 28, 0.65);
+  border: 1px solid rgba(103, 201, 255, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.4rem;
+  text-align: center;
+}
+
+.guardian-metric-num {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.guardian-metric-lbl {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.guardian-event-content {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 35px);
+  justify-content: space-between;
+}
+
+.guardian-event-details-box {
+  background: rgba(4, 16, 28, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.guardian-event-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+}
+
+.guardian-event-row i {
+  margin-top: 3px;
+  font-size: 0.95rem;
+}
+
+.guardian-event-row strong {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+}
+
+.guardian-event-row span {
+  color: #e2e8f0;
+}
+
+.guardian-event-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.guardian-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+}
+
+.guardian-quick-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  background: rgba(7, 24, 42, 0.65);
+  border: 1px solid rgba(103, 201, 255, 0.16);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.guardian-quick-item:hover {
+  background: rgba(13, 70, 115, 0.4);
+  border-color: var(--accent-primary-light);
+  transform: translateY(-2px);
+}
+
+.guardian-quick-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.guardian-quick-icon.bg-gold {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-gold);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.guardian-quick-icon.bg-primary {
+  background: rgba(21, 153, 230, 0.2);
+  color: var(--accent-primary-light);
+  border: 1px solid rgba(21, 153, 230, 0.35);
+}
+
+.guardian-quick-icon.bg-green {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.guardian-quick-icon.bg-whatsapp {
+  background: rgba(37, 211, 102, 0.2);
+  color: #25d366;
+  border: 1px solid rgba(37, 211, 102, 0.35);
+}
+
+.guardian-quick-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.guardian-quick-text strong {
+  font-size: 0.88rem;
+  color: #fff;
+}
+
+.guardian-quick-text span {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.guardian-guide-stepper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.guardian-guide-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  background: rgba(4, 16, 28, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+}
+
+.guardian-guide-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.guardian-guide-desc strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #fff;
+}
+
+.guardian-guide-desc span {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.badge-gold {
+  background: rgba(245, 158, 11, 0.18);
+  color: var(--accent-gold);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+@media (max-width: 600px) {
+  .guardian-child-profile {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .guardian-child-badges {
+    justify-content: center;
+  }
+
+  .guardian-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .guardian-event-actions {
+    flex-direction: column;
+  }
+
+  .guardian-quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
