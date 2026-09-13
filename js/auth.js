@@ -175,9 +175,16 @@ export function applyRolePermissions() {
   document.querySelectorAll(".role-admin-trainer-only").forEach((el) => {
     el.style.display = canViewSensitive ? "" : "none";
   });
-  document.querySelectorAll(".guardian-payment-card").forEach((el) => {
-    el.classList.toggle("hidden", !isGuardian);
-  });
+  const guardianHome = document.getElementById("guardianHomeView");
+  const coachHome = document.getElementById("coachHomeView");
+  const guardianPayments = document.getElementById("guardianPaymentsView");
+  const coachPayments = document.getElementById("coachPaymentsView");
+
+  if (guardianHome) guardianHome.classList.toggle("hidden", !isGuardian);
+  if (coachHome) coachHome.classList.toggle("hidden", isGuardian);
+  if (guardianPayments) guardianPayments.classList.toggle("hidden", !isGuardian);
+  if (coachPayments) coachPayments.classList.toggle("hidden", isGuardian);
+
   if (isGuardian) {
     const student =
       squadData.find((p) => p.id === profilePlayerId) || loggedInUser;
@@ -225,6 +232,17 @@ export function applyRolePermissions() {
       ) {
         group.style.display = "none";
       }
+    });
+  } else {
+    document.querySelectorAll(".tab-btn[data-tab]").forEach((el) => {
+      el.style.display = "";
+    });
+    document.querySelectorAll(".guardian-hidden-module").forEach((el) => {
+      el.classList.remove("guardian-hidden-module");
+    });
+    document.querySelectorAll(".nav-group-header").forEach((el) => {
+      const group = el.parentElement;
+      if (group) group.style.display = "";
     });
   }
   document.querySelectorAll(".player-marker").forEach((el) => {

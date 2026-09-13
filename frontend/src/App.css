@@ -1,0 +1,200 @@
+.app-shell {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 30%),
+    radial-gradient(
+      circle at bottom right,
+      rgba(34, 197, 94, 0.16),
+      transparent 28%
+    ),
+    #040816;
+  color: #edf6ff;
+  font-family: Inter, "Segoe UI", sans-serif;
+}
+
+.app-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.18),
+    rgba(15, 23, 42, 0.7)
+  );
+  pointer-events: none;
+}
+
+.topbar,
+.hero-layout {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 32px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #04101d;
+  font-weight: 900;
+}
+
+.nav {
+  display: inline-flex;
+  gap: 26px;
+}
+
+.nav a {
+  color: rgba(237, 246, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-layout {
+  max-width: 1280px;
+  min-height: calc(100vh - 88px);
+  margin: 0 auto;
+  padding: 24px 32px 40px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero-copy {
+  max-width: 540px;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: #7dd3fc;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hero-copy h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 4vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.subtitle {
+  margin-top: 20px;
+  max-width: 460px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.cta-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.primary-btn,
+.secondary-btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #08131d;
+  box-shadow: 0 18px 34px rgba(56, 189, 248, 0.35);
+}
+
+.secondary-btn {
+  background: rgba(148, 163, 184, 0.08);
+  color: #edf6ff;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover {
+  transform: translateY(-1px);
+}
+
+.hero-visual {
+  position: relative;
+  width: min(100%, 780px);
+  height: min(80vh, 760px);
+  margin-left: auto;
+  border-radius: 28px;
+  background: rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 30px 80px rgba(3, 7, 18, 0.52);
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    padding: 20px 18px 0;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .hero-layout {
+    grid-template-columns: 1fr;
+    padding: 20px 18px 28px;
+    text-align: center;
+  }
+
+  .hero-copy {
+    max-width: 100%;
+  }
+
+  .subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-row {
+    justify-content: center;
+  }
+
+  .hero-visual {
+    width: 100%;
+    height: 480px;
+    margin: 0 auto;
+  }
+}

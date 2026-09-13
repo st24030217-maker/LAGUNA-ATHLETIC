@@ -539,214 +539,498 @@
         <div class="content-wrapper">
           <!-- DASHBOARD HOME -->
           <div id="mod-home" class="module-panel active">
-            <!-- Hero Banner -->
-            <div class="hero-event-card margin-bottom" id="dashNextEventBanner">
-              <div class="hero-event-info">
-                <span class="badge badge-event" id="dashEventBadge"
-                  >Próxima Sesión o Partido</span
-                >
-                <h2 id="dashEventTitle">Cargando evento próximo...</h2>
-                <p id="dashEventSub">Temporada 2026</p>
-              </div>
-              <div class="hero-stats">
-                <div class="stat-box">
-                  <i class="fa-solid fa-calendar-day"></i>
-                  <span id="dashEventDate">—</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- KPI Cards Fila 1 -->
-            <div
-              class="dashboard-kpi-grid margin-bottom fade-in-up"
-              style="animation-delay: 0.05s"
-            >
-              <div class="kpi-card kpi-blue">
-                <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
-                <div class="kpi-body">
-                  <div class="kpi-label">Total Jugadores</div>
-                  <div class="kpi-value" id="dashTotalPlayers">0</div>
-                </div>
-              </div>
-              <div class="kpi-card kpi-green">
-                <div class="kpi-icon">
-                  <i class="fa-solid fa-user-check"></i>
-                </div>
-                <div class="kpi-body">
-                  <div class="kpi-label">Presentes Hoy</div>
-                  <div class="kpi-value" id="dashPresentToday">0</div>
-                </div>
-              </div>
-              <div class="kpi-card kpi-gold">
-                <div class="kpi-icon">
-                  <i class="fa-solid fa-chart-pie"></i>
-                </div>
-                <div class="kpi-body">
-                  <div class="kpi-label">% Asistencia</div>
-                  <div class="kpi-value" id="dashAttendancePct">0%</div>
-                </div>
-              </div>
-              <div class="kpi-card kpi-red">
-                <div class="kpi-icon">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-                <div class="kpi-body">
-                  <div class="kpi-label">Pagos Pendientes</div>
-                  <div class="kpi-value" id="dashPendingPayments">$0</div>
-                </div>
-              </div>
-              <div class="kpi-card kpi-orange">
-                <div class="kpi-icon">
-                  <i class="fa-solid fa-briefcase-medical"></i>
-                </div>
-                <div class="kpi-body">
-                  <div class="kpi-label">En Enfermería</div>
-                  <div class="kpi-value" id="dashInjuredCount">0</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Alertas Automáticas -->
-            <div
-              id="dashAlerts"
-              class="dash-alerts margin-bottom fade-in-up"
-              style="animation-delay: 0.1s"
-            ></div>
-
-            <!-- Grid: Top Racha + Accesos Rápidos -->
-            <div class="grid-2-cols fade-in-up" style="animation-delay: 0.15s">
-              <!-- Top Racha de Asistencia -->
-              <div class="glass-card">
-                <h3 class="card-title">
-                  <i class="fa-solid fa-trophy text-primary"></i> Top Racha de
-                  Asistencia
-                </h3>
-                <div class="table-responsive">
-                  <table class="modern-table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Jugador</th>
-                        <th>%</th>
-                        <th>Racha</th>
-                      </tr>
-                    </thead>
-                    <tbody id="dashTopAttendance"></tbody>
-                  </table>
-                </div>
-              </div>
-              <!-- Accesos Rápidos -->
-              <div class="glass-card">
-                <h3 class="card-title">
-                  <i class="fa-solid fa-bolt text-primary"></i> Accesos Rápidos
-                </h3>
-                <div class="quick-access-grid">
-                  <button
-                    class="quick-access-btn"
-                    onclick="showModuleTab('mod-qr')"
-                  >
-                    <i class="fa-solid fa-qrcode"></i>
-                    <span>Pasar Lista QR</span>
-                  </button>
-                  <button
-                    class="quick-access-btn"
-                    onclick="showModuleTab('mod-alineacion')"
-                  >
-                    <i class="fa-solid fa-shirt"></i>
-                    <span>Pizarra Táctica</span>
-                  </button>
-                  <button
-                    class="quick-access-btn"
-                    onclick="showModuleTab('mod-pagos')"
-                  >
-                    <i class="fa-solid fa-money-bill-wave"></i>
-                    <span>Control de Pagos</span>
-                  </button>
-                  <button
-                    class="quick-access-btn"
-                    onclick="showModuleTab('mod-avisos')"
-                  >
-                    <i class="fa-brands fa-whatsapp"></i>
-                    <span>Avisos WhatsApp</span>
-                  </button>
-                  <button
-                    class="quick-access-btn"
-                    onclick="showModuleTab('mod-estadisticas')"
-                  >
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Rendimiento</span>
-                  </button>
-                  <button
-                    class="quick-access-btn"
-                    onclick="showModuleTab('mod-registro')"
-                  >
-                    <i class="fa-solid fa-user-plus"></i>
-                    <span>Nuevo Jugador</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Fila de Respaldo y Mantenimiento de Datos -->
-            <div class="glass-card margin-top">
+            <!-- ========================================================= -->
+            <!-- VISTA EXCLUSIVA PARA PADRES DE FAMILIA / TUTORES           -->
+            <!-- ========================================================= -->
+            <div id="guardianHomeView" class="hidden">
+              <!-- Banner de Bienvenida a la Familia -->
               <div
-                class="flex-between align-center"
-                style="flex-wrap: wrap; gap: 0.75rem"
+                class="hero-event-card margin-bottom fade-in-up"
+                style="background: linear-gradient(135deg, #0b1f3a, #071526)"
               >
-                <div>
-                  <h4
-                    style="
-                      margin: 0;
-                      font-size: 0.95rem;
-                      color: var(--accent-gold);
-                    "
+                <div class="hero-event-info">
+                  <span class="badge badge-neon"
+                    ><i class="fa-solid fa-people-roof"></i> PORTAL DE PADRES
+                    LAGUNA</span
                   >
-                    <i class="fa-solid fa-database"></i> Respaldo y Base de
-                    Datos
-                  </h4>
-                  <p
-                    class="subtitle-text text-muted"
-                    style="margin: 0; font-size: 0.78rem"
-                  >
-                    Exporta o restaura la base de datos completa del club
-                    (jugadores, asistencias, cobros y calendario) en formato
-                    JSON.
+                  <h2 id="guardianFamilyWelcome">
+                    ¡Bienvenido(a), Familia Suárez!
+                  </h2>
+                  <p id="guardianFamilySubtitle">
+                    Seguimiento deportivo, convocatorias, pagos y avisos
+                    oficiales de tu hijo(a).
                   </p>
                 </div>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
-                  <button
-                    class="btn btn-outline btn-sm"
-                    onclick="exportDatabaseBackup()"
-                    title="Descargar copia de seguridad en JSON"
+                <div class="hero-stats">
+                  <div class="stat-box" style="color: var(--accent-gold)">
+                    <i class="fa-solid fa-shield-heart"></i>
+                    <span id="guardianChildStatusTag">Plantel Oficial</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ficha del Alumno + Próximo Partido Grid -->
+              <div class="grid-2-cols margin-bottom fade-in-up">
+                <!-- Tarjeta Principal del Alumno -->
+                <div class="glass-card guardian-child-card">
+                  <div class="flex-between align-center mb-3">
+                    <h3 class="card-title" style="margin-bottom: 0">
+                      <i class="fa-solid fa-child-reaching text-primary"></i> Mi
+                      Alumno(a)
+                    </h3>
+                    <span class="badge badge-success" id="guardianMedicalPill"
+                      >Apto Físicamente</span
+                    >
+                  </div>
+
+                  <div
+                    class="guardian-lanyard-scene"
+                    aria-label="Animación 3D del alumno"
                   >
-                    <i class="fa-solid fa-download"></i> Descargar Copia JSON
-                  </button>
-                  <label
-                    class="btn btn-outline btn-sm"
-                    style="margin-bottom: 0; cursor: pointer"
-                    title="Restaurar base de datos desde un archivo JSON"
+                    <iframe
+                      id="guardianLanyardFrame"
+                      title="Tarjeta 3D del alumno"
+                      src="frontend/dist/index.html?embed=guardian&amp;name=Mateo%20Su%C3%A1rez"
+                      loading="eager"
+                    ></iframe>
+                  </div>
+
+                  <div class="guardian-child-profile">
+                    <div class="guardian-child-avatar-wrap">
+                      <img
+                        id="guardianChildPhoto"
+                        src="LAGUNA.jpg"
+                        alt="Foto del alumno"
+                        class="guardian-child-avatar"
+                      />
+                      <div
+                        class="guardian-child-number"
+                        id="guardianChildNumber"
+                      >
+                        #10
+                      </div>
+                    </div>
+                    <div class="guardian-child-info">
+                      <h3 id="guardianChildName">Mateo Suárez</h3>
+                      <p class="text-muted" id="guardianChildCategory">
+                        Sub-10 · Delantero Centro
+                      </p>
+                      <div class="guardian-child-badges mt-1">
+                        <span
+                          class="badge badge-gold"
+                          id="guardianChildStarterBadge"
+                          >11 Titular</span
+                        >
+                        <span
+                          class="badge badge-outline"
+                          id="guardianChildFolio"
+                          >LA-2026-0010</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Métricas del Niño -->
+                  <div class="guardian-metrics-grid mt-3">
+                    <div class="guardian-metric-box">
+                      <div
+                        class="guardian-metric-num text-primary"
+                        id="guardianMetricAtt"
+                      >
+                        95%
+                      </div>
+                      <div class="guardian-metric-lbl">Asistencia</div>
+                    </div>
+                    <div class="guardian-metric-box">
+                      <div
+                        class="guardian-metric-num text-gold"
+                        id="guardianMetricGoals"
+                      >
+                        0
+                      </div>
+                      <div class="guardian-metric-lbl">Goles</div>
+                    </div>
+                    <div class="guardian-metric-box">
+                      <div
+                        class="guardian-metric-num text-neon"
+                        id="guardianMetricAssists"
+                      >
+                        0
+                      </div>
+                      <div class="guardian-metric-lbl">Asistencias</div>
+                    </div>
+                    <div class="guardian-metric-box">
+                      <div
+                        class="guardian-metric-num text-success"
+                        id="guardianMetricMins"
+                      >
+                        0'
+                      </div>
+                      <div class="guardian-metric-lbl">Minutos</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Próxima Cita / Partido del Alumno -->
+                <div class="glass-card guardian-next-card">
+                  <div class="flex-between align-center mb-2">
+                    <h3 class="card-title" style="margin-bottom: 0">
+                      <i class="fa-solid fa-calendar-check text-gold"></i>
+                      Próxima Convocatoria
+                    </h3>
+                    <span class="badge badge-event" id="guardianEventBadge"
+                      >⚽ Partido</span
+                    >
+                  </div>
+
+                  <div class="guardian-event-content">
+                    <h4
+                      id="guardianMatchTitle"
+                      style="
+                        color: #fff;
+                        font-size: 1.15rem;
+                        margin: 0.4rem 0 0.2rem;
+                      "
+                    >
+                      Laguna Athletic vs Santos Laguna
+                    </h4>
+                    <p
+                      class="text-muted"
+                      id="guardianMatchDate"
+                      style="font-size: 0.85rem"
+                    >
+                      <i class="fa-regular fa-clock text-gold"></i> Sábado 13
+                      Septiembre · 09:30 AM
+                    </p>
+
+                    <div class="guardian-event-details-box mt-2">
+                      <div class="guardian-event-row">
+                        <i class="fa-solid fa-location-dot text-primary"></i>
+                        <div>
+                          <strong>Sede / Cancha:</strong>
+                          <span id="guardianMatchLocation"
+                            >Cancha 2 - Complejo Laguna</span
+                          >
+                        </div>
+                      </div>
+                      <div class="guardian-event-row">
+                        <i class="fa-solid fa-shirt text-gold"></i>
+                        <div>
+                          <strong>Uniforme Requerido:</strong>
+                          <span id="guardianMatchUniform"
+                            >Uniforme Oficial Azul (Espinilleras y
+                            calcetas)</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="guardian-event-actions mt-3">
+                      <button
+                        type="button"
+                        class="btn btn-outline btn-sm"
+                        onclick="openMatchGoogleMaps()"
+                        id="btnGuardianMaps"
+                        style="flex: 1"
+                      >
+                        <i class="fa-solid fa-map-location-dot text-gold"></i>
+                        ¿Cómo Llegar? (GPS)
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        onclick="openGuardianJustificationModal()"
+                        style="flex: 1"
+                      >
+                        <i class="fa-solid fa-calendar-xmark"></i> Justificar
+                        Inasistencia
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Centro de Accesos Rápidos para Padres -->
+              <div class="glass-card margin-bottom fade-in-up">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-bolt text-gold"></i> Accesos Rápidos
+                  para la Familia
+                </h3>
+                <div class="guardian-quick-grid">
+                  <div
+                    class="guardian-quick-item"
+                    onclick="showModuleTab('mod-pagos')"
                   >
-                    <i class="fa-solid fa-upload"></i> Restaurar Copia
-                    <input
-                      type="file"
-                      id="backupFileInput"
-                      accept=".json"
-                      style="display: none"
-                      onchange="importDatabaseBackup(event)"
-                    />
-                  </label>
-                  <button
-                    class="btn btn-ghost btn-sm role-dt-only"
-                    onclick="confirmResetFactoryData()"
-                    style="color: var(--accent-danger)"
-                    title="Restablecer datos originales del club"
+                    <div class="guardian-quick-icon bg-gold">
+                      <i class="fa-solid fa-credit-card"></i>
+                    </div>
+                    <div class="guardian-quick-text">
+                      <strong>Pagar Colegiatura (SPEI)</strong>
+                      <span>Ver datos bancarios del DT y CLABE</span>
+                    </div>
+                  </div>
+
+                  <div
+                    class="guardian-quick-item"
+                    onclick="openGuardianChildCredential()"
                   >
-                    <i class="fa-solid fa-rotate-left"></i> Restablecer Datos
-                  </button>
+                    <div class="guardian-quick-icon bg-primary">
+                      <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <div class="guardian-quick-text">
+                      <strong>Credencial Oficial QR</strong>
+                      <span>Abrir carnet digital para partidos</span>
+                    </div>
+                  </div>
+
+                  <div
+                    class="guardian-quick-item"
+                    onclick="openGuardianChildFolder()"
+                  >
+                    <div class="guardian-quick-icon bg-green">
+                      <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <div class="guardian-quick-text">
+                      <strong>Expediente y Documentos</strong>
+                      <span>Revisar Acta, CURP y Certificado</span>
+                    </div>
+                  </div>
+
+                  <div class="guardian-quick-item" onclick="contactCoachWA()">
+                    <div class="guardian-quick-icon bg-whatsapp">
+                      <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div class="guardian-quick-text">
+                      <strong>WhatsApp del Entrenador</strong>
+                      <span>Contactar al DT directamente</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <!-- ========================================================= -->
+            <!-- VISTA DEL CUERPO TÉCNICO / ADMINISTRADOR                  -->
+            <!-- ========================================================= -->
+            <div id="coachHomeView">
+              <!-- Hero Banner -->
+              <div
+                class="hero-event-card margin-bottom"
+                id="dashNextEventBanner"
+              >
+                <div class="hero-event-info">
+                  <span class="badge badge-event" id="dashEventBadge"
+                    >Próxima Sesión o Partido</span
+                  >
+                  <h2 id="dashEventTitle">Cargando evento próximo...</h2>
+                  <p id="dashEventSub">Temporada 2026</p>
+                </div>
+                <div class="hero-stats">
+                  <div class="stat-box">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <span id="dashEventDate">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- KPI Cards Fila 1 -->
+              <div
+                class="dashboard-kpi-grid margin-bottom fade-in-up"
+                style="animation-delay: 0.05s"
+              >
+                <div class="kpi-card kpi-blue">
+                  <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">Total Jugadores</div>
+                    <div class="kpi-value" id="dashTotalPlayers">0</div>
+                  </div>
+                </div>
+                <div class="kpi-card kpi-green">
+                  <div class="kpi-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">Presentes Hoy</div>
+                    <div class="kpi-value" id="dashPresentToday">0</div>
+                  </div>
+                </div>
+                <div class="kpi-card kpi-gold">
+                  <div class="kpi-icon">
+                    <i class="fa-solid fa-chart-pie"></i>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">% Asistencia</div>
+                    <div class="kpi-value" id="dashAttendancePct">0%</div>
+                  </div>
+                </div>
+                <div class="kpi-card kpi-red">
+                  <div class="kpi-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">Pagos Pendientes</div>
+                    <div class="kpi-value" id="dashPendingPayments">$0</div>
+                  </div>
+                </div>
+                <div class="kpi-card kpi-orange">
+                  <div class="kpi-icon">
+                    <i class="fa-solid fa-briefcase-medical"></i>
+                  </div>
+                  <div class="kpi-body">
+                    <div class="kpi-label">En Enfermería</div>
+                    <div class="kpi-value" id="dashInjuredCount">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Alertas Automáticas -->
+              <div
+                id="dashAlerts"
+                class="dash-alerts margin-bottom fade-in-up"
+                style="animation-delay: 0.1s"
+              ></div>
+
+              <!-- Grid: Top Racha + Accesos Rápidos -->
+              <div
+                class="grid-2-cols fade-in-up"
+                style="animation-delay: 0.15s"
+              >
+                <!-- Top Racha de Asistencia -->
+                <div class="glass-card">
+                  <h3 class="card-title">
+                    <i class="fa-solid fa-trophy text-primary"></i> Top Racha de
+                    Asistencia
+                  </h3>
+                  <div class="table-responsive">
+                    <table class="modern-table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Jugador</th>
+                          <th>%</th>
+                          <th>Racha</th>
+                        </tr>
+                      </thead>
+                      <tbody id="dashTopAttendance"></tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- Accesos Rápidos -->
+                <div class="glass-card">
+                  <h3 class="card-title">
+                    <i class="fa-solid fa-bolt text-primary"></i> Accesos
+                    Rápidos
+                  </h3>
+                  <div class="quick-access-grid">
+                    <button
+                      class="quick-access-btn"
+                      onclick="showModuleTab('mod-qr')"
+                    >
+                      <i class="fa-solid fa-qrcode"></i>
+                      <span>Pasar Lista QR</span>
+                    </button>
+                    <button
+                      class="quick-access-btn"
+                      onclick="showModuleTab('mod-alineacion')"
+                    >
+                      <i class="fa-solid fa-shirt"></i>
+                      <span>Pizarra Táctica</span>
+                    </button>
+                    <button
+                      class="quick-access-btn"
+                      onclick="showModuleTab('mod-pagos')"
+                    >
+                      <i class="fa-solid fa-money-bill-wave"></i>
+                      <span>Control de Pagos</span>
+                    </button>
+                    <button
+                      class="quick-access-btn"
+                      onclick="showModuleTab('mod-avisos')"
+                    >
+                      <i class="fa-brands fa-whatsapp"></i>
+                      <span>Avisos WhatsApp</span>
+                    </button>
+                    <button
+                      class="quick-access-btn"
+                      onclick="showModuleTab('mod-estadisticas')"
+                    >
+                      <i class="fa-solid fa-chart-line"></i>
+                      <span>Rendimiento</span>
+                    </button>
+                    <button
+                      class="quick-access-btn"
+                      onclick="showModuleTab('mod-registro')"
+                    >
+                      <i class="fa-solid fa-user-plus"></i>
+                      <span>Nuevo Jugador</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fila de Respaldo y Mantenimiento de Datos -->
+              <div class="glass-card margin-top">
+                <div
+                  class="flex-between align-center"
+                  style="flex-wrap: wrap; gap: 0.75rem"
+                >
+                  <div>
+                    <h4
+                      style="
+                        margin: 0;
+                        font-size: 0.95rem;
+                        color: var(--accent-gold);
+                      "
+                    >
+                      <i class="fa-solid fa-database"></i> Respaldo y Base de
+                      Datos
+                    </h4>
+                    <p
+                      class="subtitle-text text-muted"
+                      style="margin: 0; font-size: 0.78rem"
+                    >
+                      Exporta o restaura la base de datos completa del club
+                      (jugadores, asistencias, cobros y calendario) en formato
+                      JSON.
+                    </p>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      onclick="exportDatabaseBackup()"
+                      title="Descargar copia de seguridad en JSON"
+                    >
+                      <i class="fa-solid fa-download"></i> Descargar Copia JSON
+                    </button>
+                    <label
+                      class="btn btn-outline btn-sm"
+                      style="margin-bottom: 0; cursor: pointer"
+                      title="Restaurar base de datos desde un archivo JSON"
+                    >
+                      <i class="fa-solid fa-upload"></i> Restaurar Copia
+                      <input
+                        type="file"
+                        id="backupFileInput"
+                        accept=".json"
+                        style="display: none"
+                        onchange="importDatabaseBackup(event)"
+                      />
+                    </label>
+                    <button
+                      class="btn btn-ghost btn-sm role-dt-only"
+                      onclick="confirmResetFactoryData()"
+                      style="color: var(--accent-danger)"
+                      title="Restablecer datos originales del club"
+                    >
+                      <i class="fa-solid fa-rotate-left"></i> Restablecer Datos
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /coachHomeView -->
           </div>
+          <!-- /mod-home -->
 
           <!-- EXPEDIENTES DIGITALES Y CARPETAS POR AÑO -->
           <div id="mod-expedientes" class="module-panel">
@@ -2986,463 +3270,624 @@
               </div>
             </div>
 
-            <!-- Tarjeta de Transferencia Oficial del Entrenador para Padres -->
-            <div class="guardian-payment-card margin-bottom fade-in-up hidden">
-              <div class="guardian-payment-card-copy">
-                <span class="badge badge-neon">DATOS PARA TRANSFERIR</span>
-                <h3>Cuenta Oficial del Entrenador</h3>
-                <p class="text-muted">
-                  Realiza el pago de tu colegiatura mensual mediante transferencia SPEI o depósito directo con los siguientes datos bancarios:
-                </p>
-
-                <div class="guardian-transfer-details">
-                  <div><span>Banco:</span> <strong id="coachBankText">BBVA México</strong></div>
-                  <div><span>Beneficiario:</span> <strong id="coachBeneficiaryText">LAGUNA ATHLETIC / PROF. DT</strong></div>
-                  <div><span>CLABE Interbancaria:</span> <strong class="mono-text" id="coachClabeText">012180004152314089</strong></div>
-                  <div><span>Concepto / Referencia:</span> <strong id="coachConceptText">Colegiatura + Alumno</strong></div>
-                </div>
-
-                <div class="guardian-transfer-actions">
-                  <button type="button" class="btn btn-outline btn-sm" onclick="copyCoachCardNumber()" title="Copiar CLABE / Tarjeta al portapapeles">
-                    <i class="fa-solid fa-copy text-gold"></i> Copiar CLABE / Tarjeta
-                  </button>
-                  <button type="button" class="btn btn-whatsapp btn-sm" onclick="sendPaymentReceiptWA()" title="Enviar comprobante de pago por WhatsApp">
-                    <i class="fa-brands fa-whatsapp"></i> Enviar Comprobante
-                  </button>
-                </div>
-
-                <div class="mt-2">
-                  <span class="guardian-payment-status">
-                    <i class="fa-solid fa-circle-check"></i> Mensualidad al día
-                  </span>
-                </div>
-              </div>
-
+            <!-- ========================================================= -->
+            <!-- VISTA DE PAGOS PARA PADRES DE FAMILIA / TUTORES           -->
+            <!-- ========================================================= -->
+            <div id="guardianPaymentsView" class="hidden">
               <div
-                class="guardian-payment-card-visual"
-                aria-label="Tarjeta de transferencia del entrenador"
+                class="hero-event-card margin-bottom fade-in-up"
+                style="background: linear-gradient(135deg, #0b1f3a, #071526)"
               >
-                <div class="guardian-card-topline">
-                  <strong>LAGUNA ATHLETIC</strong>
-                  <span>SPEI · BBVA</span>
-                </div>
-                <div class="guardian-card-chip">
-                  <span></span><span></span><span></span><span></span>
-                </div>
-                <div class="guardian-card-number" id="coachCardNumberDisplay">
-                  4152&nbsp;&nbsp;3140&nbsp;&nbsp;8901&nbsp;&nbsp;2345
-                </div>
-                <div class="guardian-card-bottomline">
-                  <span id="coachCardBeneficiary">PROF. EDGAR LAGUNA (DT)</span>
-                  <span>SPEI 24/7</span>
-                </div>
-                <div class="guardian-card-mark" aria-hidden="true">
-                  <i></i><i></i>
-                </div>
-              </div>
-            </div>
-
-            <!-- Resumen Rápido Finanzas -->
-            <div
-              class="grid-2-cols gap-2 margin-bottom fade-in-up"
-              style="
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-              "
-            >
-              <div class="stat-card-mini glass-card text-center">
-                <p class="subtitle-text">Total Recaudado</p>
-                <h3 id="statTotalPaid" class="mono-text text-success mt-1">
-                  $0
-                </h3>
-              </div>
-              <div class="stat-card-mini glass-card text-center">
-                <p class="subtitle-text">Pagos Pendientes</p>
-                <h3 id="statTotalPending" class="mono-text text-warning mt-1">
-                  $0
-                </h3>
-              </div>
-              <div class="stat-card-mini glass-card text-center">
-                <p class="subtitle-text">Familias Beneficiadas</p>
-                <h3 id="statSiblingsCount" class="mono-text text-primary mt-1">
-                  0 Familias
-                </h3>
-              </div>
-              <div class="stat-card-mini glass-card text-center">
-                <p class="subtitle-text">Total Descuentos Hermanos</p>
-                <h3 id="statTotalDiscounts" class="mono-text text-neon mt-1">
-                  $0
-                </h3>
-              </div>
-            </div>
-
-            <div class="grid-2-cols margin-bottom">
-              <!-- Formulario de Cobro de Mensualidad / Pago -->
-              <div class="glass-card fade-in-up" style="animation-delay: 0.1s">
-                <h3 class="card-title">
-                  <i class="fa-solid fa-credit-card text-primary"></i> Registrar
-                  Pago / Mensualidad
-                </h3>
-
-                <!-- Switch Cobro Alumno vs Paquete Familia -->
-                <div class="payment-mode-tabs margin-bottom">
-                  <button
-                    type="button"
-                    class="pay-mode-btn active"
-                    id="btnModeIndividual"
-                    onclick="togglePaymentScope('individual')"
+                <div class="hero-event-info">
+                  <span class="badge badge-neon"
+                    ><i class="fa-solid fa-receipt"></i> CONTROL DE PAGOS
+                    FAMILIAR</span
                   >
-                    <i class="fa-solid fa-user"></i> Cobro por Alumno
-                  </button>
-                  <button
-                    type="button"
-                    class="pay-mode-btn"
-                    id="btnModeFamily"
-                    onclick="togglePaymentScope('family')"
-                  >
-                    <i class="fa-solid fa-people-roof"></i> PAQUETE FAMILIA
-                    (PRECIO ÚNICO)
-                  </button>
+                  <h2>Portal de Pagos y Transferencias</h2>
+                  <p>
+                    Consulta tu estado de cuenta, datos bancarios del entrenador
+                    para transferir y tus recibos oficiales.
+                  </p>
                 </div>
-
-                <!-- Selector del Método de Pago -->
-                <label
-                  style="
-                    font-size: 0.85rem;
-                    color: var(--text-muted);
-                    display: block;
-                    margin-bottom: 0.5rem;
-                  "
-                  >Modalidad de Pago:</label
-                >
-                <div class="payment-type-selector">
-                  <div
-                    class="pay-type-card active"
-                    id="payCardTransfer"
-                    onclick="setPaymentType('Transferencia SPEI')"
-                  >
-                    <i class="fa-solid fa-building-columns text-primary"></i>
-                    <strong>Transferencia SPEI</strong>
-                    <small class="text-muted block mt-1"
-                      >Vía Banco / CLABE</small
-                    >
-                  </div>
-                  <div
-                    class="pay-type-card"
-                    id="payCardManual"
-                    onclick="setPaymentType('Manual Efectivo')"
-                  >
-                    <i class="fa-solid fa-money-bill-wave text-success"></i>
-                    <strong>Manual en Efectivo</strong>
-                    <small class="text-muted block mt-1"
-                      >Pago en Caja / Ventanilla</small
-                    >
+                <div class="hero-stats">
+                  <div class="stat-box" style="color: var(--accent-neon)">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span id="guardianPayHeaderStatus">Al día</span>
                   </div>
                 </div>
+              </div>
 
-                <form
-                  id="paymentForm"
-                  class="modern-form"
-                  onsubmit="handlePaymentSubmit(event)"
-                >
-                  <input
-                    type="hidden"
-                    id="payMethodSelected"
-                    value="Transferencia SPEI"
-                  />
-                  <input type="hidden" id="payScopeMode" value="individual" />
+              <!-- Tarjeta de Transferencia Oficial del Entrenador -->
+              <div class="guardian-payment-card margin-bottom fade-in-up">
+                <div class="guardian-payment-card-copy">
+                  <span class="badge badge-neon">DATOS PARA TRANSFERIR</span>
+                  <h3>Cuenta Oficial del Entrenador</h3>
+                  <p class="text-muted">
+                    Realiza el pago de tu colegiatura mensual mediante
+                    transferencia SPEI o depósito directo con los siguientes
+                    datos bancarios:
+                  </p>
 
-                  <!-- Modo Individual -->
-                  <div class="form-group" id="groupPlayerSelect">
-                    <label>Alumno / Niño Registrado *</label>
-                    <select
-                      id="payPlayerSelect"
-                      class="form-control"
-                      onchange="onPaymentPlayerChange()"
-                    >
-                      <option value="" disabled selected>
-                        Selecciona un alumno...
-                      </option>
-                    </select>
-                  </div>
-
-                  <!-- Modo Familia (Cobro Unificado) -->
-                  <div class="form-group hidden" id="groupFamilySelect">
-                    <label
-                      ><i class="fa-solid fa-people-roof text-warning"></i>
-                      Seleccionar Familia de Hermanos *</label
-                    >
-                    <select
-                      id="payFamilySelect"
-                      class="form-control"
-                      onchange="onPaymentFamilyChange()"
-                    >
-                      <option value="" disabled selected>
-                        Selecciona una familia...
-                      </option>
-                    </select>
-                  </div>
-
-                  <!-- Tarjeta Destacada Paquete Familia Unificado -->
-                  <div
-                    id="familyBundleCard"
-                    class="family-bundle-card hidden margin-bottom"
-                  >
-                    <div class="flex-between">
-                      <h4
-                        class="card-title text-warning"
-                        style="margin-bottom: 0"
-                        id="famCardTitle"
-                      >
-                        <i class="fa-solid fa-people-roof"></i> PAQUETE FAMILIA
-                      </h4>
-                      <span class="badge badge-neon" id="famCardBadge"
-                        >2 HERMANOS</span
-                      >
-                    </div>
-                    <div id="famChildrenList" class="fam-children-list mt-2">
-                      <!-- Dinámico -->
-                    </div>
-                    <div class="fam-total-banner mt-3">
-                      <span>PRECIO ÚNICO GLOBAL FAMILIAR:</span>
-                      <strong id="famGrandTotalDisplay">$0.00 MXN</strong>
-                    </div>
-                  </div>
-
-                  <!-- Alerta detección de hermanos individual -->
-                  <div
-                    id="siblingAlertBox"
-                    class="alert alert-success hidden margin-bottom"
-                  >
-                    <i class="fa-solid fa-people-roof"></i>
+                  <div class="guardian-transfer-details">
                     <div>
-                      <strong id="siblingAlertTitle"
-                        >¡Hermanos Detectados!</strong
+                      <span>Banco:</span>
+                      <strong id="coachBankText">BBVA México</strong>
+                    </div>
+                    <div>
+                      <span>Beneficiario:</span>
+                      <strong id="coachBeneficiaryText"
+                        >LAGUNA ATHLETIC / PROF. DT</strong
                       >
-                      <p
-                        id="siblingAlertDesc"
-                        style="font-size: 0.8rem"
-                        class="mt-1"
+                    </div>
+                    <div>
+                      <span>CLABE Interbancaria:</span>
+                      <strong class="mono-text" id="coachClabeText"
+                        >012180004152314089</strong
                       >
-                        Se aplica descuento automáticamente.
-                      </p>
                     </div>
-                  </div>
-
-                  <div class="reg-form-grid">
-                    <div class="form-group">
-                      <label>Concepto de Cobro *</label>
-                      <select
-                        id="payConcept"
-                        class="form-control"
-                        onchange="onPaymentConceptChange()"
-                        required
+                    <div>
+                      <span>Concepto / Referencia:</span>
+                      <strong id="coachConceptText"
+                        >Colegiatura + Alumno</strong
                       >
-                        <option value="Colegiatura Mensual" data-amount="1200">
-                          Colegiatura Mensual ($1,200)
-                        </option>
-                        <option value="Inscripción Anual" data-amount="2500">
-                          Inscripción Anual ($2,500)
-                        </option>
-                        <option
-                          value="Kit Uniforme Completo"
-                          data-amount="1800"
-                        >
-                          Kit Uniforme Completo ($1,800)
-                        </option>
-                        <option value="Torneo / Arbitraje" data-amount="600">
-                          Torneo / Arbitraje ($600)
-                        </option>
-                        <option value="Otro Concepto" data-amount="0">
-                          Otro Concepto...
-                        </option>
-                      </select>
-                    </div>
-
-                    <!-- Selector de Mes de Mensualidad -->
-                    <div class="form-group" id="payMonthGroup">
-                      <label>Mes Correspondiente *</label>
-                      <select id="payMonthSelect" class="form-control">
-                        <option value="Agosto 2026" selected>
-                          Agosto 2026
-                        </option>
-                        <option value="Septiembre 2026">Septiembre 2026</option>
-                        <option value="Octubre 2026">Octubre 2026</option>
-                        <option value="Noviembre 2026">Noviembre 2026</option>
-                        <option value="Diciembre 2026">Diciembre 2026</option>
-                        <option value="Inscripción / Evento">
-                          Inscripción / Evento
-                        </option>
-                      </select>
                     </div>
                   </div>
 
-                  <div class="reg-form-grid">
-                    <div class="form-group">
-                      <label>Monto Base ($) *</label>
-                      <input
-                        type="number"
-                        id="payBaseAmount"
-                        class="form-control"
-                        placeholder="1200"
-                        min="0"
-                        oninput="recalculatePaymentTotals()"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label>Descuento Hermano (%)</label>
-                      <input
-                        type="number"
-                        id="payDiscountPct"
-                        class="form-control"
-                        placeholder="0"
-                        min="0"
-                        max="100"
-                        oninput="recalculatePaymentTotals()"
-                      />
-                    </div>
+                  <div class="guardian-transfer-actions">
+                    <button
+                      type="button"
+                      class="btn btn-outline btn-sm"
+                      onclick="copyCoachCardNumber()"
+                      title="Copiar CLABE / Tarjeta al portapapeles"
+                    >
+                      <i class="fa-solid fa-copy text-gold"></i> Copiar CLABE /
+                      Tarjeta
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-whatsapp btn-sm"
+                      onclick="sendPaymentReceiptWA()"
+                      title="Enviar comprobante de pago por WhatsApp"
+                    >
+                      <i class="fa-brands fa-whatsapp"></i> Enviar Comprobante
+                    </button>
                   </div>
 
-                  <div class="reg-form-grid">
-                    <div class="form-group">
-                      <label>Monto Final Neto ($)</label>
-                      <input
-                        type="number"
-                        id="payFinalAmount"
-                        class="form-control mono-text"
-                        style="
-                          font-weight: 700;
-                          color: var(--accent-neon);
-                          font-size: 1.2rem;
-                        "
-                        readonly
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label>Estatus del Pago</label>
-                      <select id="payStatus" class="form-control">
-                        <option value="Pagado">Pagado (Confirmado)</option>
-                        <option value="Pendiente">
-                          Pendiente de Verificación
-                        </option>
-                      </select>
-                    </div>
+                  <div class="mt-2">
+                    <span class="guardian-payment-status">
+                      <i class="fa-solid fa-circle-check"></i> Mensualidad al
+                      día
+                    </span>
                   </div>
-
-                  <div class="reg-form-grid">
-                    <div class="form-group">
-                      <label>Fecha de Operación</label>
-                      <input
-                        type="date"
-                        id="payDate"
-                        class="form-control"
-                        required
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label id="payNotesLabel"
-                        >Folio / Referencia SPEI *</label
-                      >
-                      <input
-                        type="text"
-                        id="payNotes"
-                        class="form-control"
-                        placeholder="Ej. SPEI Ref 948271"
-                      />
-                    </div>
-                  </div>
-
-                  <button type="submit" class="btn btn-primary btn-block mt-3">
-                    <i class="fa-solid fa-receipt"></i> CONFIRMAR PAGO Y EMITIR
-                    RECIBO
-                  </button>
-                </form>
-              </div>
-
-              <!-- Matriz de Control de Mensualidades por Niño -->
-              <div class="glass-card fade-in-up" style="animation-delay: 0.2s">
-                <h3 class="card-title">
-                  <i class="fa-solid fa-calendar-check text-success"></i> Matriz
-                  de Mensualidades 2026
-                </h3>
-                <p
-                  class="subtitle-text margin-bottom"
-                  style="font-size: 0.85rem"
-                >
-                  Seguimiento rápido del estado mensual de cada niño inscrito.
-                </p>
+                </div>
 
                 <div
-                  class="table-responsive"
-                  style="max-height: 480px; overflow-y: auto"
+                  class="guardian-payment-card-visual"
+                  aria-label="Tarjeta de transferencia del entrenador"
                 >
-                  <table class="modern-table" id="monthlyMatrixTable">
+                  <div class="guardian-card-topline">
+                    <strong>LAGUNA ATHLETIC</strong>
+                    <span>SPEI · BBVA</span>
+                  </div>
+                  <div class="guardian-card-chip">
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+                  <div class="guardian-card-number" id="coachCardNumberDisplay">
+                    4152&nbsp;&nbsp;3140&nbsp;&nbsp;8901&nbsp;&nbsp;2345
+                  </div>
+                  <div class="guardian-card-bottomline">
+                    <span id="coachCardBeneficiary"
+                      >PROF. EDGAR LAGUNA (DT)</span
+                    >
+                    <span>SPEI 24/7</span>
+                  </div>
+                  <div class="guardian-card-mark" aria-hidden="true">
+                    <i></i><i></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Estado de Cuenta Familiar -->
+              <div class="glass-card margin-bottom fade-in-up">
+                <div class="flex-between align-center mb-3">
+                  <div>
+                    <h3 class="card-title" style="margin-bottom: 0">
+                      <i
+                        class="fa-solid fa-file-invoice-dollar text-primary"
+                      ></i>
+                      Estado de Cuenta de tu Familia
+                    </h3>
+                    <p class="subtitle-text text-muted" style="margin-top: 2px">
+                      Historial de cuotas y mensualidades de tus hijos
+                      registrados en el club.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="modern-table">
                     <thead>
                       <tr>
-                        <th>Alumno & Familia</th>
-                        <th>Agosto 2026</th>
-                        <th>Acción</th>
+                        <th>Mes / Concepto</th>
+                        <th>Alumno</th>
+                        <th>Monto Neto</th>
+                        <th>Estatus</th>
+                        <th>Recibo Oficial</th>
                       </tr>
                     </thead>
-                    <tbody id="monthlyMatrixBody">
+                    <tbody id="guardianFamilyPaymentsBody">
+                      <!-- Dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Guía de Pago Fácil en 3 Pasos -->
+              <div class="glass-card margin-bottom fade-in-up">
+                <h3 class="card-title">
+                  <i class="fa-solid fa-circle-info text-gold"></i> ¿Cómo
+                  realizar tu pago?
+                </h3>
+                <div class="guardian-guide-stepper">
+                  <div class="guardian-guide-step">
+                    <div class="guardian-guide-num">1</div>
+                    <div class="guardian-guide-desc">
+                      <strong>Copia la CLABE</strong>
+                      <span
+                        >Usa el botón "Copiar CLABE" para transferir a
+                        BBVA.</span
+                      >
+                    </div>
+                  </div>
+                  <div class="guardian-guide-step">
+                    <div class="guardian-guide-num">2</div>
+                    <div class="guardian-guide-desc">
+                      <strong>Coloca la Referencia</strong>
+                      <span
+                        >Escribe el nombre y número de tu hijo en el
+                        concepto.</span
+                      >
+                    </div>
+                  </div>
+                  <div class="guardian-guide-step">
+                    <div class="guardian-guide-num">3</div>
+                    <div class="guardian-guide-desc">
+                      <strong>Envía Comprobante</strong>
+                      <span
+                        >Toca "Enviar Comprobante" para confirmar con el DT por
+                        WhatsApp.</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- VISTA DE COBRO PARA ADMINISTRACIÓN / CUERPO TÉCNICO       -->
+            <!-- ========================================================= -->
+            <div id="coachPaymentsView">
+              <!-- Resumen Rápido Finanzas -->
+              <div
+                class="grid-2-cols gap-2 margin-bottom fade-in-up"
+                style="
+                  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                "
+              >
+                <div class="stat-card-mini glass-card text-center">
+                  <p class="subtitle-text">Total Recaudado</p>
+                  <h3 id="statTotalPaid" class="mono-text text-success mt-1">
+                    $0
+                  </h3>
+                </div>
+                <div class="stat-card-mini glass-card text-center">
+                  <p class="subtitle-text">Pagos Pendientes</p>
+                  <h3 id="statTotalPending" class="mono-text text-warning mt-1">
+                    $0
+                  </h3>
+                </div>
+                <div class="stat-card-mini glass-card text-center">
+                  <p class="subtitle-text">Familias Beneficiadas</p>
+                  <h3
+                    id="statSiblingsCount"
+                    class="mono-text text-primary mt-1"
+                  >
+                    0 Familias
+                  </h3>
+                </div>
+                <div class="stat-card-mini glass-card text-center">
+                  <p class="subtitle-text">Total Descuentos Hermanos</p>
+                  <h3 id="statTotalDiscounts" class="mono-text text-neon mt-1">
+                    $0
+                  </h3>
+                </div>
+              </div>
+
+              <div class="grid-2-cols margin-bottom">
+                <!-- Formulario de Cobro de Mensualidad / Pago -->
+                <div
+                  class="glass-card fade-in-up"
+                  style="animation-delay: 0.1s"
+                >
+                  <h3 class="card-title">
+                    <i class="fa-solid fa-credit-card text-primary"></i>
+                    Registrar Pago / Mensualidad
+                  </h3>
+
+                  <!-- Switch Cobro Alumno vs Paquete Familia -->
+                  <div class="payment-mode-tabs margin-bottom">
+                    <button
+                      type="button"
+                      class="pay-mode-btn active"
+                      id="btnModeIndividual"
+                      onclick="togglePaymentScope('individual')"
+                    >
+                      <i class="fa-solid fa-user"></i> Cobro por Alumno
+                    </button>
+                    <button
+                      type="button"
+                      class="pay-mode-btn"
+                      id="btnModeFamily"
+                      onclick="togglePaymentScope('family')"
+                    >
+                      <i class="fa-solid fa-people-roof"></i> PAQUETE FAMILIA
+                      (PRECIO ÚNICO)
+                    </button>
+                  </div>
+
+                  <!-- Selector del Método de Pago -->
+                  <label
+                    style="
+                      font-size: 0.85rem;
+                      color: var(--text-muted);
+                      display: block;
+                      margin-bottom: 0.5rem;
+                    "
+                    >Modalidad de Pago:</label
+                  >
+                  <div class="payment-type-selector">
+                    <div
+                      class="pay-type-card active"
+                      id="payCardTransfer"
+                      onclick="setPaymentType('Transferencia SPEI')"
+                    >
+                      <i class="fa-solid fa-building-columns text-primary"></i>
+                      <strong>Transferencia SPEI</strong>
+                      <small class="text-muted block mt-1"
+                        >Vía Banco / CLABE</small
+                      >
+                    </div>
+                    <div
+                      class="pay-type-card"
+                      id="payCardManual"
+                      onclick="setPaymentType('Manual Efectivo')"
+                    >
+                      <i class="fa-solid fa-money-bill-wave text-success"></i>
+                      <strong>Manual en Efectivo</strong>
+                      <small class="text-muted block mt-1"
+                        >Pago en Caja / Ventanilla</small
+                      >
+                    </div>
+                  </div>
+
+                  <form
+                    id="paymentForm"
+                    class="modern-form"
+                    onsubmit="handlePaymentSubmit(event)"
+                  >
+                    <input
+                      type="hidden"
+                      id="payMethodSelected"
+                      value="Transferencia SPEI"
+                    />
+                    <input type="hidden" id="payScopeMode" value="individual" />
+
+                    <!-- Modo Individual -->
+                    <div class="form-group" id="groupPlayerSelect">
+                      <label>Alumno / Niño Registrado *</label>
+                      <select
+                        id="payPlayerSelect"
+                        class="form-control"
+                        onchange="onPaymentPlayerChange()"
+                      >
+                        <option value="" disabled selected>
+                          Selecciona un alumno...
+                        </option>
+                      </select>
+                    </div>
+
+                    <!-- Modo Familia (Cobro Unificado) -->
+                    <div class="form-group hidden" id="groupFamilySelect">
+                      <label
+                        ><i class="fa-solid fa-people-roof text-warning"></i>
+                        Seleccionar Familia de Hermanos *</label
+                      >
+                      <select
+                        id="payFamilySelect"
+                        class="form-control"
+                        onchange="onPaymentFamilyChange()"
+                      >
+                        <option value="" disabled selected>
+                          Selecciona una familia...
+                        </option>
+                      </select>
+                    </div>
+
+                    <!-- Tarjeta Destacada Paquete Familia Unificado -->
+                    <div
+                      id="familyBundleCard"
+                      class="family-bundle-card hidden margin-bottom"
+                    >
+                      <div class="flex-between">
+                        <h4
+                          class="card-title text-warning"
+                          style="margin-bottom: 0"
+                          id="famCardTitle"
+                        >
+                          <i class="fa-solid fa-people-roof"></i> PAQUETE
+                          FAMILIA
+                        </h4>
+                        <span class="badge badge-neon" id="famCardBadge"
+                          >2 HERMANOS</span
+                        >
+                      </div>
+                      <div id="famChildrenList" class="fam-children-list mt-2">
+                        <!-- Dinámico -->
+                      </div>
+                      <div class="fam-total-banner mt-3">
+                        <span>PRECIO ÚNICO GLOBAL FAMILIAR:</span>
+                        <strong id="famGrandTotalDisplay">$0.00 MXN</strong>
+                      </div>
+                    </div>
+
+                    <!-- Alerta detección de hermanos individual -->
+                    <div
+                      id="siblingAlertBox"
+                      class="alert alert-success hidden margin-bottom"
+                    >
+                      <i class="fa-solid fa-people-roof"></i>
+                      <div>
+                        <strong id="siblingAlertTitle"
+                          >¡Hermanos Detectados!</strong
+                        >
+                        <p
+                          id="siblingAlertDesc"
+                          style="font-size: 0.8rem"
+                          class="mt-1"
+                        >
+                          Se aplica descuento automáticamente.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="reg-form-grid">
+                      <div class="form-group">
+                        <label>Concepto de Cobro *</label>
+                        <select
+                          id="payConcept"
+                          class="form-control"
+                          onchange="onPaymentConceptChange()"
+                          required
+                        >
+                          <option
+                            value="Colegiatura Mensual"
+                            data-amount="1200"
+                          >
+                            Colegiatura Mensual ($1,200)
+                          </option>
+                          <option value="Inscripción Anual" data-amount="2500">
+                            Inscripción Anual ($2,500)
+                          </option>
+                          <option
+                            value="Kit Uniforme Completo"
+                            data-amount="1800"
+                          >
+                            Kit Uniforme Completo ($1,800)
+                          </option>
+                          <option value="Torneo / Arbitraje" data-amount="600">
+                            Torneo / Arbitraje ($600)
+                          </option>
+                          <option value="Otro Concepto" data-amount="0">
+                            Otro Concepto...
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Selector de Mes de Mensualidad -->
+                      <div class="form-group" id="payMonthGroup">
+                        <label>Mes Correspondiente *</label>
+                        <select id="payMonthSelect" class="form-control">
+                          <option value="Agosto 2026" selected>
+                            Agosto 2026
+                          </option>
+                          <option value="Septiembre 2026">
+                            Septiembre 2026
+                          </option>
+                          <option value="Octubre 2026">Octubre 2026</option>
+                          <option value="Noviembre 2026">Noviembre 2026</option>
+                          <option value="Diciembre 2026">Diciembre 2026</option>
+                          <option value="Inscripción / Evento">
+                            Inscripción / Evento
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="reg-form-grid">
+                      <div class="form-group">
+                        <label>Monto Base ($) *</label>
+                        <input
+                          type="number"
+                          id="payBaseAmount"
+                          class="form-control"
+                          placeholder="1200"
+                          min="0"
+                          oninput="recalculatePaymentTotals()"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label>Descuento Hermano (%)</label>
+                        <input
+                          type="number"
+                          id="payDiscountPct"
+                          class="form-control"
+                          placeholder="0"
+                          min="0"
+                          max="100"
+                          oninput="recalculatePaymentTotals()"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="reg-form-grid">
+                      <div class="form-group">
+                        <label>Monto Final Neto ($)</label>
+                        <input
+                          type="number"
+                          id="payFinalAmount"
+                          class="form-control mono-text"
+                          style="
+                            font-weight: 700;
+                            color: var(--accent-neon);
+                            font-size: 1.2rem;
+                          "
+                          readonly
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label>Estatus del Pago</label>
+                        <select id="payStatus" class="form-control">
+                          <option value="Pagado">Pagado (Confirmado)</option>
+                          <option value="Pendiente">
+                            Pendiente de Verificación
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="reg-form-grid">
+                      <div class="form-group">
+                        <label>Fecha de Operación</label>
+                        <input
+                          type="date"
+                          id="payDate"
+                          class="form-control"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label id="payNotesLabel"
+                          >Folio / Referencia SPEI *</label
+                        >
+                        <input
+                          type="text"
+                          id="payNotes"
+                          class="form-control"
+                          placeholder="Ej. SPEI Ref 948271"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-block mt-3"
+                    >
+                      <i class="fa-solid fa-receipt"></i> CONFIRMAR PAGO Y
+                      EMITIR RECIBO
+                    </button>
+                  </form>
+                </div>
+
+                <!-- Matriz de Control de Mensualidades por Niño -->
+                <div
+                  class="glass-card fade-in-up"
+                  style="animation-delay: 0.2s"
+                >
+                  <h3 class="card-title">
+                    <i class="fa-solid fa-calendar-check text-success"></i>
+                    Matriz de Mensualidades 2026
+                  </h3>
+                  <p
+                    class="subtitle-text margin-bottom"
+                    style="font-size: 0.85rem"
+                  >
+                    Seguimiento rápido del estado mensual de cada niño inscrito.
+                  </p>
+
+                  <div
+                    class="table-responsive"
+                    style="max-height: 480px; overflow-y: auto"
+                  >
+                    <table class="modern-table" id="monthlyMatrixTable">
+                      <thead>
+                        <tr>
+                          <th>Alumno & Familia</th>
+                          <th>Agosto 2026</th>
+                          <th>Acción</th>
+                        </tr>
+                      </thead>
+                      <tbody id="monthlyMatrixBody">
+                        <!-- Dinámico -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabla de Historial de Cobranza General -->
+              <div class="glass-card fade-in-up">
+                <div
+                  class="flex-between margin-bottom"
+                  style="flex-wrap: wrap; gap: 0.75rem; align-items: center"
+                >
+                  <h3 class="card-title" style="margin-bottom: 0">
+                    <i class="fa-solid fa-clock-rotate-left text-primary"></i>
+                    Historial de Cobranza Registrada
+                  </h3>
+                  <div style="display: flex; gap: 0.5rem; align-items: center">
+                    <div class="reg-search-box">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <input
+                        type="text"
+                        id="paySearchInput"
+                        class="form-control"
+                        placeholder="Buscar alumno, folio..."
+                        oninput="renderPaymentsTable()"
+                        style="padding: 0.45rem 0.8rem; font-size: 0.85rem"
+                      />
+                    </div>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="exportPaymentsPrint()"
+                      title="Exportar reporte de cobranza a PDF / Impresión"
+                    >
+                      <i class="fa-solid fa-print"></i> Exportar
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="modern-table" id="paymentsTable">
+                    <thead>
+                      <tr>
+                        <th>Folio / Fecha</th>
+                        <th>Alumno & Familia</th>
+                        <th>Concepto / Mes</th>
+                        <th>Método</th>
+                        <th>Monto Neto</th>
+                        <th>Estatus</th>
+                        <th>Comprobante</th>
+                      </tr>
+                    </thead>
+                    <tbody id="paymentsTableBody">
                       <!-- Dinámico -->
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
-
-            <!-- Tabla de Historial de Cobranza General -->
-            <div class="glass-card fade-in-up">
-              <div
-                class="flex-between margin-bottom"
-                style="flex-wrap: wrap; gap: 0.75rem; align-items: center"
-              >
-                <h3 class="card-title" style="margin-bottom: 0">
-                  <i class="fa-solid fa-clock-rotate-left text-primary"></i>
-                  Historial de Cobranza Registrada
-                </h3>
-                <div style="display: flex; gap: 0.5rem; align-items: center">
-                  <div class="reg-search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input
-                      type="text"
-                      id="paySearchInput"
-                      class="form-control"
-                      placeholder="Buscar alumno, folio..."
-                      oninput="renderPaymentsTable()"
-                      style="padding: 0.45rem 0.8rem; font-size: 0.85rem"
-                    />
-                  </div>
-                  <button
-                    class="btn btn-ghost btn-sm"
-                    onclick="exportPaymentsPrint()"
-                    title="Exportar reporte de cobranza a PDF / Impresión"
-                  >
-                    <i class="fa-solid fa-print"></i> Exportar
-                  </button>
-                </div>
-              </div>
-
-              <div class="table-responsive">
-                <table class="modern-table" id="paymentsTable">
-                  <thead>
-                    <tr>
-                      <th>Folio / Fecha</th>
-                      <th>Alumno & Familia</th>
-                      <th>Concepto / Mes</th>
-                      <th>Método</th>
-                      <th>Monto Neto</th>
-                      <th>Estatus</th>
-                      <th>Comprobante</th>
-                    </tr>
-                  </thead>
-                  <tbody id="paymentsTableBody">
-                    <!-- Dinámico -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <!-- /coachPaymentsView -->
           </div>
           <!-- /SISTEMA DE PAGOS Y HERMANOS -->
           <!-- /SISTEMA DE PAGOS Y HERMANOS -->
@@ -3450,7 +3895,91 @@
       </main>
     </div>
 
-    <!-- MODALES -->
+    <!-- Modal Justificación Rápida de Padres -->
+    <div id="guardianJustificationModal" class="modal-overlay hidden">
+      <div class="glass-card modal-content" style="max-width: 500px">
+        <div class="flex-between align-center mb-2">
+          <h3 class="card-title" style="margin-bottom: 0">
+            <i class="fa-solid fa-calendar-xmark text-gold"></i> Justificar
+            Inasistencia
+          </h3>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            onclick="closeGuardianJustificationModal()"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <p class="subtitle-text text-muted">
+          Envía el motivo de la falta de tu hijo directamente al cuerpo técnico.
+        </p>
+
+        <form
+          id="guardianJustForm"
+          class="modern-form mt-3"
+          onsubmit="submitGuardianJustification(event)"
+        >
+          <div class="form-group">
+            <label>Alumno</label>
+            <input
+              type="text"
+              id="guardianJustChildName"
+              class="form-control"
+              readonly
+              style="opacity: 0.85"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Fecha de la Inasistencia *</label>
+            <input
+              type="date"
+              id="guardianJustDate"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Motivo Principal *</label>
+            <select id="guardianJustReason" class="form-control" required>
+              <option value="Salud / Enfermedad">
+                Salud / Síntomas o Enfermedad
+              </option>
+              <option value="Compromiso Escolar / Examen">
+                Compromiso Escolar / Examen
+              </option>
+              <option value="Viaje Familiar">Viaje / Motivo Familiar</option>
+              <option value="Fuerza Mayor">Fuerza Mayor u Otro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Detalle o Mensaje para el Entrenador (Opcional)</label>
+            <textarea
+              id="guardianJustDetail"
+              class="form-control"
+              rows="3"
+              placeholder="Ej. Presenta cuadro de gripe, reposo médico por 48 hrs..."
+            ></textarea>
+          </div>
+
+          <div class="flex-end gap-2 mt-4">
+            <button
+              type="button"
+              class="btn btn-ghost"
+              onclick="closeGuardianJustificationModal()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-paper-plane"></i> Enviar al Entrenador
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- Modal Alineación -->
     <div id="playerSelectModal" class="modal-overlay hidden">

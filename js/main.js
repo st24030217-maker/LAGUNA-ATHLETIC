@@ -207,6 +207,7 @@ import {
   exportPaymentsPrint,
   copyCoachCardNumber,
   sendPaymentReceiptWA,
+  renderGuardianPaymentsView,
   injectPaymentsCallbacks,
 } from "./payments.js";
 
@@ -470,6 +471,7 @@ function renderDashAlerts() {
 // ---------------------------------------------------------------------------
 export function postLoginInit() {
   applyRolePermissions();
+  renderGuardianHomeProfile();
   populateQuickPlayerSelect();
   populateGameInfoPlayerSelect();
   renderAttendanceTable();
@@ -548,6 +550,85 @@ export function postLoginInit() {
     },
     onNoticesInit: populateNoticeControls,
   });
+}
+
+export function renderGuardianHomeProfile() {
+  const activeStudent =
+    squadData.find((player) => player.id === profilePlayerId) ||
+    loggedInUser ||
+    squadData[0];
+
+  if (!activeStudent || currentRole !== "guardian") return;
+
+  const welcomeEl = document.getElementById("guardianFamilyWelcome");
+  const subtitleEl = document.getElementById("guardianFamilySubtitle");
+  const statusEl = document.getElementById("guardianChildStatusTag");
+  const nameEl = document.getElementById("guardianChildName");
+  const avatarEl = document.getElementById("guardianChildPhoto");
+  const numberEl = document.getElementById("guardianChildNumber");
+  const categoryEl = document.getElementById("guardianChildCategory");
+  const badgeEl = document.getElementById("guardianChildStarterBadge");
+  const folioEl = document.getElementById("guardianChildFolio");
+  const medicalEl = document.getElementById("guardianMedicalPill");
+  const attEl = document.getElementById("guardianMetricAtt");
+  const goalsEl = document.getElementById("guardianMetricGoals");
+  const assistsEl = document.getElementById("guardianMetricAssists");
+  const minsEl = document.getElementById("guardianMetricMins");
+  const lanyardFrameEl = document.getElementById("guardianLanyardFrame");
+
+  if (welcomeEl) {
+    const tutorName = activeStudent.tutorName || "Familia";
+    welcomeEl.textContent = `¡Bienvenido(a), ${tutorName}!`;
+  }
+  if (subtitleEl) {
+    subtitleEl.textContent = `Seguimiento deportivo, convocatorias, pagos y avisos oficiales de ${activeStudent.name}.`;
+  }
+  if (statusEl) {
+    statusEl.textContent = activeStudent.injured
+      ? "Rehabilitación"
+      : "Plantel Oficial";
+  }
+  if (nameEl) nameEl.textContent = activeStudent.name;
+  if (avatarEl) avatarEl.src = activeStudent.photo || "LAGUNA.jpg";
+  if (numberEl) numberEl.textContent = `#${activeStudent.number}`;
+  if (categoryEl) {
+    const categoryLabel = activeStudent.position || "Jugador";
+    categoryEl.textContent = `${categoryLabel}${activeStudent.starter ? " · Titular" : " · Suplente"}`;
+  }
+  if (badgeEl) {
+    badgeEl.textContent = activeStudent.starter
+      ? `Titular · #${activeStudent.number}`
+      : `Suplente · #${activeStudent.number}`;
+  }
+  if (folioEl)
+    folioEl.textContent = `LA-2026-${String(activeStudent.number).padStart(4, "0")}`;
+  if (medicalEl) {
+    medicalEl.textContent = activeStudent.injured
+      ? "Fuera de juego"
+      : "Apto Físicamente";
+    medicalEl.className = activeStudent.injured
+      ? "badge badge-warning"
+      : "badge badge-success";
+  }
+  if (attEl)
+    attEl.textContent = `${Math.max(0, Math.min(100, Number(activeStudent.attendancePct) || 0))}%`;
+  if (goalsEl) goalsEl.textContent = String(activeStudent.goals || 0);
+  if (assistsEl) assistsEl.textContent = String(activeStudent.assists || 0);
+  if (minsEl) minsEl.textContent = `${activeStudent.mins || 0}'`;
+  if (lanyardFrameEl) {
+    const cardParams = new URLSearchParams({
+      embed: "guardian",
+      name: activeStudent.name || "Jugador",
+      number: String(activeStudent.number || "-"),
+      position: activeStudent.position || "Jugador",
+      status: activeStudent.injured ? "Rehabilitacion" : "Plantel Oficial",
+      attendance: `${Math.max(0, Math.min(100, Number(activeStudent.attendancePct) || 0))}%`,
+      goals: String(activeStudent.goals || 0),
+      assists: String(activeStudent.assists || 0),
+      minutes: `${activeStudent.mins || 0}'`,
+    });
+    lanyardFrameEl.src = `frontend/dist/index.html?${cardParams.toString()}`;
+  }
 }
 
 // ---------------------------------------------------------------------------

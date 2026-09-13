@@ -723,3 +723,88 @@ export function sendPaymentReceiptWA() {
   );
   window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
 }
+
+export function renderGuardianPaymentsView() {
+  const tbody = document.getElementById("guardianFamilyPaymentsBody");
+  const headerStatus = document.getElementById("guardianPayHeaderStatus");
+  if (!tbody) return;
+
+  const student =
+    squadData.find((p) => p.id === (window.profilePlayerId || 10)) ||
+    squadData[0];
+  if (!student) return;
+
+  const familyStudents = squadData.filter(
+    (p) =>
+      p.id === student.id ||
+      (student.tutorName && p.tutorName === student.tutorName) ||
+      p.linkedSiblingId === student.id,
+  );
+
+  const studentIds = new Set(familyStudents.map((p) => p.id));
+  const familyPayments = paymentsData.filter((p) => studentIds.has(p.playerId));
+
+  const hasPending = familyPayments.some((p) => p.status === "Pendiente");
+  if (headerStatus) {
+    headerStatus.innerHTML = hasPending
+      ? '<i class="fa-solid fa-clock" style="color:var(--accent-warning);"></i> Cuota pendiente'
+      : '<i class="fa-solid fa-circle-check" style="color:#6ee7b7;"></i> Al día (Sin adeudo)';
+  }
+
+  if (familyPayments.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td><strong>Agosto 2026</strong><br><small class="text-muted">Colegiatura Mensual</small></td>
+        <td><strong>#${student.number} ${student.name}</strong><br><small class="text-muted">${student.group || "Sub-10"}</small></td>
+        <td class="mono-text" style="font-weight:700; color:var(--accent-gold);">$1,200.00 MXN</td>
+        <td><span class="badge badge-success"><i class="fa-solid fa-check"></i> Pagado</span></td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick="openReceiptModal(${student.id})" style="font-size:0.75rem; padding:0.25rem 0.5rem;">
+            <i class="fa-solid fa-receipt text-primary"></i> Ver Recibo
+          </button>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = familyPayments
+    .map((p) => {
+      const isPaid = p.status === "Pagado";
+      const statusBadge = isPaid
+        ? '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Pagado</span>'
+        : '<span class="badge badge-warning"><i class="fa-solid fa-clock"></i> Pendiente</span>';
+
+      const receiptBtn = isPaid
+        ? `<button class="btn btn-ghost btn-sm" onclick="openReceiptModal(${p.id})" style="font-size:0.75rem; padding:0.25rem 0.5rem;" title="Ver e imprimir recibo digital">
+             <i class="fa-solid fa-receipt text-primary"></i> Recibo #${p.folio || p.id}
+           </button>`
+        : `<button class="btn btn-outline btn-sm" onclick="sendPaymentReceiptWA()" style="font-size:0.72rem; padding:0.2rem 0.45rem;" title="Notificar pago al entrenador">
+             <i class="fa-brands fa-whatsapp text-success"></i> Notificar
+           </button>`;
+
+      const discountTag =
+        p.discountAmount > 0
+          ? `<br><small class="text-neon"><i class="fa-solid fa-tag"></i> Descuento -$${p.discountAmount}</small>`
+          : "";
+
+      return `
+        <tr>
+          <td>
+            <strong>${p.month || p.concept}</strong>
+            <br><small class="text-muted">${p.date || "2026"}</small>
+          </td>
+          <td>
+            <strong>${p.playerName || student.name}</strong>
+            ${discountTag}
+          </td>
+          <td class="mono-text" style="font-weight:700; color:var(--accent-gold);">
+            $${(p.finalAmount || p.amount || 1200).toLocaleString("es-MX", { minimumFractionDigits: 2 })} MXN
+          </td>
+          <td>${statusBadge}</td>
+          <td>${receiptBtn}</td>
+        </tr>
+      `;
+    })
+    .join("");
+}
