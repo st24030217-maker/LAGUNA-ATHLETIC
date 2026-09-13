@@ -210,7 +210,7 @@ export function renderAttendanceReportTable() {
           <td class="mono-text text-primary" style="font-weight:700;">#${p.number}</td>
           <td>
             <div style="display:flex; align-items:center; gap:0.6rem;">
-              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--border-glass);" />
+              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" onerror="this.src='LAGUNA.jpg'" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--border-glass);" />
               <strong>${p.name}</strong>
             </div>
           </td>

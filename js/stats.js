@@ -437,7 +437,7 @@ export function renderPlayerGameInfo() {
         <div class="player-game-info-card">
           <div class="flex-between align-center margin-bottom-sm">
             <div class="player-mini">
-              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" />
+              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" onerror="this.src='LAGUNA.jpg'" />
               <div>
                 <strong>#${p.number} ${p.name}</strong>
                 <small>${p.position} · ${p.group || "Sin Cat."}</small>

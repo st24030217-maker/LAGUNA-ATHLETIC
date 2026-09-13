@@ -150,7 +150,7 @@ export function onPaymentFamilyChange() {
       childrenList.innerHTML += `
         <div class="fam-child-row">
           <div class="fam-child-info">
-            <img src="${child.photo || "LAGUNA.jpg"}" alt="${child.name}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
+            <img src="${child.photo || "LAGUNA.jpg"}" alt="${child.name}" onerror="this.src='LAGUNA.jpg'" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--accent-primary);" />
             <div>
               <strong>#${child.number} ${child.name}</strong>
               <br><small class="text-muted">${child.position}</small>
@@ -311,11 +311,12 @@ export function renderMonthlyMatrix() {
         ? `<br><small class="text-warning"><i class="fa-solid fa-users"></i> Desc. Hermano (-20%)</small>`
         : "";
 
+    const photoSrc = (p.photo && p.photo !== "none") ? p.photo : "LAGUNA.jpg";
     tbody.innerHTML += `
       <tr>
         <td>
           <div style="display:flex; align-items:center; gap:0.6rem;">
-            <img src="${p.photo || "LAGUNA.jpg"}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" />
+            <img src="${photoSrc}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;" onerror="this.src='LAGUNA.jpg'" />
             <div>
               <strong>#${p.number} ${p.name}</strong>
               <br><small class="text-muted">${p.tutorName}</small>

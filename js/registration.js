@@ -158,7 +158,7 @@ export function renderRegTable() {
       <tr>
         <td>
           <div class="player-mini">
-            <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" />
+            <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" onerror="this.src='LAGUNA.jpg'" />
             <div>
               <strong>#${p.number} ${p.name}</strong>
               <br><small class="text-muted">${p.position} · ${p.group || "Sin Cat."}</small>

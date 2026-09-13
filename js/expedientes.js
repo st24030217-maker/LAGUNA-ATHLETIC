@@ -207,7 +207,7 @@ export function renderExpedientesModule() {
         <div class="child-folder-card">
           <div class="folder-card-header">
             <div class="child-avatar-wrap">
-              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" class="child-avatar" />
+              <img src="${p.photo || "LAGUNA.jpg"}" alt="${p.name}" onerror="this.src='LAGUNA.jpg'" class="child-avatar" />
               <span class="child-number-badge">#${p.number}</span>
             </div>
             <div class="child-meta">

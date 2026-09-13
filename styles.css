@@ -3069,25 +3069,7 @@ textarea:focus-visible {
 /* GAFETE ANIMADO — Matriz de Mensualidades */
 #monthlyMatrixBody tr {
   animation: gafetePulse 3s ease-in-out infinite;
-  position: relative;
-  overflow: hidden;
-}
-#monthlyMatrixBody tr::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(37, 99, 235, 0.06),
-    rgba(212, 175, 55, 0.04),
-    transparent
-  );
-  animation: gafeteShimmer 4s ease-in-out infinite;
-  pointer-events: none;
+  transition: border-color 0.3s ease;
 }
 #monthlyMatrixBody tr:hover {
   border-color: rgba(37, 99, 235, 0.3);
