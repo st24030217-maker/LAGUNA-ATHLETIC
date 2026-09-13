@@ -573,26 +573,53 @@
               <div class="grid-2-cols margin-bottom fade-in-up">
                 <!-- Tarjeta Principal del Alumno -->
                 <div class="glass-card guardian-child-card">
-                  <div class="flex-between align-center mb-3">
-                    <h3 class="card-title" style="margin-bottom: 0">
-                      <i class="fa-solid fa-child-reaching text-primary"></i> Mi
-                      Alumno(a)
-                    </h3>
-                    <span class="badge badge-success" id="guardianMedicalPill"
-                      >Apto Físicamente</span
-                    >
+                  <div class="flex-between align-center mb-2">
+                    <div>
+                      <span class="badge badge-gold" style="font-size: 0.72rem; padding: 2px 8px;">
+                        <i class="fa-solid fa-id-badge"></i> CREDENCIAL DIGITAL 3D
+                      </span>
+                      <h3 class="card-title mt-1" style="margin-bottom: 0">
+                        <i class="fa-solid fa-child-reaching text-primary"></i> Mi Alumno(a)
+                      </h3>
+                    </div>
+                    <div class="flex-align-center gap-2">
+                      <div id="guardianStudentSwitchGroup" class="guardian-student-switcher hidden">
+                        <!-- Botones dinámicos de cambio de alumno -->
+                      </div>
+                      <span class="badge badge-success" id="guardianMedicalPill">Apto Físicamente</span>
+                    </div>
                   </div>
 
                   <div
                     class="guardian-lanyard-scene"
-                    aria-label="Animación 3D del alumno"
+                    aria-label="Gafete 3D interactivo del alumno"
                   >
+                    <!-- Barra de herramientas superior flotante del gafete 3D -->
+                    <div class="guardian-lanyard-toolbar">
+                      <div class="guardian-lanyard-indicator">
+                        <span class="pulse-dot"></span>
+                        <span>FÍSICA 3D EN VIVO</span>
+                      </div>
+                      <div class="guardian-lanyard-btn-group">
+                        <button type="button" class="btn-lanyard-action" id="btnFlipLanyard" title="Voltear tarjeta para ver estadísticas">
+                          <i class="fa-solid fa-arrows-rotate"></i> Voltear
+                        </button>
+                        <button type="button" class="btn-lanyard-action" id="btnResetLanyard" title="Centrar gafete">
+                          <i class="fa-solid fa-crosshairs"></i>
+                        </button>
+                      </div>
+                    </div>
+
                     <iframe
                       id="guardianLanyardFrame"
                       title="Tarjeta 3D del alumno"
                       src="frontend/dist/index.html?embed=guardian&amp;name=Mateo%20Su%C3%A1rez"
                       loading="eager"
                     ></iframe>
+
+                    <div class="guardian-lanyard-hint">
+                      <i class="fa-solid fa-hand-pointer"></i> Arrastra para mover • Doble clic para voltear
+                    </div>
                   </div>
 
                   <div class="guardian-child-profile">

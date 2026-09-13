@@ -7,11 +7,16 @@ function App() {
   const cardName = params.get("name") || "Laguna Athletic";
   const cardNumber = params.get("number") || "10";
   const cardPosition = params.get("position") || "Jugador";
+  const cardCategory = params.get("category") || "Sub-10";
   const cardStatus = params.get("status") || "Plantel Oficial";
+  const cardStarter = params.get("starter") !== "false";
   const cardAttendance = params.get("attendance") || "0%";
   const cardGoals = params.get("goals") || "0";
   const cardAssists = params.get("assists") || "0";
   const cardMinutes = params.get("minutes") || "0'";
+  const cardFolio = params.get("folio") || `LA-2026-${String(cardNumber).padStart(4, "0")}`;
+  const cardTutor = params.get("tutor") || "Familia";
+  const cardPhoto = params.get("photo") || "./LAGUNA.jpg";
 
   if (isEmbed) {
     return (
@@ -21,18 +26,21 @@ function App() {
           gravity={[0, -40, 0]}
           fov={20}
           transparent
-          frontImage="./front-card.svg"
-          backImage="./back-card.svg"
           lanyardImage="./lanyard-pattern.svg"
           lanyardWidth={1}
           cardName={cardName}
           cardNumber={cardNumber}
           cardPosition={cardPosition}
+          cardCategory={cardCategory}
           cardStatus={cardStatus}
+          cardStarter={cardStarter}
           cardAttendance={cardAttendance}
           cardGoals={cardGoals}
           cardAssists={cardAssists}
           cardMinutes={cardMinutes}
+          cardFolio={cardFolio}
+          cardTutor={cardTutor}
+          cardPhoto={cardPhoto}
         />
       </main>
     );

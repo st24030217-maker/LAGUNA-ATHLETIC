@@ -8728,15 +8728,16 @@ body {
 
 .guardian-lanyard-scene {
   position: relative;
-  height: 420px;
-  margin: 0.5rem 0 1rem;
-  border-radius: 18px;
+  height: 480px;
+  margin: 0.75rem 0 1.25rem;
+  border-radius: 20px;
   overflow: hidden;
   background:
-    radial-gradient(circle at top, rgba(59, 130, 246, 0.28), transparent 38%),
-    linear-gradient(180deg, rgba(7, 18, 33, 0.92), rgba(9, 26, 42, 0.8));
-  border: 1px solid rgba(103, 201, 255, 0.18);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    radial-gradient(circle at 50% 10%, rgba(37, 99, 235, 0.35), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(212, 175, 55, 0.15), transparent 40%),
+    linear-gradient(180deg, #071120 0%, #050a14 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), 0 0 20px rgba(37, 99, 235, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .guardian-lanyard-scene iframe {
@@ -8745,6 +8746,132 @@ body {
   height: 100%;
   border: 0;
   background: transparent;
+}
+
+.guardian-lanyard-toolbar {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.guardian-lanyard-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(4, 12, 24, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #38bdf8;
+  pointer-events: auto;
+}
+
+.guardian-lanyard-indicator .pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.guardian-lanyard-btn-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.btn-lanyard-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 24, 46, 0.82);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #f8fafc;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.btn-lanyard-action:hover {
+  background: rgba(37, 99, 235, 0.85);
+  border-color: #fde047;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.guardian-lanyard-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(3, 8, 18, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.guardian-student-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(7, 18, 34, 0.8);
+  padding: 3px 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(103, 201, 255, 0.2);
+}
+
+.btn-student-tab {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-student-tab:hover {
+  color: #fff;
+}
+
+.btn-student-tab.active {
+  background: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
 }
 
 .guardian-child-avatar-wrap {

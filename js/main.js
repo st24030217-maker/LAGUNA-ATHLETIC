@@ -615,19 +615,79 @@ export function renderGuardianHomeProfile() {
   if (goalsEl) goalsEl.textContent = String(activeStudent.goals || 0);
   if (assistsEl) assistsEl.textContent = String(activeStudent.assists || 0);
   if (minsEl) minsEl.textContent = `${activeStudent.mins || 0}'`;
+
+  // Poblar selector de hermanos si la familia tiene más de 1 alumno
+  const switchGroupEl = document.getElementById("guardianStudentSwitchGroup");
+  if (switchGroupEl) {
+    const familyStudents = squadData.filter(
+      (p) => (p.tutorName && p.tutorName === activeStudent.tutorName) || (p.name && p.name.includes("Suárez"))
+    );
+    if (familyStudents.length > 1) {
+      switchGroupEl.classList.remove("hidden");
+      switchGroupEl.innerHTML = familyStudents
+        .map(
+          (p) =>
+            `<button type="button" class="btn-student-tab ${p.id === activeStudent.id ? "active" : ""}" data-sid="${p.id}"><i class="fa-solid fa-id-card"></i> ${p.name.split(" ")[0]} (#${p.number})</button>`
+        )
+        .join("");
+
+      switchGroupEl.querySelectorAll(".btn-student-tab").forEach((btn) => {
+        btn.onclick = () => {
+          const sid = Number(btn.getAttribute("data-sid"));
+          setProfilePlayerId(sid);
+          renderGuardianHomeProfile();
+        };
+      });
+    } else {
+      switchGroupEl.classList.add("hidden");
+    }
+  }
+
+  // Controles de interacción 3D: Voltear y Re-centrar
+  const flipBtn = document.getElementById("btnFlipLanyard");
+  if (flipBtn && !flipBtn.dataset.bound) {
+    flipBtn.dataset.bound = "true";
+    flipBtn.addEventListener("click", () => {
+      const frame = document.getElementById("guardianLanyardFrame");
+      frame?.contentWindow?.postMessage({ action: "flip" }, "*");
+    });
+  }
+
+  const resetBtn = document.getElementById("btnResetLanyard");
+  if (resetBtn && !resetBtn.dataset.bound) {
+    resetBtn.dataset.bound = "true";
+    resetBtn.addEventListener("click", () => {
+      const frame = document.getElementById("guardianLanyardFrame");
+      frame?.contentWindow?.postMessage({ action: "reset" }, "*");
+    });
+  }
+
   if (lanyardFrameEl) {
+    const photoParam = activeStudent.photo
+      ? (activeStudent.photo.startsWith("assets/") ? `./${activeStudent.photo}` : `./${activeStudent.photo}`)
+      : "./LAGUNA.jpg";
+
     const cardParams = new URLSearchParams({
       embed: "guardian",
       name: activeStudent.name || "Jugador",
-      number: String(activeStudent.number || "-"),
+      number: String(activeStudent.number || "10"),
       position: activeStudent.position || "Jugador",
-      status: activeStudent.injured ? "Rehabilitacion" : "Plantel Oficial",
+      category: activeStudent.category || "Sub-10",
+      status: activeStudent.injured ? "Rehabilitacion" : (activeStudent.starter ? "Plantel Oficial" : "Suplente"),
+      starter: activeStudent.starter !== false ? "true" : "false",
       attendance: `${Math.max(0, Math.min(100, Number(activeStudent.attendancePct) || 0))}%`,
       goals: String(activeStudent.goals || 0),
       assists: String(activeStudent.assists || 0),
       minutes: `${activeStudent.mins || 0}'`,
+      folio: `LA-2026-${String(activeStudent.number || 10).padStart(4, "0")}`,
+      tutor: activeStudent.tutorName || "Familia",
+      photo: photoParam,
     });
-    lanyardFrameEl.src = `frontend/dist/index.html?${cardParams.toString()}`;
+    const targetSrc = `frontend/dist/index.html?${cardParams.toString()}`;
+    if (lanyardFrameEl.dataset.currentSrc !== targetSrc) {
+      lanyardFrameEl.dataset.currentSrc = targetSrc;
+      lanyardFrameEl.src = targetSrc;
+    }
   }
 }
 
