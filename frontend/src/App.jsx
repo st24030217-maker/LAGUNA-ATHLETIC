@@ -53,7 +53,7 @@ function App() {
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark">L</span>
-          <span>Laguna Etletic</span>
+          <span>Laguna Athletic</span>
         </div>
         <nav className="nav">
           <a href="#club">Club</a>

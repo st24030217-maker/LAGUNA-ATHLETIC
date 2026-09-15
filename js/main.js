@@ -274,6 +274,15 @@ injectExpedientesCallbacks({ saveData: appSaveData, refreshAllModules });
 injectTacticalCallbacks({ saveData: appSaveData, renderSquadCallupList });
 injectPostLogin(postLoginInit);
 
+// Si Supabase conserva una sesión válida, evita obligar al usuario a iniciar
+// sesión otra vez. El evento se emite solo después de validar el perfil/RLS.
+window.addEventListener("laguna-session-restored", () => {
+  document.getElementById("loginScreen")?.classList.add("hidden");
+  const appLayout = document.getElementById("appLayout");
+  if (appLayout) appLayout.style.display = "grid";
+  postLoginInit();
+});
+
 // ---------------------------------------------------------------------------
 // DINÁMICAS DE GRUPOS
 // ---------------------------------------------------------------------------
@@ -620,7 +629,7 @@ export function renderGuardianHomeProfile() {
   const switchGroupEl = document.getElementById("guardianStudentSwitchGroup");
   if (switchGroupEl) {
     const familyStudents = squadData.filter(
-      (p) => (p.tutorName && p.tutorName === activeStudent.tutorName) || (p.name && p.name.includes("Suárez"))
+      (p) => p.tutorName && p.tutorName === activeStudent.tutorName,
     );
     if (familyStudents.length > 1) {
       switchGroupEl.classList.remove("hidden");

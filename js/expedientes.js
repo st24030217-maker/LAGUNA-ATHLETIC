@@ -539,30 +539,58 @@ export function openDocumentViewerModal(url, title, type) {
 
   if (!modal || !bodyEl) return;
 
-  if (titleEl) titleEl.textContent = title || "Visualizador de Documento";
+  const safeTitle = String(title || "Visualizador de Documento");
+  const safeUrl = getSafeDocumentUrl(url, type === "pdf");
+  if (!safeUrl) {
+    showToast("El enlace del documento no tiene un formato permitido.", "error");
+    return;
+  }
+  if (titleEl) titleEl.textContent = safeTitle;
+  bodyEl.replaceChildren();
 
-  if (type === "pdf" || (url && url.startsWith("data:application/pdf"))) {
-    bodyEl.innerHTML = `
-      <iframe src="${url}" style="width: 100%; height: 75vh; border: none; border-radius: 8px;"></iframe>
-    `;
+  const isPdf = type === "pdf" || safeUrl.startsWith("data:application/pdf");
+  if (isPdf) {
+    const frame = document.createElement("iframe");
+    frame.src = safeUrl;
+    frame.style.cssText = "width: 100%; height: 75vh; border: none; border-radius: 8px;";
+    frame.setAttribute("sandbox", "allow-same-origin");
+    bodyEl.appendChild(frame);
   } else {
-    bodyEl.innerHTML = `
-      <div style="text-align: center; max-height: 75vh; overflow: auto;">
-        <img src="${url}" alt="${title}" style="max-width: 100%; max-height: 70vh; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
-      </div>
-    `;
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = "text-align: center; max-height: 75vh; overflow: auto;";
+    const image = document.createElement("img");
+    image.src = safeUrl;
+    image.alt = safeTitle;
+    image.style.cssText = "max-width: 100%; max-height: 70vh; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
+    wrapper.appendChild(image);
+    bodyEl.appendChild(wrapper);
   }
 
   if (downloadBtn) {
     downloadBtn.onclick = () => {
       const a = document.createElement("a");
-      a.href = url;
-      a.download = `${title.replace(/\s+/g, "_")}_${Date.now()}`;
+      a.href = safeUrl;
+      a.download = `${safeTitle.replace(/\s+/g, "_")}_${Date.now()}`;
       a.click();
     };
   }
 
   modal.classList.remove("hidden");
+}
+
+function getSafeDocumentUrl(value, isPdf) {
+  if (typeof value !== "string") return null;
+  const url = value.trim();
+  const allowedDataUrl = isPdf
+    ? /^data:application\/pdf(?:;[a-z0-9=._-]+)*,/i
+    : /^data:image\/(?:png|jpe?g|webp|gif)(?:;[a-z0-9=._-]+)*,/i;
+  if (allowedDataUrl.test(url) || url.startsWith("blob:")) return url;
+  try {
+    const protocol = new URL(url, window.location.origin).protocol;
+    return protocol === "https:" || protocol === "http:" ? url : null;
+  } catch (_) {
+    return null;
+  }
 }
 
 export function closeDocumentViewerModal() {

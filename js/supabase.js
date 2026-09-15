@@ -50,7 +50,7 @@ export function initSupabase() {
       cloudConnected = true;
       updateCloudStatusBadge(true);
       setupRealtimeSubscriptions();
-      restoreSupabaseSession();
+      void restoreSupabaseSession();
       return true;
     }
   } catch (e) {
@@ -64,10 +64,31 @@ export function initSupabase() {
 export async function restoreSupabaseSession() {
   if (!supabaseClient) return;
   try {
-    await supabaseClient.auth.signOut();
-  } catch (e) { /* silencioso */ }
-  sessionStorage.removeItem("laguna_active_role");
-  sessionStorage.removeItem("laguna_auth_user");
+    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!session) return null;
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("role, player_id")
+      .eq("id", session.user.id)
+      .single();
+    if (profileError || !profile) {
+      await supabaseClient.auth.signOut();
+      return null;
+    }
+
+    applySupabaseProfile(session.user, profile);
+    await syncAllFromCloud();
+    // La sincronización reemplaza el arreglo de jugadores; vuelve a enlazar el
+    // perfil con la instancia actual del jugador.
+    applySupabaseProfile(session.user, profile);
+    window.dispatchEvent(new CustomEvent("laguna-session-restored"));
+    return session;
+  } catch (e) {
+    console.warn("No se pudo restaurar la sesión:", e);
+    return null;
+  }
 }
 
 export function applySupabaseProfile(user, profile) {
@@ -78,7 +99,9 @@ export function applySupabaseProfile(user, profile) {
     ? "dt"
     : profile.role === "coach"
       ? "auxiliar"
-      : "jugador";
+      : profile.role === "guardian"
+        ? "guardian"
+        : "jugador";
   setCurrentRole(role);
   sessionStorage.setItem("laguna_active_role", role);
   sessionStorage.setItem("laguna_auth_user", user.id);

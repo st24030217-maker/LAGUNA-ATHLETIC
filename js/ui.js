@@ -15,7 +15,13 @@ export function showToast(message, type = "info") {
   if (type === "success") icon = "fa-circle-check";
   if (type === "warning") icon = "fa-triangle-exclamation";
   if (type === "error")   icon = "fa-circle-xmark";
-  toast.innerHTML = `<i class="fa-solid ${icon} toast-icon"></i><span>${message}</span>`;
+  // `message` puede venir de entradas de usuario, QR o servicios remotos.  No
+  // lo interpoles como HTML: un toast no necesita aceptar marcado.
+  const iconEl = document.createElement("i");
+  iconEl.className = `fa-solid ${icon} toast-icon`;
+  const messageEl = document.createElement("span");
+  messageEl.textContent = String(message ?? "");
+  toast.append(iconEl, messageEl);
   container.appendChild(toast);
   setTimeout(() => {
     toast.style.opacity = "0";

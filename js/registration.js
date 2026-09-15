@@ -369,15 +369,15 @@ export function savePlayerRegistration(e) {
   if (e) e.preventDefault();
 
   const number = parseInt(document.getElementById("regNumber")?.value) || 0;
-  const name = document.getElementById("regName")?.value.trim();
-  const position = document.getElementById("regPosition")?.value || "Jugador";
-  const positionAlt = document.getElementById("regPositionAlt")?.value || "";
-  const group = document.getElementById("regGroup")?.value.trim() || "Sin Cat.";
+  const name = cleanUserText(document.getElementById("regName")?.value);
+  const position = cleanUserText(document.getElementById("regPosition")?.value) || "Jugador";
+  const positionAlt = cleanUserText(document.getElementById("regPositionAlt")?.value);
+  const group = cleanUserText(document.getElementById("regGroup")?.value) || "Sin Cat.";
   const birthdate = document.getElementById("regBirthdate")?.value || "";
-  const email = document.getElementById("regEmail")?.value.trim() || "";
+  const email = cleanUserText(document.getElementById("regEmail")?.value);
   const regStatus = document.getElementById("regStatus")?.value || "Activo";
   const starter = document.getElementById("regStarter")?.value === "true";
-  const regNotes = document.getElementById("regNotes")?.value.trim() || "";
+  const regNotes = cleanUserText(document.getElementById("regNotes")?.value);
   const linkedSiblingId = parseInt(document.getElementById("regLinkedSibling")?.value) || null;
 
   const docActa = !!document.getElementById("docActa")?.checked;
@@ -400,22 +400,22 @@ export function savePlayerRegistration(e) {
 
   // Extraer contactos
   const contacts = [];
-  const c1Name = document.getElementById("contact1Name")?.value.trim();
-  const c1Phone = document.getElementById("contact1Phone")?.value.trim();
+  const c1Name = cleanUserText(document.getElementById("contact1Name")?.value);
+  const c1Phone = cleanUserText(document.getElementById("contact1Phone")?.value);
   const c1Rel = document.getElementById("contact1Relation")?.value || "Tutor";
   if (c1Name || c1Phone) {
     contacts.push({ name: c1Name || `Familia ${name.split(" ").pop()}`, phone: c1Phone || "", relation: c1Rel });
   }
 
-  const c2Name = document.getElementById("contact2Name")?.value.trim();
-  const c2Phone = document.getElementById("contact2Phone")?.value.trim();
+  const c2Name = cleanUserText(document.getElementById("contact2Name")?.value);
+  const c2Phone = cleanUserText(document.getElementById("contact2Phone")?.value);
   const c2Rel = document.getElementById("contact2Relation")?.value || "Tutor";
   if (c2Name || c2Phone) {
     contacts.push({ name: c2Name, phone: c2Phone, relation: c2Rel });
   }
 
-  const c3Name = document.getElementById("contact3Name")?.value.trim();
-  const c3Phone = document.getElementById("contact3Phone")?.value.trim();
+  const c3Name = cleanUserText(document.getElementById("contact3Name")?.value);
+  const c3Phone = cleanUserText(document.getElementById("contact3Phone")?.value);
   const c3Rel = document.getElementById("contact3Relation")?.value || "Tutor";
   if (c3Name || c3Phone) {
     contacts.push({ name: c3Name, phone: c3Phone, relation: c3Rel });
@@ -515,6 +515,13 @@ export function savePlayerRegistration(e) {
   } else {
     executeSave();
   }
+}
+
+// Estos valores se muestran en plantillas HTML de módulos heredados. Mantener
+// el contenido como texto plano evita que una captura de registro se convierta
+// en marcado ejecutable al volver a renderizarse.
+function cleanUserText(value) {
+  return String(value || "").replace(/[<>"'`]/g, "").trim();
 }
 
 export function confirmDeletePlayer(id) {

@@ -33,42 +33,42 @@ export function setProfilePlayerId(id)      { profilePlayerId = id; }
 // ---------------------------------------------------------------------------
 export const defaultSquadData = [
   {
-    id: 10, number: 10, name: "Emilio Suárez", position: "Medio Ofensivo",
+    id: 10, number: 10, name: "Jugador Demo 10", position: "Medio Ofensivo",
     attendancePct: 95, streak: "10 A", status: "Ausente", checkinTime: "-",
     starter: true, injured: false, goals: 6, assists: 4, mins: 900, cards: 1,
-    tutorName: "Familia Suárez", phone: "+52 844 123 4567",
+    tutorName: "Familia Demo A", phone: "Sin registrar",
     docActa: true, docCURP: true, docMedico: true, docINE: true,
     photo: "LAGUNA.jpg",
     gameInfo: [
       {
-        id: 101, title: "Resumen del partido vs. Real San Luis",
+        id: 101, title: "Resumen de partido de demostración",
         date: "2026-08-09", type: "partido",
-        downloadUrl: "https://example.com/laguna/emilio-resumen.pdf",
-        notes: "Buena recuperación defensiva y dos acciones de peligro en el segundo tiempo.",
+        downloadUrl: "https://example.com/laguna/resumen-demo.pdf",
+        notes: "Registro ficticio para mostrar el formato del módulo.",
       },
     ],
   },
   {
-    id: 15, number: 15, name: "Mateo Suárez", position: "Delantero Centro",
+    id: 15, number: 15, name: "Jugador Demo 15", position: "Delantero Centro",
     attendancePct: 92, streak: "8 A", status: "Ausente", checkinTime: "-",
     starter: true, injured: false, goals: 4, assists: 2, mins: 750, cards: 0,
-    tutorName: "Familia Suárez", phone: "+52 844 123 4567",
+    tutorName: "Familia Demo A", phone: "Sin registrar",
     docActa: true, docCURP: true, docMedico: true, docINE: true,
     photo: "LAGUNA.jpg",
     gameInfo: [
       {
-        id: 102, title: "Análisis de rendimiento vs. Real San Luis",
+        id: 102, title: "Análisis de demostración",
         date: "2026-08-09", type: "partido",
-        downloadUrl: "https://example.com/laguna/mateo-analisis.pdf",
-        notes: "Se mantuvo activo en presión alta y generó dos oportunidades claras.",
+        downloadUrl: "https://example.com/laguna/analisis-demo.pdf",
+        notes: "Registro ficticio para mostrar el formato del módulo.",
       },
     ],
   },
   {
-    id: 2, number: 2, name: "Lucas Sánchez", position: "Lateral Derecho",
+    id: 2, number: 2, name: "Jugador Demo 2", position: "Lateral Derecho",
     attendancePct: 90, streak: "6 A", status: "Ausente", checkinTime: "-",
     starter: true, injured: false, goals: 1, assists: 3, mins: 680, cards: 0,
-    tutorName: "Familia Sánchez", phone: "+52 844 222 3344",
+    tutorName: "Familia Demo B", phone: "Sin registrar",
     docActa: true, docCURP: true, docMedico: true, docINE: false,
     photo: "LAGUNA.jpg", gameInfo: [],
   },
@@ -77,17 +77,17 @@ export const defaultSquadData = [
 export const defaultPayments = [
   {
     id: 101, folio: "LA-PAGO-1001", playerId: 10,
-    playerName: "Emilio Suárez (#10)", tutorName: "Familia Suárez",
+    playerName: "Jugador Demo 10 (#10)", tutorName: "Familia Demo A",
     concept: "Colegiatura Mensual", baseAmount: 1200, discountPct: 0,
     discountAmount: 0, finalAmount: 1200, method: "Transferencia SPEI",
     date: "2026-08-01", status: "Pagado", notes: "Colegiatura Agosto",
   },
   {
     id: 102, folio: "LA-PAGO-1002", playerId: 15,
-    playerName: "Mateo Suárez (#15)", tutorName: "Familia Suárez",
+    playerName: "Jugador Demo 15 (#15)", tutorName: "Familia Demo A",
     concept: "Colegiatura Mensual", baseAmount: 1200, discountPct: 20,
     discountAmount: 240, finalAmount: 960, method: "Efectivo",
-    date: "2026-08-01", status: "Pagado", notes: "Descuento 2º Hermano Suárez",
+    date: "2026-08-01", status: "Pagado", notes: "Descuento por segundo integrante de la familia",
   },
 ];
 
@@ -98,8 +98,8 @@ export const defaultCalendarEvents = [
 
 export const defaultJustifications = [
   {
-    id: 1, player: "Emilio Suárez (#10)", date: "2026-08-06",
-    reason: "Examen Académico", detail: "Examen final universitario.", status: "Aprobada",
+    id: 1, player: "Jugador Demo 10 (#10)", date: "2026-08-06",
+    reason: "Actividad académica", detail: "Registro ficticio de demostración.", status: "Aprobada",
   },
 ];
 

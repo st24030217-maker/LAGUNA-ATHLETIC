@@ -101,6 +101,8 @@ export async function handleLogin(e) {
     }
     applySupabaseProfile(data.user, profile);
     await syncAllFromCloud();
+    // syncAllFromCloud sustituye squadData; restablece la referencia del perfil.
+    applySupabaseProfile(data.user, profile);
     queueCloudSync(currentRole);
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("appLayout").style.display = "grid";
