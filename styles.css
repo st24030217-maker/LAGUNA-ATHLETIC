@@ -8811,17 +8811,19 @@ body {
   bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(3, 8, 18, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(3, 8, 18, 0.88);
+  border: 1px solid rgba(251, 191, 36, 0.35);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  padding: 4px 14px;
+  padding: 5px 16px;
   border-radius: 999px;
-  font-size: 0.72rem;
-  color: #94a3b8;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #e2e8f0;
   pointer-events: none;
   z-index: 10;
   white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 .guardian-student-switcher {

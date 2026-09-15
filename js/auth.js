@@ -20,7 +20,7 @@ import {
   setCalendarEvents,
   setPaymentsData,
 } from "./state.js";
-import { setProfilePlayerId } from "./state.js";
+import { setProfilePlayerId, GUARDIAN_ALLOWED_TABS, isTabAllowedForGuardian } from "./state.js";
 import { showToast, triggerStatefulButton } from "./ui.js";
 import {
   supabaseClient,
@@ -166,6 +166,8 @@ export function isStaffRole() {
   return currentRole === "dt" || currentRole === "auxiliar";
 }
 
+export { GUARDIAN_ALLOWED_TABS, isTabAllowedForGuardian };
+
 export function applyRolePermissions() {
   const isDT = currentRole === "dt";
   const canViewSensitive = canViewGameInfo();
@@ -208,10 +210,8 @@ export function applyRolePermissions() {
 
     const allowedTabs = new Set([
       "mod-home",
-      "mod-avisos",
-      "mod-calendario",
       "mod-pagos",
-      "mod-expedientes",
+      "mod-calendario",
     ]);
     document.querySelectorAll(".tab-btn[data-tab]").forEach((el) => {
       el.style.display = allowedTabs.has(el.dataset.tab) ? "" : "none";
@@ -219,21 +219,18 @@ export function applyRolePermissions() {
     [
       "mod-qr",
       "mod-justificaciones",
+      "mod-avisos",
       "mod-registro",
+      "mod-expedientes",
       "mod-alineacion",
       "mod-medico",
       "mod-estadisticas",
     ].forEach((id) => {
       document.getElementById(id)?.classList.add("guardian-hidden-module");
     });
-    document.querySelectorAll(".nav-group-header").forEach((el) => {
-      const group = el.parentElement;
-      if (
-        group &&
-        !group.querySelector('.tab-btn:not([style*="display: none"])')
-      ) {
-        group.style.display = "none";
-      }
+    document.querySelectorAll(".nav-group").forEach((group) => {
+      const visibleTabs = group.querySelectorAll('.tab-btn:not([style*="display: none"])');
+      group.style.display = visibleTabs.length > 0 ? "" : "none";
     });
   } else {
     document.querySelectorAll(".tab-btn[data-tab]").forEach((el) => {
@@ -242,9 +239,8 @@ export function applyRolePermissions() {
     document.querySelectorAll(".guardian-hidden-module").forEach((el) => {
       el.classList.remove("guardian-hidden-module");
     });
-    document.querySelectorAll(".nav-group-header").forEach((el) => {
-      const group = el.parentElement;
-      if (group) group.style.display = "";
+    document.querySelectorAll(".nav-group").forEach((group) => {
+      group.style.display = "";
     });
   }
   document.querySelectorAll(".player-marker").forEach((el) => {

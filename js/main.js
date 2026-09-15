@@ -659,6 +659,15 @@ export function renderGuardianHomeProfile() {
     flipBtn.addEventListener("click", () => {
       const frame = document.getElementById("guardianLanyardFrame");
       frame?.contentWindow?.postMessage({ action: "flip" }, "*");
+      const badge = document.getElementById("lanyardSideBadge");
+      if (badge) {
+        const isReverso = badge.dataset.side === "reverso";
+        badge.dataset.side = isReverso ? "frente" : "reverso";
+        badge.innerHTML = isReverso
+          ? '<i class="fa-solid fa-id-badge"></i> Frente'
+          : '<i class="fa-solid fa-arrows-rotate"></i> Reverso';
+        badge.className = isReverso ? "badge badge-gold" : "badge badge-neon";
+      }
     });
   }
 
@@ -668,6 +677,29 @@ export function renderGuardianHomeProfile() {
     resetBtn.addEventListener("click", () => {
       const frame = document.getElementById("guardianLanyardFrame");
       frame?.contentWindow?.postMessage({ action: "reset" }, "*");
+      const badge = document.getElementById("lanyardSideBadge");
+      if (badge) {
+        badge.dataset.side = "frente";
+        badge.innerHTML = '<i class="fa-solid fa-id-badge"></i> Frente';
+        badge.className = "badge badge-gold";
+      }
+    });
+  }
+
+  // Listener para sincronizar estado de rotación desde el iframe 3D
+  if (!window._lanyardMessageBound) {
+    window._lanyardMessageBound = true;
+    window.addEventListener("message", (e) => {
+      if (e.data && e.data.type === "lanyard-flipped") {
+        const badge = document.getElementById("lanyardSideBadge");
+        if (badge) {
+          badge.dataset.side = e.data.isFlipped ? "reverso" : "frente";
+          badge.innerHTML = e.data.isFlipped
+            ? '<i class="fa-solid fa-arrows-rotate"></i> Reverso'
+            : '<i class="fa-solid fa-id-badge"></i> Frente';
+          badge.className = e.data.isFlipped ? "badge badge-neon" : "badge badge-gold";
+        }
+      }
     });
   }
 
@@ -698,6 +730,53 @@ export function renderGuardianHomeProfile() {
       lanyardFrameEl.src = targetSrc;
     }
   }
+}
+
+export function openGuardianChildCredential() {
+  const activeStudent =
+    squadData.find((p) => p.id === profilePlayerId) ||
+    squadData.find((p) => p.id === 10) ||
+    squadData[0];
+  if (activeStudent) {
+    openCredentialModal(activeStudent.id);
+  }
+}
+
+export function openGuardianChildFolder() {
+  const activeStudent =
+    squadData.find((p) => p.id === profilePlayerId) ||
+    squadData.find((p) => p.id === 10) ||
+    squadData[0];
+  if (activeStudent) {
+    openChildFolderModal(activeStudent.id);
+  }
+}
+
+export function contactCoachWA() {
+  const activeStudent =
+    squadData.find((p) => p.id === profilePlayerId) ||
+    squadData.find((p) => p.id === 10) ||
+    squadData[0];
+  const studentName = activeStudent ? activeStudent.name : "mi hijo(a)";
+  const studentNum = activeStudent ? `#${activeStudent.number}` : "";
+  const text = encodeURIComponent(
+    `Hola Coach Zúñiga, le escribo respecto al alumno ${studentName} ${studentNum} de Laguna Athletic.`
+  );
+  window.open(`https://wa.me/528711234567?text=${text}`, "_blank");
+}
+
+export function openMatchGoogleMaps() {
+  const locationEl = document.getElementById("guardianMatchLocation");
+  const venue = locationEl ? locationEl.textContent.trim() : "Complejo Deportivo Laguna Athletic";
+  window.open(
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`,
+    "_blank"
+  );
+}
+
+export function openGuardianJustificationModal() {
+  showToast("Para justificar la ausencia de tu alumno(a), envía aviso al DT por WhatsApp.", "info");
+  contactCoachWA();
 }
 
 // ---------------------------------------------------------------------------
@@ -939,6 +1018,11 @@ window.confirmResetFactoryData = confirmResetFactoryData;
 window.initChart = initChart;
 window.updateChartData = updateChartData;
 window.triggerStatefulButton = triggerStatefulButton;
+window.openGuardianChildCredential = openGuardianChildCredential;
+window.openGuardianChildFolder = openGuardianChildFolder;
+window.contactCoachWA = contactCoachWA;
+window.openMatchGoogleMaps = openMatchGoogleMaps;
+window.openGuardianJustificationModal = openGuardianJustificationModal;
 
 // ---------------------------------------------------------------------------
 // INICIALIZACIÓN AL CARGAR EL DOCUMENTO

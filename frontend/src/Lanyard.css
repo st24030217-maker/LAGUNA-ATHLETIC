@@ -8,21 +8,24 @@
   align-items: center;
   transform: scale(1);
   transform-origin: center;
+  background: transparent !important;
 }
 
 .lanyard-wrapper canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
+  background: transparent !important;
 }
 
 .embed-shell {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: transparent;
+  background: transparent !important;
 }
 
 .embed-shell .lanyard-wrapper {
   height: 100%;
+  background: transparent !important;
 }

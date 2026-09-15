@@ -592,13 +592,17 @@
 
                   <div
                     class="guardian-lanyard-scene"
+                    id="guardianLanyardScene"
                     aria-label="Gafete 3D interactivo del alumno"
                   >
                     <!-- Barra de herramientas superior flotante del gafete 3D -->
                     <div class="guardian-lanyard-toolbar">
                       <div class="guardian-lanyard-indicator">
                         <span class="pulse-dot"></span>
-                        <span>FÍSICA 3D EN VIVO</span>
+                        <span>GAFETE DIGITAL 3D</span>
+                        <span id="lanyardSideBadge" class="badge badge-gold" data-side="frente" style="margin-left: 6px; font-size: 0.72rem; padding: 2px 8px;">
+                          <i class="fa-solid fa-id-badge"></i> Frente
+                        </span>
                       </div>
                       <div class="guardian-lanyard-btn-group">
                         <button type="button" class="btn-lanyard-action" id="btnFlipLanyard" title="Voltear tarjeta para ver estadísticas">
@@ -615,10 +619,12 @@
                       title="Tarjeta 3D del alumno"
                       src="frontend/dist/index.html?embed=guardian&amp;name=Mateo%20Su%C3%A1rez"
                       loading="eager"
+                      allowtransparency="true"
+                      style="background: transparent;"
                     ></iframe>
 
                     <div class="guardian-lanyard-hint">
-                      <i class="fa-solid fa-hand-pointer"></i> Arrastra para mover • Doble clic para voltear
+                      <i class="fa-solid fa-hand-pointer"></i> Toca o arrastra para mover • Clic para voltear
                     </div>
                   </div>
 

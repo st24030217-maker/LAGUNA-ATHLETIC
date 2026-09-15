@@ -28,6 +28,13 @@ export function setCurrentRole(role)        { currentRole = role; }
 export function setLoggedInUser(user)       { loggedInUser = user; }
 export function setProfilePlayerId(id)      { profilePlayerId = id; }
 
+// Secciones autorizadas para el rol de padres/tutores (guardian)
+export const GUARDIAN_ALLOWED_TABS = new Set(["mod-home", "mod-pagos", "mod-calendario"]);
+
+export function isTabAllowedForGuardian(tabId) {
+  return GUARDIAN_ALLOWED_TABS.has(tabId);
+}
+
 // ---------------------------------------------------------------------------
 // Datos semilla por defecto (demo / fallback sin nube)
 // ---------------------------------------------------------------------------

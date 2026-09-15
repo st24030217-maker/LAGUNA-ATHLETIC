@@ -3,6 +3,8 @@
    Módulo de interfaz: toasts, navegación, loading screen, carousel login.
    ========================================================================== */
 
+import { currentRole, isTabAllowedForGuardian } from "./state.js";
+
 // ---------------------------------------------------------------------------
 // TOASTS
 // ---------------------------------------------------------------------------
@@ -78,6 +80,12 @@ export function triggerAppLoading(message = "Cargando plataforma...", durationMs
 // NAVEGACIÓN DE MÓDULOS
 // ---------------------------------------------------------------------------
 export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesInit, onExpedientesRender } = {}) {
+  // Si el usuario activo es padre/tutor (guardian), restringir a solo sus secciones autorizadas
+  if (currentRole === "guardian" && !isTabAllowedForGuardian(tabId)) {
+    showToast("Esta sección es de uso exclusivo del cuerpo técnico y directiva.", "warning");
+    tabId = "mod-home";
+  }
+
   document.querySelectorAll(".module-panel").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".tab-btn").forEach((el) => el.classList.remove("active"));
   document.querySelectorAll(".dock-item").forEach((el) => el.classList.remove("active"));
