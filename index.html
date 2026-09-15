@@ -35,6 +35,10 @@
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 
+    <!-- Leaflet — Mapa Interactivo (GPS Modal) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
     <link rel="stylesheet" href="styles.css?v=2026.9.11.4" />
   </head>
   <body class="dark-theme">
@@ -5503,5 +5507,71 @@
       });
     </script>
     <script type="module" src="js/main.js?v=2026.9.11.1"></script>
+
+    <!-- ===================================================================
+         MODAL GPS EN VIVO — LAGUNA ATHLETIC
+         =================================================================== -->
+    <div id="gpsMapModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Mapa de ubicación de la cancha">
+      <div class="gps-modal-panel">
+        <!-- Cabecera del modal -->
+        <div class="gps-modal-header">
+          <div class="gps-modal-title-group">
+            <span class="gps-live-dot"></span>
+            <div>
+              <h3 class="gps-modal-title">Mapa en Vivo</h3>
+              <p class="gps-modal-subtitle" id="gpsModalVenueName">Cancha 2 - Complejo Laguna</p>
+            </div>
+          </div>
+          <button type="button" class="gps-close-btn" onclick="closeGpsModal()" aria-label="Cerrar">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Contenedor del mapa -->
+        <div id="gpsLeafletMap" class="gps-map-container"></div>
+
+        <!-- Info bar: distancia y tiempo estimado -->
+        <div class="gps-info-bar">
+          <div class="gps-info-item" id="gpsDistanceBox">
+            <i class="fa-solid fa-route text-primary"></i>
+            <div>
+              <span class="gps-info-label">Tu distancia</span>
+              <strong class="gps-info-val" id="gpsDistanceVal">Calculando…</strong>
+            </div>
+          </div>
+          <div class="gps-info-item" id="gpsDriveTimeBox">
+            <i class="fa-solid fa-car text-gold"></i>
+            <div>
+              <span class="gps-info-label">Tiempo aprox. en auto</span>
+              <strong class="gps-info-val" id="gpsDriveTimeVal">—</strong>
+            </div>
+          </div>
+          <div class="gps-info-item">
+            <i class="fa-solid fa-person-walking text-neon"></i>
+            <div>
+              <span class="gps-info-label">A pie</span>
+              <strong class="gps-info-val" id="gpsWalkTimeVal">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de navegación externa -->
+        <div class="gps-nav-buttons">
+          <a id="gpsGoogleMapsLink" href="#" target="_blank" rel="noopener" class="gps-nav-btn google">
+            <i class="fa-solid fa-map-location-dot"></i>
+            Google Maps
+          </a>
+          <a id="gpsWazeLink" href="#" target="_blank" rel="noopener" class="gps-nav-btn waze">
+            <i class="fa-solid fa-road"></i>
+            Waze
+          </a>
+          <a id="gpsAppleMapsLink" href="#" target="_blank" rel="noopener" class="gps-nav-btn apple">
+            <i class="fa-brands fa-apple"></i>
+            Apple Maps
+          </a>
+        </div>
+      </div>
+    </div>
+
   </body>
 </html>
