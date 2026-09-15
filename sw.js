@@ -1,4 +1,4 @@
-const CACHE_VERSION = "2026.8.31.2";
+const CACHE_VERSION = "2026.9.15.1";
 const CACHE_NAME = `laguna-athletic-${CACHE_VERSION}`;
 const CDN_CACHE_NAME = `laguna-athletic-cdn-${CACHE_VERSION}`;
 
@@ -26,12 +26,13 @@ const APP_SHELL = [
   "./js/stats.js",
   "./js/registration.js",
   "./js/payments.js",
+  "./js/expedientes.js",
   "./js/main.js",
 ];
 
 // Librerías externas y fuentes para soporte 100% offline
 const CDN_SHELL = [
-  "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+  "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
   "https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js",
   "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js",
