@@ -625,6 +625,45 @@ export function renderGuardianHomeProfile() {
   if (assistsEl) assistsEl.textContent = String(activeStudent.assists || 0);
   if (minsEl) minsEl.textContent = `${activeStudent.mins || 0}'`;
 
+  // Sincronizar Ficha del Alumno en la Convocatoria
+  const convocaPhoto = document.getElementById("guardianConvocaPlayerPhoto");
+  const convocaName = document.getElementById("guardianConvocaPlayerName");
+  const convocaRole = document.getElementById("guardianConvocaPlayerRole");
+  const convocaStatus = document.getElementById("guardianConvocatoriaStatus");
+
+  if (convocaPhoto) convocaPhoto.src = activeStudent.photo || "LAGUNA.jpg";
+  if (convocaName) convocaName.textContent = `${activeStudent.name} (#${activeStudent.number})`;
+  if (convocaRole) {
+    convocaRole.textContent = `${activeStudent.position || "Jugador"} · ${activeStudent.starter ? "Titular" : "Suplente"}`;
+  }
+  if (convocaStatus) {
+    if (activeStudent.injured) {
+      convocaStatus.className = "badge badge-warning";
+      convocaStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> En Rehabilitación';
+    } else if (activeStudent.starter) {
+      convocaStatus.className = "badge badge-success";
+      convocaStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Convocado · XI Titular';
+    } else {
+      convocaStatus.className = "badge badge-primary";
+      convocaStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Convocado · Suplente';
+    }
+  }
+
+  // Estado guardado de confirmación de asistencia
+  const storageKey = `guardian_confirmed_match_${activeStudent.id}`;
+  const isConfirmed = localStorage.getItem(storageKey) === "true";
+  const confirmBtn = document.getElementById("btnConfirmMatchAttendance");
+  const confirmTxt = document.getElementById("textConfirmAttendance");
+  if (confirmBtn && confirmTxt) {
+    if (isConfirmed) {
+      confirmBtn.classList.add("active");
+      confirmTxt.textContent = "¡Asistencia Confirmada! ✓";
+    } else {
+      confirmBtn.classList.remove("active");
+      confirmTxt.textContent = "Confirmar Asistencia";
+    }
+  }
+
   // Poblar selector de hermanos si la familia tiene más de 1 alumno
   const switchGroupEl = document.getElementById("guardianStudentSwitchGroup");
   if (switchGroupEl) {
@@ -652,7 +691,7 @@ export function renderGuardianHomeProfile() {
     }
   }
 
-  // Controles de interacción 3D: Voltear y Re-centrar
+  // Controles de interacción 3D: Voltear
   const flipBtn = document.getElementById("btnFlipLanyard");
   if (flipBtn && !flipBtn.dataset.bound) {
     flipBtn.dataset.bound = "true";
@@ -662,11 +701,9 @@ export function renderGuardianHomeProfile() {
       const badge = document.getElementById("lanyardSideBadge");
       if (badge) {
         const isReverso = badge.dataset.side === "reverso";
-        badge.dataset.side = isReverso ? "frente" : "reverso";
-        badge.innerHTML = isReverso
-          ? '<i class="fa-solid fa-id-badge"></i> Frente'
-          : '<i class="fa-solid fa-arrows-rotate"></i> Reverso';
-        badge.className = isReverso ? "badge badge-gold" : "badge badge-neon";
+        const nextSide = isReverso ? "frente" : "reverso";
+        badge.dataset.side = nextSide;
+        badge.textContent = nextSide === "reverso" ? "Ver frente" : "Voltear credencial";
       }
     });
   }
@@ -680,8 +717,7 @@ export function renderGuardianHomeProfile() {
       const badge = document.getElementById("lanyardSideBadge");
       if (badge) {
         badge.dataset.side = "frente";
-        badge.innerHTML = '<i class="fa-solid fa-id-badge"></i> Frente';
-        badge.className = "badge badge-gold";
+        badge.textContent = "Voltear credencial";
       }
     });
   }
@@ -694,10 +730,7 @@ export function renderGuardianHomeProfile() {
         const badge = document.getElementById("lanyardSideBadge");
         if (badge) {
           badge.dataset.side = e.data.isFlipped ? "reverso" : "frente";
-          badge.innerHTML = e.data.isFlipped
-            ? '<i class="fa-solid fa-arrows-rotate"></i> Reverso'
-            : '<i class="fa-solid fa-id-badge"></i> Frente';
-          badge.className = e.data.isFlipped ? "badge badge-neon" : "badge badge-gold";
+          badge.textContent = e.data.isFlipped ? "Ver frente" : "Voltear credencial";
         }
       }
     });
@@ -777,6 +810,34 @@ export function openMatchGoogleMaps() {
 export function openGuardianJustificationModal() {
   showToast("Para justificar la ausencia de tu alumno(a), envía aviso al DT por WhatsApp.", "info");
   contactCoachWA();
+}
+
+export function toggleGuardianMatchAttendance() {
+  const activeStudent =
+    squadData.find((p) => p.id === profilePlayerId) ||
+    squadData.find((p) => p.id === 10) ||
+    squadData[0];
+  const sid = activeStudent ? activeStudent.id : "default";
+  const storageKey = `guardian_confirmed_match_${sid}`;
+  const isConfirmed = localStorage.getItem(storageKey) === "true";
+
+  const btn = document.getElementById("btnConfirmMatchAttendance");
+  const txt = document.getElementById("textConfirmAttendance");
+
+  if (isConfirmed) {
+    localStorage.removeItem(storageKey);
+    if (btn) btn.classList.remove("active");
+    if (txt) txt.textContent = "Confirmar Asistencia";
+    showToast("Confirmación de asistencia cancelada.", "info");
+  } else {
+    localStorage.setItem(storageKey, "true");
+    if (btn) btn.classList.add("active");
+    if (txt) txt.textContent = "¡Asistencia Confirmada! ✓";
+    showToast(
+      `¡Confirmado! El DT fue notificado de la asistencia de ${activeStudent ? activeStudent.name : "tu alumno"}.`,
+      "success"
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1023,6 +1084,7 @@ window.openGuardianChildFolder = openGuardianChildFolder;
 window.contactCoachWA = contactCoachWA;
 window.openMatchGoogleMaps = openMatchGoogleMaps;
 window.openGuardianJustificationModal = openGuardianJustificationModal;
+window.toggleGuardianMatchAttendance = toggleGuardianMatchAttendance;
 
 // ---------------------------------------------------------------------------
 // INICIALIZACIÓN AL CARGAR EL DOCUMENTO

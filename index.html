@@ -575,11 +575,8 @@
                 <div class="glass-card guardian-child-card">
                   <div class="flex-between align-center mb-2">
                     <div>
-                      <span class="badge badge-gold" style="font-size: 0.72rem; padding: 2px 8px;">
-                        <i class="fa-solid fa-id-badge"></i> CREDENCIAL DIGITAL 3D
-                      </span>
-                      <h3 class="card-title mt-1" style="margin-bottom: 0">
-                        <i class="fa-solid fa-child-reaching text-primary"></i> Mi Alumno(a)
+                      <h3 class="card-title" style="margin-bottom: 0">
+                        <i class="fa-solid fa-id-card text-primary"></i> Mi Alumno(a)
                       </h3>
                     </div>
                     <div class="flex-align-center gap-2">
@@ -595,25 +592,6 @@
                     id="guardianLanyardScene"
                     aria-label="Gafete 3D interactivo del alumno"
                   >
-                    <!-- Barra de herramientas superior flotante del gafete 3D -->
-                    <div class="guardian-lanyard-toolbar">
-                      <div class="guardian-lanyard-indicator">
-                        <span class="pulse-dot"></span>
-                        <span>GAFETE DIGITAL 3D</span>
-                        <span id="lanyardSideBadge" class="badge badge-gold" data-side="frente" style="margin-left: 6px; font-size: 0.72rem; padding: 2px 8px;">
-                          <i class="fa-solid fa-id-badge"></i> Frente
-                        </span>
-                      </div>
-                      <div class="guardian-lanyard-btn-group">
-                        <button type="button" class="btn-lanyard-action" id="btnFlipLanyard" title="Voltear tarjeta para ver estadísticas">
-                          <i class="fa-solid fa-arrows-rotate"></i> Voltear
-                        </button>
-                        <button type="button" class="btn-lanyard-action" id="btnResetLanyard" title="Centrar gafete">
-                          <i class="fa-solid fa-crosshairs"></i>
-                        </button>
-                      </div>
-                    </div>
-
                     <iframe
                       id="guardianLanyardFrame"
                       title="Tarjeta 3D del alumno"
@@ -623,8 +601,11 @@
                       style="background: transparent;"
                     ></iframe>
 
-                    <div class="guardian-lanyard-hint">
-                      <i class="fa-solid fa-hand-pointer"></i> Toca o arrastra para mover • Clic para voltear
+                    <div class="guardian-lanyard-footer">
+                      <button type="button" class="btn-lanyard-flip" id="btnFlipLanyard" title="Voltear credencial (o haz clic sobre el gafete)">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span id="lanyardSideBadge" data-side="frente">Voltear credencial</span>
+                      </button>
                     </div>
                   </div>
 
@@ -706,77 +687,138 @@
 
                 <!-- Próxima Cita / Partido del Alumno -->
                 <div class="glass-card guardian-next-card">
+                  <!-- Header -->
                   <div class="flex-between align-center mb-2">
                     <h3 class="card-title" style="margin-bottom: 0">
-                      <i class="fa-solid fa-calendar-check text-gold"></i>
-                      Próxima Convocatoria
+                      <i class="fa-solid fa-trophy text-gold"></i> Próxima Convocatoria
                     </h3>
-                    <span class="badge badge-event" id="guardianEventBadge"
-                      >⚽ Partido</span
-                    >
+                    <span class="badge badge-event" id="guardianEventBadge">
+                      <i class="fa-solid fa-futbol"></i> Partido Oficial
+                    </span>
                   </div>
 
-                  <div class="guardian-event-content">
-                    <h4
-                      id="guardianMatchTitle"
-                      style="
-                        color: #fff;
-                        font-size: 1.15rem;
-                        margin: 0.4rem 0 0.2rem;
-                      "
-                    >
-                      Laguna Athletic vs Santos Laguna
-                    </h4>
-                    <p
-                      class="text-muted"
-                      id="guardianMatchDate"
-                      style="font-size: 0.85rem"
-                    >
-                      <i class="fa-regular fa-clock text-gold"></i> Sábado 13
-                      Septiembre · 09:30 AM
-                    </p>
+                  <div class="guardian-convoca-container">
+                    <!-- Banner Enfrentamiento Match Fixture -->
+                    <div class="match-fixture-banner">
+                      <div class="fixture-league-tag">
+                        <span id="guardianMatchTournament"><i class="fa-solid fa-award text-gold"></i> Liga Premier · Sub-10</span>
+                        <span class="fixture-countdown-pill" id="guardianMatchCountdown"><i class="fa-regular fa-clock"></i> En 3 días</span>
+                      </div>
 
-                    <div class="guardian-event-details-box mt-2">
-                      <div class="guardian-event-row">
-                        <i class="fa-solid fa-location-dot text-primary"></i>
-                        <div>
-                          <strong>Sede / Cancha:</strong>
-                          <span id="guardianMatchLocation"
-                            >Cancha 2 - Complejo Laguna</span
-                          >
+                      <div class="fixture-teams-row">
+                        <div class="fixture-team home">
+                          <img src="LAGUNA.jpg" alt="Laguna Athletic" class="fixture-crest" />
+                          <span class="fixture-team-name">Laguna Athletic</span>
+                          <span class="fixture-team-role">Local</span>
+                        </div>
+
+                        <div class="fixture-vs-center">
+                          <span class="fixture-vs-badge">VS</span>
+                          <span class="fixture-time-tag" id="guardianMatchKickoff">09:30 AM</span>
+                        </div>
+
+                        <div class="fixture-team away">
+                          <div class="fixture-crest-placeholder">
+                            <i class="fa-solid fa-shield-halved"></i>
+                          </div>
+                          <span class="fixture-team-name" id="guardianMatchOpponent">Santos Laguna</span>
+                          <span class="fixture-team-role">Visitante</span>
                         </div>
                       </div>
-                      <div class="guardian-event-row">
-                        <i class="fa-solid fa-shirt text-gold"></i>
+
+                      <div class="fixture-datetime-bar">
+                        <i class="fa-regular fa-calendar text-gold"></i>
+                        <span id="guardianMatchDate">Sábado 13 Septiembre 2026</span>
+                      </div>
+                    </div>
+
+                    <!-- Ficha del Jugador Convocado -->
+                    <div class="guardian-convoca-status-card">
+                      <div class="convoca-player-meta">
+                        <img id="guardianConvocaPlayerPhoto" src="LAGUNA.jpg" alt="Jugador" class="convoca-player-avatar" />
                         <div>
-                          <strong>Uniforme Requerido:</strong>
-                          <span id="guardianMatchUniform"
-                            >Uniforme Oficial Azul (Espinilleras y
-                            calcetas)</span
-                          >
+                          <div class="convoca-player-name" id="guardianConvocaPlayerName">Mateo Suárez (#10)</div>
+                          <div class="convoca-player-sub" id="guardianConvocaPlayerRole">Delantero Centro · Titular</div>
+                        </div>
+                      </div>
+                      <div id="guardianConvocatoriaStatus" class="badge badge-success">
+                        <i class="fa-solid fa-circle-check"></i> Convocado · XI Titular
+                      </div>
+                    </div>
+
+                    <!-- Grid de Logística del Partido -->
+                    <div class="convoca-logistics-grid">
+                      <div class="convoca-logistic-card">
+                        <div class="logistic-icon text-primary">
+                          <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="logistic-info">
+                          <span class="logistic-label">Sede / Cancha</span>
+                          <strong class="logistic-val" id="guardianMatchLocation">Cancha 2 - Complejo Laguna</strong>
+                        </div>
+                      </div>
+
+                      <div class="convoca-logistic-card">
+                        <div class="logistic-icon text-gold">
+                          <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="logistic-info">
+                          <span class="logistic-label">Cita Previa</span>
+                          <strong class="logistic-val" id="guardianMatchMeetTime">08:45 AM (45 min antes)</strong>
+                        </div>
+                      </div>
+
+                      <div class="convoca-logistic-card">
+                        <div class="logistic-icon text-neon">
+                          <i class="fa-solid fa-shirt"></i>
+                        </div>
+                        <div class="logistic-info">
+                          <span class="logistic-label">Uniforme Requerido</span>
+                          <strong class="logistic-val" id="guardianMatchUniform">Kit Azul Marino Oficial</strong>
+                        </div>
+                      </div>
+
+                      <div class="convoca-logistic-card">
+                        <div class="logistic-icon text-success">
+                          <i class="fa-solid fa-id-card"></i>
+                        </div>
+                        <div class="logistic-info">
+                          <span class="logistic-label">Requisitos en Mesa</span>
+                          <strong class="logistic-val">Credencial Oficial y Agua</strong>
                         </div>
                       </div>
                     </div>
 
-                    <div class="guardian-event-actions mt-3">
+                    <!-- Acciones del Tutor / Padre -->
+                    <div class="guardian-convoca-actions">
                       <button
                         type="button"
-                        class="btn btn-outline btn-sm"
+                        class="btn-convoca-confirm"
+                        id="btnConfirmMatchAttendance"
+                        onclick="toggleGuardianMatchAttendance()"
+                      >
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="textConfirmAttendance">Confirmar Asistencia</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn-convoca-action"
                         onclick="openMatchGoogleMaps()"
                         id="btnGuardianMaps"
-                        style="flex: 1"
                       >
-                        <i class="fa-solid fa-map-location-dot text-gold"></i>
-                        ¿Cómo Llegar? (GPS)
+                        <i class="fa-solid fa-location-arrow text-gold"></i>
+                        GPS / Mapa
                       </button>
+
                       <button
                         type="button"
-                        class="btn btn-primary btn-sm"
+                        class="btn-convoca-action ghost"
                         onclick="openGuardianJustificationModal()"
-                        style="flex: 1"
+                        title="Avisar al DT si el alumno no podrá asistir"
                       >
-                        <i class="fa-solid fa-calendar-xmark"></i> Justificar
-                        Inasistencia
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                        Justificar
                       </button>
                     </div>
                   </div>
