@@ -597,6 +597,8 @@ export function renderGuardianHomeProfile() {
       ? "Rehabilitación"
       : "Plantel Oficial";
   }
+  const greetingNameEl = document.getElementById("guardianGreetingPlayerName");
+  if (greetingNameEl) greetingNameEl.textContent = activeStudent.name;
   if (nameEl) nameEl.textContent = activeStudent.name;
   if (avatarEl) avatarEl.src = activeStudent.photo || "LAGUNA.jpg";
   if (numberEl) numberEl.textContent = `#${activeStudent.number}`;
