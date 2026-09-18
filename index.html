@@ -547,135 +547,139 @@
             <!-- VISTA EXCLUSIVA PARA PADRES DE FAMILIA / TUTORES           -->
             <!-- ========================================================= -->
             <div id="guardianHomeView" class="hidden">
-              <!-- Banner de Bienvenida a la Familia -->
-              <div
-                class="hero-event-card margin-bottom fade-in-up"
-                style="background: linear-gradient(135deg, #0b1f3a, #071526)"
-              >
-                <div class="hero-event-info">
-                  <span class="badge badge-neon"
-                    ><i class="fa-solid fa-people-roof"></i> PORTAL DE PADRES
-                    LAGUNA</span
-                  >
-                  <h2 id="guardianFamilyWelcome">
-                    ¡Bienvenido(a), Familia Suárez!
-                  </h2>
-                  <p id="guardianFamilySubtitle">
-                    Seguimiento deportivo, convocatorias, pagos y avisos
-                    oficiales de tu hijo(a).
-                  </p>
+              <!-- RECIBIDOR OFICIAL DE PADRES (LOBBY SHOWCASE) -->
+              <div class="guardian-recibidor-showcase margin-bottom fade-in-up">
+                <!-- Cabecera del Recibidor -->
+                <div class="guardian-recibidor-header">
+                  <div class="recibidor-badge-wrap">
+                    <span class="recibidor-pulse-dot"></span>
+                    <span class="badge badge-neon">
+                      <i class="fa-solid fa-people-roof"></i> PORTAL DE PADRES · RECIBIDOR OFICIAL
+                    </span>
+                  </div>
+                  <div class="flex-gap align-center">
+                    <span id="guardianChildStatusTag" class="badge badge-gold">
+                      <i class="fa-solid fa-shield-heart"></i> Plantel Oficial
+                    </span>
+                  </div>
                 </div>
-                <div class="hero-stats">
-                  <div class="stat-box" style="color: var(--accent-gold)">
-                    <i class="fa-solid fa-shield-heart"></i>
-                    <span id="guardianChildStatusTag">Plantel Oficial</span>
+
+                <!-- Contenido Principal en 2 Columnas para Web -->
+                <div class="guardian-recibidor-grid">
+                  <!-- Columna Izquierda: Información de Bienvenida y Alumno -->
+                  <div class="guardian-recibidor-info">
+                    <div class="guardian-recibidor-titles">
+                      <h2 id="guardianFamilyWelcome">¡Bienvenido(a), Familia Suárez!</h2>
+                      <p id="guardianFamilySubtitle">
+                        Portal exclusivo de seguimiento deportivo, convocatorias oficiales y acreditación de tu hijo(a).
+                      </p>
+                    </div>
+
+                    <div class="recibidor-greeting-pill">
+                      <i class="fa-solid fa-hand-wave text-gold"></i>
+                      <span>Hola de nuevo, <strong id="guardianGreetingPlayerName" class="text-primary">Mateo Suárez</strong> 👋</span>
+                    </div>
+
+                    <!-- Ficha y Acreditación del Alumno -->
+                    <div class="recibidor-card-inner">
+                      <div class="guardian-child-profile">
+                        <div class="guardian-child-avatar-wrap">
+                          <img
+                            id="guardianChildPhoto"
+                            src="LAGUNA.jpg"
+                            alt="Foto del alumno"
+                            class="guardian-child-avatar"
+                          />
+                          <div class="guardian-child-number" id="guardianChildNumber">#10</div>
+                        </div>
+                        <div class="guardian-child-info">
+                          <h3 id="guardianChildName">Mateo Suárez</h3>
+                          <p class="text-muted" id="guardianChildCategory">Sub-10 · Delantero Centro</p>
+                          <div class="guardian-child-badges mt-1">
+                            <span class="badge badge-gold" id="guardianChildStarterBadge">11 Titular</span>
+                            <span class="badge badge-outline" id="guardianChildFolio">LA-2026-0010</span>
+                            <span class="badge badge-success" id="guardianMedicalPill">Apto Físicamente</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Métricas de la Temporada -->
+                      <div class="guardian-metrics-grid">
+                        <div class="guardian-metric-box">
+                          <div class="guardian-metric-num text-primary" id="guardianMetricAtt">95%</div>
+                          <div class="guardian-metric-lbl">Asistencia</div>
+                        </div>
+                        <div class="guardian-metric-box">
+                          <div class="guardian-metric-num text-gold" id="guardianMetricGoals">0</div>
+                          <div class="guardian-metric-lbl">Goles</div>
+                        </div>
+                        <div class="guardian-metric-box">
+                          <div class="guardian-metric-num text-neon" id="guardianMetricAssists">0</div>
+                          <div class="guardian-metric-lbl">Asistencias</div>
+                        </div>
+                        <div class="guardian-metric-box">
+                          <div class="guardian-metric-num text-success" id="guardianMetricMins">0'</div>
+                          <div class="guardian-metric-lbl">Minutos</div>
+                        </div>
+                      </div>
+
+                      <!-- Acciones directas del Recibidor -->
+                      <div class="recibidor-actions-row mt-2">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="openGuardianChildCredential()">
+                          <i class="fa-solid fa-id-card"></i> Ver Credencial
+                        </button>
+                        <button type="button" class="btn btn-sm btn-ghost" onclick="openGuardianChildFolder()">
+                          <i class="fa-solid fa-folder-open"></i> Expediente Digital
+                        </button>
+                        <button type="button" class="btn btn-sm btn-ghost" onclick="contactCoachWA()">
+                          <i class="fa-brands fa-whatsapp text-success"></i> DT WhatsApp
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Columna Derecha: El Gafete 3D como Atril / Pedestal Interactivo -->
+                  <div class="guardian-recibidor-gafete-pedestal">
+                    <div class="recibidor-lanyard-topbar">
+                      <span class="badge badge-outline" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                        <i class="fa-solid fa-id-card-clip"></i> Gafete Oficial 3D
+                      </span>
+                      <span class="recibidor-hint">
+                        <i class="fa-solid fa-hand-pointer text-gold"></i> Toca y mueve la credencial
+                      </span>
+                    </div>
+
+                    <div
+                      class="guardian-lanyard-scene"
+                      id="guardianLanyardScene"
+                      aria-label="Credencial interactiva del alumno"
+                    >
+                      <iframe
+                        id="guardianLanyardFrame"
+                        title="Credencial del alumno"
+                        src="frontend/dist/index.html?embed=guardian&amp;name=Mateo%20Su%C3%A1rez"
+                        loading="eager"
+                        allowtransparency="true"
+                        style="background: transparent;"
+                      ></iframe>
+                    </div>
+
+                    <div class="guardian-lanyard-footer">
+                      <button type="button" class="btn-lanyard-flip" id="btnFlipLanyard">
+                        <i class="fa-solid fa-repeat"></i>
+                        <span id="lanyardSideBadge" data-side="frente">Voltear credencial</span>
+                      </button>
+                      <button type="button" class="btn-lanyard-flip" id="btnResetLanyard" style="margin-left: 8px;">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        Centrar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Ficha del Alumno + Próximo Partido Grid -->
-              <div class="grid-2-cols margin-bottom fade-in-up">
-                <!-- Tarjeta Principal del Alumno -->
-                <div class="glass-card guardian-child-card">
-                  <div class="mb-2">
-                    <h3 class="card-title" style="margin-bottom: 0; font-size: 1.25rem;">
-                      Hola de nuevo, <span id="guardianGreetingPlayerName" class="text-primary">Mateo Suárez</span> 👋
-                    </h3>
-                  </div>
-
-                  <div
-                    class="guardian-lanyard-scene"
-                    id="guardianLanyardScene"
-                    aria-label="Credencial interactiva del alumno"
-                  >
-                    <iframe
-                      id="guardianLanyardFrame"
-                      title="Credencial del alumno"
-                      src="frontend/dist/index.html?embed=guardian&amp;name=Mateo%20Su%C3%A1rez"
-                      loading="eager"
-                      allowtransparency="true"
-                      style="background: transparent;"
-                    ></iframe>
-                  </div>
-
-                  <div class="guardian-child-profile">
-                    <div class="guardian-child-avatar-wrap">
-                      <img
-                        id="guardianChildPhoto"
-                        src="LAGUNA.jpg"
-                        alt="Foto del alumno"
-                        class="guardian-child-avatar"
-                      />
-                      <div
-                        class="guardian-child-number"
-                        id="guardianChildNumber"
-                      >
-                        #10
-                      </div>
-                    </div>
-                    <div class="guardian-child-info">
-                      <h3 id="guardianChildName">Mateo Suárez</h3>
-                      <p class="text-muted" id="guardianChildCategory">
-                        Sub-10 · Delantero Centro
-                      </p>
-                      <div class="guardian-child-badges mt-1">
-                        <span
-                          class="badge badge-gold"
-                          id="guardianChildStarterBadge"
-                          >11 Titular</span
-                        >
-                        <span
-                          class="badge badge-outline"
-                          id="guardianChildFolio"
-                          >LA-2026-0010</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Métricas del Niño -->
-                  <div class="guardian-metrics-grid mt-3">
-                    <div class="guardian-metric-box">
-                      <div
-                        class="guardian-metric-num text-primary"
-                        id="guardianMetricAtt"
-                      >
-                        95%
-                      </div>
-                      <div class="guardian-metric-lbl">Asistencia</div>
-                    </div>
-                    <div class="guardian-metric-box">
-                      <div
-                        class="guardian-metric-num text-gold"
-                        id="guardianMetricGoals"
-                      >
-                        0
-                      </div>
-                      <div class="guardian-metric-lbl">Goles</div>
-                    </div>
-                    <div class="guardian-metric-box">
-                      <div
-                        class="guardian-metric-num text-neon"
-                        id="guardianMetricAssists"
-                      >
-                        0
-                      </div>
-                      <div class="guardian-metric-lbl">Asistencias</div>
-                    </div>
-                    <div class="guardian-metric-box">
-                      <div
-                        class="guardian-metric-num text-success"
-                        id="guardianMetricMins"
-                      >
-                        0'
-                      </div>
-                      <div class="guardian-metric-lbl">Minutos</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Próxima Cita / Partido del Alumno -->
-                <div class="glass-card guardian-next-card">
+              <!-- Próxima Cita / Partido del Alumno -->
+              <div class="glass-card guardian-next-card margin-bottom fade-in-up">
                   <!-- Header -->
                   <div class="flex-between align-center mb-2">
                     <h3 class="card-title" style="margin-bottom: 0">
@@ -793,7 +797,7 @@
                       <button
                         type="button"
                         class="btn-convoca-action"
-                        onclick="openMatchGoogleMaps()"
+                        onclick="openGpsModal()"
                         id="btnGuardianMaps"
                       >
                         <i class="fa-solid fa-location-arrow text-gold"></i>
@@ -812,7 +816,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
 
               <!-- Centro de Accesos Rápidos para Padres -->
               <div class="glass-card margin-bottom fade-in-up">
@@ -5506,7 +5509,7 @@
         window.HSStaticMethods?.autoInit();
       });
     </script>
-    <script type="module" src="js/main.js?v=2026.9.11.1"></script>
+    <script type="module" src="js/main.js?v=2026.9.18.2"></script>
 
     <!-- ===================================================================
          MODAL GPS EN VIVO — LAGUNA ATHLETIC

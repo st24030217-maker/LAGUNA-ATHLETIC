@@ -122,8 +122,16 @@ import {
   submitJustification,
   reviewJustification,
   renderJustifications,
+  openGuardianJustificationModal,
+  closeGuardianJustificationModal,
+  submitGuardianJustification,
   injectJustificationsCallbacks,
 } from "./justifications.js";
+
+import {
+  openGpsModal,
+  closeGpsModal,
+} from "./maps.js";
 
 import {
   switchNoticeMode,
@@ -800,18 +808,17 @@ export function contactCoachWA() {
   window.open(`https://wa.me/528711234567?text=${text}`, "_blank");
 }
 
-export function openMatchGoogleMaps() {
-  const locationEl = document.getElementById("guardianMatchLocation");
-  const venue = locationEl ? locationEl.textContent.trim() : "Complejo Deportivo Laguna Athletic";
-  window.open(
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`,
-    "_blank"
+export function getActiveGuardianStudent() {
+  return (
+    squadData.find((p) => p.id === profilePlayerId) ||
+    squadData.find((p) => p.id === 10) ||
+    squadData[0]
   );
 }
+window._getActiveGuardianStudent = getActiveGuardianStudent;
 
-export function openGuardianJustificationModal() {
-  showToast("Para justificar la ausencia de tu alumno(a), envía aviso al DT por WhatsApp.", "info");
-  contactCoachWA();
+export function openMatchGoogleMaps() {
+  openGpsModal();
 }
 
 export function toggleGuardianMatchAttendance() {
@@ -1084,8 +1091,12 @@ window.triggerStatefulButton = triggerStatefulButton;
 window.openGuardianChildCredential = openGuardianChildCredential;
 window.openGuardianChildFolder = openGuardianChildFolder;
 window.contactCoachWA = contactCoachWA;
-window.openMatchGoogleMaps = openMatchGoogleMaps;
 window.openGuardianJustificationModal = openGuardianJustificationModal;
+window.closeGuardianJustificationModal = closeGuardianJustificationModal;
+window.submitGuardianJustification = submitGuardianJustification;
+window.openGpsModal = openGpsModal;
+window.openMatchGoogleMaps = openGpsModal;
+window.closeGpsModal = closeGpsModal;
 window.toggleGuardianMatchAttendance = toggleGuardianMatchAttendance;
 
 // ---------------------------------------------------------------------------

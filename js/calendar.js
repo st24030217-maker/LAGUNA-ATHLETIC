@@ -120,7 +120,7 @@ export function renderCalendarList(grid, events) {
         ${deleteBtn}
       </div>
       <div class="event-title">${ev.title}</div>
-      <div class="subtitle-text"><i class="fa-solid fa-location-dot"></i> ${ev.location}</div>
+      <div class="subtitle-text" style="cursor:pointer;" onclick="openGpsModal('${ev.location ? ev.location.replace(/'/g, "\\'") : ""}')" title="Ver ubicación en mapa GPS"><i class="fa-solid fa-location-dot text-gold"></i> ${ev.location} <span style="font-size:0.7rem; color:var(--accent-primary); margin-left:4px;"><i class="fa-solid fa-map-location-dot"></i> Mapa</span></div>
       ${resultHtml}
     `;
       grid.appendChild(card);

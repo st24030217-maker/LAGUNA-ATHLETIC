@@ -1,4 +1,4 @@
-const CACHE_VERSION = "2026.9.15.1";
+const CACHE_VERSION = "2026.9.18.2";
 const CACHE_NAME = `laguna-athletic-${CACHE_VERSION}`;
 const CDN_CACHE_NAME = `laguna-athletic-cdn-${CACHE_VERSION}`;
 
@@ -27,6 +27,7 @@ const APP_SHELL = [
   "./js/registration.js",
   "./js/payments.js",
   "./js/expedientes.js",
+  "./js/maps.js",
   "./js/main.js",
 ];
 
@@ -38,6 +39,9 @@ const CDN_SHELL = [
   "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js",
   "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js",
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js",
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+  "https://cdn.jsdelivr.net/npm/preline@4.2.0/dist/preline.js",
 ];
 
 // Dominios CDN permitidos para caché dinámico
