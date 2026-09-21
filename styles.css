@@ -10194,3 +10194,93 @@ body {
     height: 32px;
   }
 }
+
+/* ==========================================================================
+   FLUID MORPH BACKGROUND (VENGEANCE UI / SHADCN) — PADRES & COACH
+   ========================================================================== */
+
+#guardianHomeView,
+#coachHomeView {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  min-height: 850px;
+  background-color: #040914;
+}
+
+.fluid-morph-bg-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  opacity: 0.85;
+}
+
+.fluid-morph-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.fluid-morph-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 20%, rgba(4, 9, 20, 0.2) 0%, rgba(4, 9, 20, 0.65) 60%, #040914 100%);
+  pointer-events: none;
+}
+
+/* Specific view overlays */
+.fluid-morph-guardian .fluid-morph-overlay {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 20% 75%, rgba(251, 191, 36, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 30%, rgba(4, 9, 20, 0.25) 0%, rgba(4, 9, 20, 0.72) 65%, #040914 100%);
+}
+
+.fluid-morph-coach .fluid-morph-overlay {
+  background:
+    radial-gradient(circle at 75% 25%, rgba(14, 165, 233, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 25% 65%, rgba(3, 105, 161, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 30%, rgba(4, 9, 20, 0.2) 0%, rgba(4, 9, 20, 0.75) 70%, #040914 100%);
+}
+
+/* Ensure all view content sits above fluid background with glassmorphism */
+#guardianHomeView > *:not(.fluid-morph-bg-wrapper),
+#coachHomeView > *:not(.fluid-morph-bg-wrapper) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Enhance glassmorphic blur so morphing fluid shimmers underneath */
+.guardian-recibidor-showcase {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.hero-event-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.guardian-next-card,
+.guardian-quick-grid .guardian-quick-item,
+.dashboard-kpi-grid .kpi-card {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
