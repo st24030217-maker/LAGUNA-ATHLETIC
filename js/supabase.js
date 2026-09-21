@@ -62,8 +62,14 @@ export function initSupabase() {
 }
 
 export async function restoreSupabaseSession() {
-  if (!supabaseClient) return;
+  if (!supabaseClient) return null;
   try {
+    const rememberSession = localStorage.getItem("laguna_remember_session") === "true";
+    if (!rememberSession) {
+      // Si el usuario no activó "Recordar sesión", no autologuear al entrar al sistema
+      return null;
+    }
+
     const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
     if (sessionError) throw sessionError;
     if (!session) return null;

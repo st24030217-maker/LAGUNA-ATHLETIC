@@ -86,6 +86,12 @@ export async function handleLogin(e) {
       throw new Error(errorMessage);
     }
     localStorage.setItem("laguna_auth_username", username);
+    const rememberMe = document.getElementById("rememberCheck")?.checked ?? false;
+    if (rememberMe) {
+      localStorage.setItem("laguna_remember_session", "true");
+    } else {
+      localStorage.removeItem("laguna_remember_session");
+    }
     const { data: profile, error: profileError } = await supabaseClient
       .from("profiles")
       .select("role, player_id")
@@ -178,9 +184,26 @@ export function handleDemoCoachLogin(e) {
   showToast("Modo demo: sesión técnica de DT activada.", "success");
 }
 
-export function logout() {
-  if (supabaseClient) supabaseClient.auth.signOut();
+export async function logout() {
+  try {
+    if (supabaseClient) {
+      await supabaseClient.auth.signOut();
+    }
+  } catch (e) {
+    console.warn("Error cerrando sesión en Supabase:", e);
+  }
   sessionStorage.removeItem("laguna_active_role");
+  sessionStorage.removeItem("laguna_auth_user");
+  localStorage.removeItem("laguna_remember_session");
+
+  try {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (_) {}
+
   location.reload();
 }
 
