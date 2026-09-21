@@ -32,6 +32,7 @@ import {
   closeConfirmModal,
   executeConfirmModal,
   triggerStatefulButton,
+  renderFlipText,
 } from "./ui.js";
 
 import {
@@ -555,7 +556,7 @@ export function postLoginInit() {
   const greetingEl = document.getElementById("greetingHeader");
   const subEl = document.querySelector(".greeting-sub");
   if (greetingEl) {
-    greetingEl.innerHTML = `${greeting}, <span style="color:var(--accent-primary)">${displayName}</span>.`;
+    greetingEl.innerHTML = `${greeting}, ${renderFlipText(displayName, { className: "text-primary" })}.`;
   }
   if (subEl) {
     subEl.innerText = displayRole + " · Temporada 2026";
@@ -597,7 +598,7 @@ export function renderGuardianHomeProfile() {
 
   if (welcomeEl) {
     const tutorName = activeStudent.tutorName || "Familia";
-    welcomeEl.textContent = `¡Bienvenido(a), ${tutorName}!`;
+    welcomeEl.innerHTML = `¡${renderFlipText("Bienvenido(a)")}, <span class="text-gold">${renderFlipText(tutorName)}</span>!`;
   }
   if (subtitleEl) {
     subtitleEl.textContent = `Seguimiento deportivo, convocatorias, pagos y avisos oficiales de ${activeStudent.name}.`;
@@ -1102,6 +1103,7 @@ window.openGpsModal = openGpsModal;
 window.openMatchGoogleMaps = openGpsModal;
 window.closeGpsModal = closeGpsModal;
 window.toggleGuardianMatchAttendance = toggleGuardianMatchAttendance;
+window.renderFlipText = renderFlipText;
 
 // ---------------------------------------------------------------------------
 // INICIALIZACIÓN AL CARGAR EL DOCUMENTO

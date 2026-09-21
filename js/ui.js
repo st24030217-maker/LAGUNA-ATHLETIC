@@ -225,3 +225,49 @@ export async function triggerStatefulButton(btn, asyncFn, options = {}) {
     btn.innerHTML = originalHtml;
   }
 }
+
+// ---------------------------------------------------------------------------
+// FLIP-TEXT RENDERER (VengeanceUI / shadcn) — Animación 3D de caracteres
+// ---------------------------------------------------------------------------
+export function renderFlipText(text, options = {}) {
+  if (!text) return "";
+  const duration = options.duration ?? 2.6;
+  const delay = options.delay ?? 0;
+  const loop = options.loop !== false;
+  const together = options.together ?? false;
+  const separator = options.separator ?? " ";
+  const customClass = options.className || "";
+
+  const words = String(text).split(separator);
+  const totalChars = String(text).length || 1;
+
+  let globalIndex = 0;
+  const wordsHtml = words
+    .map((word, wordIndex) => {
+      const chars = Array.from(word);
+      const charsHtml = chars
+        .map((char) => {
+          let calculatedDelay = delay;
+          if (!together) {
+            const normalizedIndex = globalIndex / totalChars;
+            const sineValue = Math.sin(normalizedIndex * (Math.PI / 2));
+            calculatedDelay = sineValue * (duration * 0.22) + delay;
+          }
+          globalIndex++;
+          const safeChar = char === " " ? "&nbsp;" : char;
+          return `<span class="flip-char" data-char="${char}" style="--flip-duration: ${duration}s; --flip-delay: ${calculatedDelay.toFixed(3)}s; --flip-iteration: ${loop ? "infinite" : "1"};">${safeChar}</span>`;
+        })
+        .join("");
+
+      if (separator === " ") globalIndex++;
+
+      const sepSpan =
+        wordIndex < words.length - 1
+          ? `<span class="whitespace inline-block">&nbsp;</span>`
+          : "";
+      return `<span class="word">${charsHtml}</span>${sepSpan}`;
+    })
+    .join("");
+
+  return `<span class="flip-text-wrapper ${customClass}">${wordsHtml}</span>`;
+}
