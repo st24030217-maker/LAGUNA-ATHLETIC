@@ -3,7 +3,7 @@
    Módulo de pizarra táctica, alineaciones, formaciones y drag & drop.
    ========================================================================== */
 
-import { squadData, currentRole } from "./state.js";
+import { squadData, calendarEvents, currentRole } from "./state.js";
 import { showToast } from "./ui.js";
 
 export let currentSlotForModal = null;
@@ -622,4 +622,89 @@ export function renderSquadCallupList() {
     `;
     container.appendChild(item);
   });
+}
+
+// ---------------------------------------------------------------------------
+// CONVOCATORIA OFICIAL WHATSAPP
+// ---------------------------------------------------------------------------
+export function shareTacticalCallupWhatsApp() {
+  const groupFilter =
+    document.getElementById("tacticalGroupSelect")?.value || "Todos";
+  const formation =
+    document.getElementById("formationSelect")?.value || "4-3-3";
+
+  // Próximo partido en calendario
+  const nextMatch =
+    calendarEvents.find((e) => e.type === "partido") ||
+    calendarEvents[0] || {
+      title: "Partido Oficial de Liga",
+      date: "Próxima Jornada",
+      time: "09:30 AM",
+      location: "Cancha 2 - Complejo Laguna",
+    };
+
+  const startersIds = new Set(Object.values(slotAssignments));
+  const starters = [];
+  const bench = [];
+
+  // Mapear titulares ordenados por número o posición
+  Object.keys(slotAssignments).forEach((slotKey) => {
+    const assignedVal = slotAssignments[slotKey];
+    const player = squadData.find(
+      (p) => (p.id === assignedVal || p.number === assignedVal) && !p.injured,
+    );
+    if (player) {
+      starters.push(`• *#${player.number}* ${player.name} (${slotKey})`);
+    }
+  });
+
+  // Mapear suplentes disponibles
+  squadData.forEach((p) => {
+    if (p.injured) return;
+    if (groupFilter !== "Todos" && p.group !== groupFilter) return;
+    if (!startersIds.has(p.id)) {
+      bench.push(`• *#${p.number}* ${p.name} (${p.position})`);
+    }
+  });
+
+  const startersText =
+    starters.length > 0
+      ? starters.join("\n")
+      : "• (Sin titulares asignados)";
+
+  const benchText =
+    bench.length > 0
+      ? bench.join("\n")
+      : "• (Sin suplentes registrados)";
+
+  const msg = [
+    `*⚽ LAGUNA ATHLETIC — CONVOCATORIA OFICIAL ⚽*`,
+    `🏆 *Encuentro:* ${nextMatch.title}`,
+    `📅 *Fecha:* ${nextMatch.date} · ⏰ *Hora:* ${nextMatch.time || "Por definir"}`,
+    `🏟️ *Sede:* ${nextMatch.location || "Complejo Laguna"}`,
+    `🏷️ *Categoría:* ${groupFilter}`,
+    ``,
+    `🛡️ *ESQUEMA TÁCTICO:* ${formation}`,
+    ``,
+    `🟢 *XI TITULAR OFICIAL:*`,
+    startersText,
+    ``,
+    `🟡 *BANQUILLO / SUPLENTES:*`,
+    benchText,
+    ``,
+    `⏱️ *CITATORIO:* Llegar 45 minutos antes con credencial y espinilleras.`,
+    `👕 *UNIFORME:* Kit Oficial Azul Marino de Juego.`,
+    ``,
+    `_¡Vamos con todo por la victoria! #OrgulloLaguna_`,
+  ].join("\n");
+
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+  // Intentar copiar al portapapeles además de abrir WhatsApp
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(msg).catch(() => {});
+  }
+
+  window.open(waUrl, "_blank");
+  showToast("Convocatoria generada y copiada para WhatsApp.", "success");
 }

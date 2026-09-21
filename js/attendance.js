@@ -55,6 +55,7 @@ export function simulateQRCheckIn() {
   player.checkinTime = timeStr;
   recalculateAttendancePct();
   _saveData();
+  playSuccessBeep();
   pushAttendanceLog(player, "Presente", timeStr);
   const alertBox = document.getElementById("lastCheckinAlert");
   if (alertBox) {

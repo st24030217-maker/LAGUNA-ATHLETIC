@@ -149,6 +149,35 @@ export function handleDemoParentLogin(e) {
   showToast("Modo demo: sesión de padre activada.", "success");
 }
 
+export function handleDemoCoachLogin(e) {
+  if (e) e.preventDefault();
+
+  loadData();
+  if (!squadData.length) setSquadData([...defaultSquadData]);
+  if (!calendarEvents.length) setCalendarEvents([...defaultCalendarEvents]);
+  if (!paymentsData.length) setPaymentsData([...defaultPayments]);
+
+  const coachUser = {
+    id: 999,
+    name: "Coach Zúñiga",
+    role: "dt",
+    email: "coach@laguna.local",
+  };
+
+  setProfilePlayerId(null);
+  setLoggedInUser(coachUser);
+  setCurrentRole("dt");
+  sessionStorage.setItem("laguna_active_role", "dt");
+  sessionStorage.setItem("laguna_auth_user", "demo-dt");
+  localStorage.setItem("laguna_auth_username", "coach.zúñiga");
+
+  document.getElementById("loginScreen")?.classList.add("hidden");
+  const appLayout = document.getElementById("appLayout");
+  if (appLayout) appLayout.style.display = "grid";
+  _postLoginInit();
+  showToast("Modo demo: sesión técnica de DT activada.", "success");
+}
+
 export function logout() {
   if (supabaseClient) supabaseClient.auth.signOut();
   sessionStorage.removeItem("laguna_active_role");

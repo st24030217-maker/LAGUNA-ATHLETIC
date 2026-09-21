@@ -279,14 +279,26 @@
             <i class="fa-solid fa-arrow-right-long"></i>
           </button>
 
-          <button
-            type="button"
-            class="btn btn-ghost btn-block demo-parent-login"
-            onclick="handleDemoParentLogin(event)"
-          >
-            <i class="fa-solid fa-people-roof"></i>
-            Entrar como padre (demo)
-          </button>
+          <div class="login-demo-actions" style="display: flex; gap: 0.5rem; margin-top: 0.65rem;">
+            <button
+              type="button"
+              class="btn btn-ghost demo-parent-login"
+              style="margin-top: 0; font-size: 0.75rem; flex: 1; padding: 0.55rem 0.4rem;"
+              onclick="handleDemoParentLogin(event)"
+            >
+              <i class="fa-solid fa-people-roof text-gold"></i>
+              Padre (Demo)
+            </button>
+            <button
+              type="button"
+              class="btn btn-ghost demo-coach-login"
+              style="margin-top: 0; font-size: 0.75rem; flex: 1; padding: 0.55rem 0.4rem;"
+              onclick="handleDemoCoachLogin(event)"
+            >
+              <i class="fa-solid fa-clipboard-user text-primary"></i>
+              DT / Staff (Demo)
+            </button>
+          </div>
         </form>
 
         <!-- Footer -->
@@ -558,6 +570,7 @@
                     </span>
                   </div>
                   <div class="flex-gap align-center">
+                    <div id="guardianStudentSwitchGroup" class="guardian-student-switcher hidden"></div>
                     <span id="guardianChildStatusTag" class="badge badge-gold">
                       <i class="fa-solid fa-shield-heart"></i> Plantel Oficial
                     </span>
@@ -1640,6 +1653,15 @@
                   >
                     <i class="fa-solid fa-cloud-arrow-up"></i> PUBLICAR
                     ALINEACIÓN OFICIAL
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-ghost btn-block role-dt-only mt-2"
+                    style="border: 1px solid rgba(37, 211, 102, 0.4); color: #25d366; background: rgba(37, 211, 102, 0.08);"
+                    onclick="shareTacticalCallupWhatsApp()"
+                    title="Enviar convocatoria y alineación al grupo de WhatsApp"
+                  >
+                    <i class="fa-brands fa-whatsapp"></i> CONVOCATORIA WHATSAPP
                   </button>
                 </div>
               </div>

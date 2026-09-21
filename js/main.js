@@ -51,6 +51,7 @@ import {
 import {
   handleLogin,
   handleDemoParentLogin,
+  handleDemoCoachLogin,
   logout,
   applyRolePermissions,
   canViewGameInfo,
@@ -86,6 +87,7 @@ import {
   resetPitchPositions,
   setSquadCallupFilter,
   saveLineup,
+  shareTacticalCallupWhatsApp,
   renderSquadCallupList,
   initDragAndDrop,
   initTacticalFullscreen,
@@ -948,6 +950,7 @@ export function confirmResetFactoryData() {
 window.showToast = showToast;
 window.handleLogin = handleLogin;
 window.handleDemoParentLogin = handleDemoParentLogin;
+window.handleDemoCoachLogin = handleDemoCoachLogin;
 window.logout = logout;
 window.showModuleTab = (tabId) =>
   showModuleTab(tabId, {
@@ -1054,6 +1057,7 @@ window.renderSquadCallupList = renderSquadCallupList;
 window.resetPitchPositions = resetPitchPositions;
 window.setSquadCallupFilter = setSquadCallupFilter;
 window.saveLineup = saveLineup;
+window.shareTacticalCallupWhatsApp = shareTacticalCallupWhatsApp;
 window.renderCalendarEvents = renderCalendarEvents;
 window.populatePaymentPlayerSelect = populatePaymentPlayerSelect;
 window.populateSiblingSelect = populateSiblingSelect;
