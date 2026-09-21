@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1280" viewBox="0 0 960 1280">
+  <defs>
+    <linearGradient id="bg2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#172554"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="1280" fill="url(#bg2)" rx="64"/>
+  <rect x="120" y="120" width="720" height="1040" rx="50" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)"/>
+  <circle cx="470" cy="420" r="220" fill="#38bdf8" opacity="0.18"/>
+  <path d="M170 885L350 620L510 760L760 540L790 1000L170 885Z" fill="#f8fafc" opacity="0.12"/>
+  <text x="150" y="250" fill="#f8fafc" font-size="46" font-family="Arial, Helvetica, sans-serif" letter-spacing="12">MEMBER</text>
+  <text x="150" y="1070" fill="#e2e8f0" font-size="82" font-family="Arial, Helvetica, sans-serif" font-weight="700">ID 2026</text>
+  <text x="150" y="1150" fill="#cbd5e1" font-size="28" font-family="Arial, Helvetica, sans-serif" letter-spacing="8">LAGUNA ETLÉTIC</text>
+</svg>
