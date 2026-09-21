@@ -500,54 +500,114 @@
       <!-- MAIN CONTENT -->
       <main class="main-content">
         <!-- TOPBAR MOBILE / EXTRA INFO -->
-        <header class="topbar glass-panel">
-          <button class="mobile-menu-btn" onclick="toggleSidebar()">
-            <i class="fa-solid fa-bars"></i>
-          </button>
-          <div class="topbar-greeting">
-            <h1 class="greeting-text" id="greetingHeader">
-              <span class="flip-text-wrapper"><span class="word"><span class="flip-char" data-char="B">B</span><span class="flip-char" data-char="i">i</span><span class="flip-char" data-char="e">e</span><span class="flip-char" data-char="n">n</span><span class="flip-char" data-char="v">v</span><span class="flip-char" data-char="e">e</span><span class="flip-char" data-char="n">n</span><span class="flip-char" data-char="i">i</span><span class="flip-char" data-char="d">d</span><span class="flip-char" data-char="o">o</span></span><span class="whitespace inline-block">&nbsp;</span><span class="word"><span class="flip-char" data-char="a">a</span><span class="flip-char" data-char="l">l</span></span><span class="whitespace inline-block">&nbsp;</span><span class="word"><span class="flip-char" data-char="s">s</span><span class="flip-char" data-char="i">i</span><span class="flip-char" data-char="s">s</span><span class="flip-char" data-char="t">t</span><span class="flip-char" data-char="e">e</span><span class="flip-char" data-char="m">m</span><span class="flip-char" data-char="a">a</span></span></span>
-            </h1>
-            <p class="greeting-sub">
-              Control operativo y seguimiento del plantel 2026
-            </p>
+        <!-- NOTCH NAVBAR — VENGEANCEUI ARCHITECTURE -->
+        <header class="topbar notch-navbar" id="mainNotchNavbar">
+          <!-- Left Side Bar -->
+          <div class="notch-side-bar notch-side-bar-left">
+            <svg preserveAspectRatio="none">
+              <line x1="0" y1="39.5" x2="100%" y2="39.5" stroke="rgba(56, 189, 248, 0.45)" stroke-width="1" />
+              <line x1="0" y1="36.5" x2="100%" y2="36.5" stroke="rgba(251, 191, 36, 0.35)" stroke-width="0.8" />
+            </svg>
           </div>
-          <div
-            class="topbar-actions"
-            style="
-              display: flex;
-              align-items: center;
-              gap: 0.75rem;
-              margin-left: auto;
-            "
-          >
-            <button
-              id="cloudStatusBadge"
-              class="badge badge-outline"
-              style="
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 0.45rem;
-                padding: 0.4rem 0.8rem;
-                font-size: 0.75rem;
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                border-radius: 999px;
-                background: rgba(0, 0, 0, 0.25);
-                color: #fff;
-                transition: all 0.2s;
-              "
-              onclick="openSupabaseConfigModal()"
-              title="Configuración de Base de Datos Supabase (Nube)"
-            >
-              <i
-                class="fa-solid fa-cloud"
-                id="cloudStatusIcon"
-                style="color: var(--accent-gold); font-size: 0.85rem"
-              ></i>
-              <span id="cloudStatusText">Modo Local</span>
-            </button>
+
+          <!-- Notch Container -->
+          <div class="notch-container">
+            <!-- Left Slice Corner -->
+            <div class="notch-slice-left">
+              <div class="notch-slice-bg"></div>
+              <svg viewBox="0 0 50 68">
+                <path d="M0 39.5 C25 39.5 25 67.5 50 67.5" fill="none" stroke="rgba(56, 189, 248, 0.45)" stroke-width="1" />
+                <path d="M0 36.5 C25 36.5 25 64.5 50 64.5" fill="none" stroke="rgba(251, 191, 36, 0.35)" stroke-width="0.8" />
+              </svg>
+            </div>
+
+            <!-- Center Slice -->
+            <div class="notch-slice-center">
+              <div class="notch-slice-bg"></div>
+              <svg class="notch-lines" preserveAspectRatio="none">
+                <line x1="0" y1="67.5" x2="100%" y2="67.5" stroke="rgba(56, 189, 248, 0.45)" stroke-width="1" />
+                <line x1="0" y1="64.5" x2="100%" y2="64.5" stroke="rgba(251, 191, 36, 0.35)" stroke-width="0.8" />
+              </svg>
+
+              <!-- Content Layer -->
+              <div class="notch-content">
+                <!-- Left Nav & Mobile Button -->
+                <div class="notch-left-group">
+                  <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Abrir Menú">
+                    <i class="fa-solid fa-bars"></i>
+                  </button>
+
+                  <nav class="notch-quick-links" aria-label="Navegación Rápida">
+                    <button type="button" class="notch-nav-pill active" onclick="showModuleTab('mod-home')">
+                      <i class="fa-solid fa-house-chimney"></i>
+                      <span>Tablero</span>
+                    </button>
+                    <button type="button" class="notch-nav-pill" onclick="showModuleTab('mod-qr')">
+                      <i class="fa-solid fa-qrcode"></i>
+                      <span>Asistencia</span>
+                    </button>
+                    <button type="button" class="notch-nav-pill" onclick="showModuleTab('mod-alineacion')">
+                      <i class="fa-solid fa-futbol"></i>
+                      <span>Pizarra</span>
+                    </button>
+                    <button type="button" class="notch-nav-pill" onclick="showModuleTab('mod-calendario')">
+                      <i class="fa-solid fa-calendar-days"></i>
+                      <span>Calendario</span>
+                    </button>
+                  </nav>
+                </div>
+
+                <!-- Center Emblem -->
+                <div class="notch-emblem-wrap">
+                  <img
+                    src="LAGUNA.jpg"
+                    alt="Escudo Laguna Athletic"
+                    class="notch-emblem-img"
+                    onclick="showModuleTab('mod-home')"
+                    title="Laguna Athletic Club 2026"
+                  />
+                </div>
+
+                <!-- Right Nav: Greeting & Actions -->
+                <div class="notch-right-group">
+                  <div class="notch-greeting-wrap">
+                    <h1 class="greeting-text" id="greetingHeader">
+                      <span class="flip-text-wrapper"><span class="word"><span class="flip-char" data-char="B">B</span><span class="flip-char" data-char="i">i</span><span class="flip-char" data-char="e">e</span><span class="flip-char" data-char="n">n</span><span class="flip-char" data-char="v">v</span><span class="flip-char" data-char="e">e</span><span class="flip-char" data-char="n">n</span><span class="flip-char" data-char="i">i</span><span class="flip-char" data-char="d">d</span><span class="flip-char" data-char="o">o</span></span><span class="whitespace inline-block">&nbsp;</span><span class="word"><span class="flip-char" data-char="a">a</span><span class="flip-char" data-char="l">l</span></span><span class="whitespace inline-block">&nbsp;</span><span class="word"><span class="flip-char" data-char="s">s</span><span class="flip-char" data-char="i">i</span><span class="flip-char" data-char="s">s</span><span class="flip-char" data-char="t">t</span><span class="flip-char" data-char="e">e</span><span class="flip-char" data-char="m">m</span><span class="flip-char" data-char="a">a</span></span></span>
+                    </h1>
+                    <p class="greeting-sub">Control operativo 2026</p>
+                  </div>
+
+                  <button
+                    id="cloudStatusBadge"
+                    class="badge badge-outline notch-cloud-btn"
+                    onclick="openSupabaseConfigModal()"
+                    title="Configuración de Base de Datos Supabase (Nube)"
+                  >
+                    <i class="fa-solid fa-cloud" id="cloudStatusIcon" style="color: var(--accent-gold); font-size: 0.85rem"></i>
+                    <span id="cloudStatusText">Local</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Slice Corner -->
+            <div class="notch-slice-right">
+              <div class="notch-slice-bg"></div>
+              <svg viewBox="0 0 50 68">
+                <path d="M0 67.5 C25 67.5 25 39.5 50 39.5" fill="none" stroke="rgba(56, 189, 248, 0.45)" stroke-width="1" />
+                <path d="M0 64.5 C25 64.5 25 36.5 50 36.5" fill="none" stroke="rgba(251, 191, 36, 0.35)" stroke-width="0.8" />
+              </svg>
+            </div>
           </div>
+
+          <!-- Right Side Bar -->
+          <div class="notch-side-bar notch-side-bar-right">
+            <svg preserveAspectRatio="none">
+              <line x1="0" y1="39.5" x2="100%" y2="39.5" stroke="rgba(56, 189, 248, 0.45)" stroke-width="1" />
+              <line x1="0" y1="36.5" x2="100%" y2="36.5" stroke="rgba(251, 191, 36, 0.35)" stroke-width="0.8" />
+            </svg>
+          </div>
+
           <div id="toastContainer" class="toast-container"></div>
         </header>
 

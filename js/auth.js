@@ -284,6 +284,11 @@ export function applyRolePermissions() {
       const visibleTabs = group.querySelectorAll('.tab-btn:not([style*="display: none"])');
       group.style.display = visibleTabs.length > 0 ? "" : "none";
     });
+    document.querySelectorAll(".notch-nav-pill").forEach((el) => {
+      const onclick = el.getAttribute("onclick") || "";
+      const isAllowed = onclick.includes("mod-home") || onclick.includes("mod-calendario") || onclick.includes("mod-pagos");
+      el.style.display = isAllowed ? "" : "none";
+    });
   } else {
     document.querySelectorAll(".tab-btn[data-tab]").forEach((el) => {
       el.style.display = "";
@@ -293,6 +298,9 @@ export function applyRolePermissions() {
     });
     document.querySelectorAll(".nav-group").forEach((group) => {
       group.style.display = "";
+    });
+    document.querySelectorAll(".notch-nav-pill").forEach((el) => {
+      el.style.display = "";
     });
   }
   document.querySelectorAll(".player-marker").forEach((el) => {

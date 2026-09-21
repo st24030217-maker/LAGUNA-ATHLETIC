@@ -100,6 +100,11 @@ export function showModuleTab(tabId, { onHomeRender, onStatsResize, onNoticesIni
     if (parentGroup && !parentGroup.classList.contains("open")) parentGroup.classList.add("open");
   }
 
+  document.querySelectorAll(".notch-nav-pill").forEach((el) => {
+    const isTarget = el.getAttribute("onclick")?.includes(tabId);
+    el.classList.toggle("active", Boolean(isTarget));
+  });
+
   if (tabId === "mod-home"         && typeof onHomeRender        === "function") onHomeRender();
   if (tabId === "mod-estadisticas" && typeof onStatsResize      === "function") onStatsResize();
   if (tabId === "mod-avisos"       && typeof onNoticesInit       === "function") onNoticesInit();

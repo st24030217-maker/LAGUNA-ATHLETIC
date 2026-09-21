@@ -9904,3 +9904,293 @@ body {
     opacity: 1;
   }
 }
+
+/* ==========================================================================
+   NOTCH NAVBAR (VengeanceUI Architecture adapted for Laguna Athletic)
+   ========================================================================== */
+.topbar.notch-navbar {
+  display: flex;
+  align-items: flex-start;
+  padding: 0;
+  height: 68px;
+  background: transparent;
+  border-bottom: none;
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  box-shadow: none;
+}
+
+/* Barras laterales horizontales flexibles */
+.notch-side-bar {
+  flex: 1;
+  height: 40px;
+  background: rgba(7, 15, 30, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  min-width: 6px;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.18);
+}
+
+.notch-side-bar svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Contenedor central del Notch */
+.notch-container {
+  display: flex;
+  height: 68px;
+  position: relative;
+  z-index: 10;
+  flex: 20;
+  margin-left: -1px;
+}
+
+/* Esquinas biseladas con curvas SVG (Left Slice) */
+.notch-slice-left {
+  width: 50px;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.notch-slice-left .notch-slice-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 15, 30, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  clip-path: path('M0 0 H50 V68 C25 68 25 40 0 40 Z');
+}
+
+.notch-slice-left svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Sección central interactiva del Notch (Center Slice) */
+.notch-slice-center {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  min-width: 0;
+  margin-left: -1px;
+}
+
+.notch-slice-center .notch-slice-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 15, 30, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.28);
+}
+
+.notch-slice-center svg.notch-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Esquinas biseladas con curvas SVG (Right Slice) */
+.notch-slice-right {
+  width: 50px;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0;
+  margin-left: -1px;
+}
+
+.notch-slice-right .notch-slice-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 15, 30, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  clip-path: path('M0 0 H50 V40 C25 40 25 68 0 68 Z');
+}
+
+.notch-slice-right svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Capa de contenido interno del Notch */
+.notch-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 1rem 0.55rem;
+  gap: 0.85rem;
+}
+
+.notch-left-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.notch-quick-links {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.notch-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.notch-nav-pill:hover,
+.notch-nav-pill.active {
+  color: #ffffff;
+  background: rgba(30, 58, 138, 0.55);
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  transform: translateY(-1px);
+}
+
+.notch-nav-pill i {
+  color: #38bdf8;
+  font-size: 0.78rem;
+}
+
+/* Medallón del escudo en el Notch */
+.notch-emblem-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  margin-bottom: 2px;
+}
+
+.notch-emblem-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #fbbf24;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.45);
+  object-fit: cover;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.notch-emblem-img:hover {
+  transform: scale(1.12) rotate(6deg);
+}
+
+/* Grupo derecho del Notch */
+.notch-right-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.notch-greeting-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: right;
+  min-width: 0;
+}
+
+.notch-greeting-wrap .greeting-text {
+  font-size: 1rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notch-greeting-wrap .greeting-sub {
+  font-size: 0.7rem;
+  color: #64748b;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+.notch-cloud-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.72rem;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #e2e8f0;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.notch-cloud-btn:hover {
+  background: rgba(30, 58, 138, 0.5);
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+}
+
+@media (max-width: 1080px) {
+  .notch-quick-links {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar.notch-navbar {
+    height: 62px;
+  }
+  .notch-container {
+    height: 62px;
+  }
+  .notch-slice-left,
+  .notch-slice-right {
+    width: 35px;
+  }
+  .notch-slice-left .notch-slice-bg {
+    clip-path: path('M0 0 H35 V62 C18 62 18 40 0 40 Z');
+  }
+  .notch-slice-right .notch-slice-bg {
+    clip-path: path('M0 0 H35 V40 C18 40 18 62 0 62 Z');
+  }
+  .notch-greeting-wrap .greeting-sub {
+    display: none;
+  }
+  .notch-greeting-wrap .greeting-text {
+    font-size: 0.88rem;
+  }
+  .notch-emblem-img {
+    width: 32px;
+    height: 32px;
+  }
+}
